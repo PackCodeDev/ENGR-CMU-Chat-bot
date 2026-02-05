@@ -1,0 +1,14 @@
+if (message.find("เพิ่มเติม") != string::npos || message.find("สวัสดี") != string::npos) {
+            selectUserStatus(&select); }
+            // 3. กรณีเข้า Else (ไม่เจอ Keyword) มันจะวนลูปกลับมาให้พิมพ์ใหม่เองอัตโนมัติ
+        else if{
+            cout << "Chatbot: ขอโทษครับ ผมยังไม่เข้าใจ... ลองถามเรื่อง 'หอพัก', 'ขึ้นดอย' หรือ 'ตารางสอน' ดูไหม?" << endl;
+            cout << "Chatbot: (หรือพิมพ์ 'ออก' เพื่อเลิกถาม)" << endl;
+            if (message.find("ออก") != string::npos || message.find("จบ") != string::npos) {
+                cout << "Chatbot: ขอบคุณครับ! ไว้คุยกันใหม่นะลูกช้าง" << endl;
+                keepAsking = false;
+            } else {
+                cout << "ต้องการข้อมูลอะไรเพิ่มเติมไหมครับ" << endl;
+                cout << "User : ";
+            }
+        }
