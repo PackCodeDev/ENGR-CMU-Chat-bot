@@ -15,6 +15,7 @@ int main() {
 
     while(true) {
 
+
         cout << "\nAI: สนใจทุนการศึกษาไหมครับ?\n";
         cout << "You: ";
         getline(cin, input);
