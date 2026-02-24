@@ -25,8 +25,8 @@ int main() {
         "Electrical",
         "Civil",
         "Environmental",
-        "Robotics Engineering and Artificial Intelligence",
-        "Mining and Petroleum Engineering",
+        "REAI",
+        "Mining&Petroleum Engineering",
         "Industrial Engineering",
         "ISNE"
     };
@@ -35,21 +35,21 @@ int main() {
     string regularMajors[] = {
         "Computer","Mechanical","Semiconductor","Integrated",
         "Electrical","Civil","Environmental",
-        "Robotics Engineering and Artificial Intelligence",
-        "Mining and Petroleum","Industrial"
+        "REAI",
+        "Mining&Petroleum","Industrial"
     };
 
     string regularDesc[] = {
-        "Computer (Regular): เรียนเขียนโปรแกรม ระบบซอฟต์แวร์ และ AI",
-        "Mechanical (Regular): เครื่องจักรและระบบพลังงาน",
+        "Computer (Regular): เรียนเกี่ยวกับด้าน Hardware, Software รวมถึงระบบเครือข่ายและการจัดการข้อมูล และการเขียนโปรแกรม",
+        "Mechanical (Regular): เป็นหัวใจของอุตสาหกรรมทุกประเภท เกี่ยวข้องกับการเคลื่อนที่ พลังงาน และการออกแบบเครื่องจักรต่างๆ",
         "Semiconductor (Regular): เทคโนโลยีชิปและอุปกรณ์อิเล็กทรอนิกส์",
-        "Integrated (Regular): ระบบวงจรรวมและฮาร์ดแวร์",
-        "Electrical (Regular): ระบบไฟฟ้าและพลังงาน",
-        "Civil (Regular): โครงสร้าง อาคาร ถนน สะพาน",
-        "Environmental (Regular): การจัดการสิ่งแวดล้อม",
-        "Robotics & AI (Regular): หุ่นยนต์และปัญญาประดิษฐ์",
-        "Mining & Petroleum (Regular): เหมืองแร่และปิโตรเลียม",
-        "Industrial (Regular): การจัดการอุตสาหกรรม"
+        "Integrated (Regular): เป็นหลักสูตรที่ยืดหยุ่น เน้นการนำองค์ความรู้หลายแขนงมาประยุกต์ใช้เพื่อตอบโจทย์อุตสาหกรรมสมัยใหม่",
+        "Electrical (Regular): ครอบคลุมตั้งแต่ความรู้ระบบไฟฟ้ากำลังที่ใช้ในเมือง ไปจนถึงระบบสื่อสารและอิเล็กทรอนิกส์ขนาดเล็ก",
+        "Civil (Regular): เน้นการออกแบบและควบคุมการก่อสร้างโครงสร้างพื้นฐาน ตั้งแต่บ้าน อาคารสูง ถนน ไปจนถึงเขื่อนและสะพาน",
+        "Environmental (Regular): มุ่งเน้นการแก้ปัญหามลพิษและการจัดการทรัพยากรธรรมชาติเพื่อความยั่งยืน",
+        "REAI (Regular): รวมเอาเครื่องกล ไฟฟ้า และคอมพิวเตอร์เข้าด้วยกัน เพื่อสร้างระบบอัตโนมัติที่ชาญฉลาด",
+        "Mining&Petroleum (Regular): เรียนเกี่ยวกับการสำรวจ สกัด และแปรรูปทรัพยากรธรณีและพลังงานจากใต้ดิน",
+        "Industrial (Regular): เรียนรู้วิธีการบริหารจัดการ คน เครื่องจักร และงบประมาณ ให้ทำงานร่วมกันได้อย่างมีประสิทธิภาพสูงสุด"
     };
 
     //SPECIAL
@@ -58,9 +58,9 @@ int main() {
     };
 
     string specialDesc[] = {
-        "Industrial (Special): เรียนวันเสาร์-อาทิตย์ เน้นคนทำงาน",
-        "Electrical (Special): ภาคพิเศษสำหรับผู้ทำงานแล้ว",
-        "Mechanical (Special): ระบบเครื่องกลภาคพิเศษ"
+        "Industrial (Special): เน้นการจัดการระบบการผลิตและห่วงโซ่อุปทานที่เชื่อมโยงกันทั่วโลก เรียนวันเสาร์-อาทิตย์ เน้นคนทำงาน",
+        "Electrical (Special): ยกระดับวิศวกรรมไฟฟ้าแบบเดิมเข้าสู่ยุคพลังงานสะอาดและระบบดิจิทัล ภาคพิเศษสำหรับผู้ทำงานแล้ว",
+        "Mechanical (Special): เป็นการนำพื้นฐานวิศวกรรมเครื่องกลมาบวกกับทักษะการบริหารจัดการแบบนักบริหาร"
     };
 
     //INTER
@@ -71,12 +71,12 @@ int main() {
     };
 
     string interDesc[] = {
-        "Mechanical (International): หลักสูตรภาษาอังกฤษ",
-        "Integrated (International): IC Design ภาคนานาชาติ",
-        "Electrical (International): ระบบไฟฟ้าอินเตอร์",
-        "Civil Engineering (International): วิศวกรรมโยธาอินเตอร์",
-        "ISNE (International): Information Systems & Network English Program",
-        "Industrial (International): โลจิสติกส์และการจัดการภาษาอังกฤษ"
+        "Mechanical (International):  นอกจากเครื่องกลหลัก (Thermodynamics, Fluid) จะเน้นเรื่องการวางแผนโครงการ, การบริหารความเสี่ยง, และเศรษฐศาสตร์สำหรับวิศวกร",
+        "Integrated (International): ไม่ได้เจาะจงสาขาเดียว แต่จะเน้นการแก้ปัญหาที่ต้องใช้ความรู้หลายด้าน เช่น หุ่นยนต์การแพทย์ หรือเทคโนโลยีด้านอาหาร",
+        "Electrical (International): วิเคราะห์โครงสร้าง, เทคโนโลยีก่อสร้างสมัยใหม่, การจัดการทรัพยากรน้ำ และภาษาอังกฤษทางวิศวกรรม",
+        "Civil Engineering (International): วิศวกรรมโยธาอินเตอร์ เน้นการออกแบบและก่อสร้างโครงสร้างพื้นฐานตามมาตรฐานสากล",
+        "ISNE (International): เน้นความปลอดภัยของข้อมูล ซึ่งเป็นหัวใจสำคัญของโลกดิจิทัลปัจจุบัน",
+        "Industrial (International): การบริหารคลังสินค้า, ระบบขนส่ง, การวิจัยดำเนินงาน (OR), และการปรับปรุงกระบวนการแบบ Lean"
     };
 
     while (true) {
