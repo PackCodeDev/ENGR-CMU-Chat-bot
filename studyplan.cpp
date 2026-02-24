@@ -153,7 +153,7 @@ int main() {
         }
 
 
-        string imagePath = majorList[majorChoice - 1] + suffix;
+        string imagePath = "studyplan_photo\\" + majorList[majorChoice - 1] + suffix;
 
         cout << "\nกำลังเปิดรูป...\n";
         openImage(imagePath);
@@ -169,3 +169,4 @@ int main() {
     
     return 0;
 }
+
