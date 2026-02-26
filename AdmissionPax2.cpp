@@ -18,52 +18,134 @@ bool checkHistory(const vector<string>& history, string topic) {
     return false;
 }
 //ฟังก์ชันสาขาโยธา //เเก้ตรงนี้ให้มันสามารถวนถามได้เรื่อยๆ
+
+
+// ฟังก์ชันโยธา
 void CivilMajorDetails() {
     string input;
-    cout << "อยากสมัครวิศวกรรมโยธาในรอบไหนครับ?" << endl;
-    cout << "User: ";
-    getline(cin, input);
+    string name;
+    bool keepRunning = true;
+    vector<string> history;
 
-    if (hasKeyword(input, "1") || hasKeyword(input, "Portfolio")) {
+    while (keepRunning) {
+        cout << "AI: อยากสมัครวิศวกรรมโยธาในรอบไหนครับ?" << endl;
+        cout << "User: ";
+        getline(cin, input);
+
+        bool found = false;
+
+        if (hasKeyword(input, "1") || hasKeyword(input, "Portfolio")) {
         cout << "AI: สำหรับรอบ Portfolio ของสาขาวิศวกรรมโยธา ตอนนี้มีทั้งหมด 5 โครงการครับ  " << endl;
         cout << "AI: 1. ประเภทโครงการ การรับนักกีฬาที่มีความสามารถดีเด่นระดับนานาชาติ/ระดับชาติ และนักกีฬาตามยุทธศาสตร์  🧑‍🎓 จำนวนรับ แบบ 1.1: 2 คน, แบบ 1.2: 0 คน" << endl;
         cout << "AI: 2. ประเภทโครงการ การรับนักเรียนจาก โครงการห้องเรียนวิทยาศาสตร์ในโรงเรียน โดยการกำกับดูแลของมหาวิทยาลัย (โครงการ วมว.)  🧑‍🎓 จำนวนรับ แบบ 1.1: 5 คน, แบบ 1.2: 0 คน" << endl;
         cout << "AI: 3. ประเภทโครงการ โครงการพิเศษอื่นๆ (โครงการรับนักเรียนผู้มีความรู้ ความสามารถพิเศษ ) 🧑‍🎓จำนวนรับ แบบ 1.1: 5 คน, แบบ 1.2: 5 คน" << endl;
         cout << "AI: 4. ประเภทโครงการ โครงการพิเศษอื่นๆ (โครงการรับนักเรียนผู้มีผลการเรียนดีเด่น )  🧑‍🎓จำนวนรับ แบบ 1.1: 10 คน, แบบ 1.2: 10 คน" << endl;
         cout << "AI: 5. ประเภทโครงการ โครงการพิเศษอื่นๆ (โครงการรับนักเรียนผู้มีความรู้ ความสามารถทางวิศวกรรม )  🧑‍🎓จำนวนรับ แบบ 1.1: 10 คน, แบบ 1.2: 0 คน" << endl;
-        cout << "AI: คุณสนใจโครงการไหนเป็นพิเศษไหมครับ เดี๋ยวผมอธิบายรายละเอียดให้แบบเจาะลึกเลย 🙂" << endl;
+        cout << "AI: อยากสมัครวิศวกรรมโยธาในโครงการอะไรดีครับครับ🙂?" << endl;
         cout << "User: ";
         getline(cin, input);
+            while (keepRunning)
+            {
+                cout << "AI: อยากสมัครวิศวกรรมโยธาในโครงการอะไรดีครับครับ🙂?" << endl;
+                cout << "User: ";
+                getline(cin, input);
 
-        if (hasKeyword(input, "นักกีฬา") || hasKeyword(input, "นักกีฬาที่มีความสามารถดีเด่น") || hasKeyword(input, "ระดับนานาชาติ/ระดับชาติ") ) {
-            cout << "AI: โครงการนี้เน้นรับนักกีฬาที่มีความสามารถโดดเด่นในระดับนานาชาติหรือระดับชาติครับ โดยจะพิจารณาจากผลงานการแข่งขันและเกียรติประวัติทางกีฬาเป็นหลัก" << endl;
+                bool found = false;
+
+                if (hasKeyword(input, "1") || hasKeyword(input, "นักกีฬา") || hasKeyword(input, "นักกีฬาตามยุทธศาสตร์")) {
+                    cout << "AI: โดยทั่วไปคุณสมบัติพื้นฐานที่มักกำหนดไว้ เช่น:" << endl;
+                    cout << "AI: ✔ จบหรือกำลังจะจบ ม.6 หรือเทียบเท่า (เช่น GED)" << endl;
+                    cout << "AI: ✔ มีความสามารถด้านกีฬา โดดเด่นจริง (ระดับชนะเลิศ หรือได้เป็นตัวแทนแข่งขันในระดับชาติ/นานาชาติ)" << endl;
+                    cout << "AI: ✔ มีผลงานหรือผลงานการแข่งขันที่สามารถนำไปอยู่ในแฟ้มสะสมงานเพื่อใช้พิจารณา" << endl;
+                    
+                    while (keepRunning) {
+                        cout << "AI: คุณสนใจรายละเอียดเพิ่มเติมเกี่ยวกับโครงการนี้ไหมครับ?" << endl;
+                        cout << "User: ";
+                        getline(cin, input);
+
+                        bool found = false;
+
+                        if (hasKeyword(input, "1") || hasKeyword(input, "Portfolio")) {
+        
+                        getline(cin, input);
+
+                        found = true;
+                        
+
+                        } 
+                        if (hasKeyword(input, "ลา") || hasKeyword(input, "พอแล้ว") || hasKeyword(input, "หยุด")|| hasKeyword(input, "ไม่มี") ) {
+                        cout << "AI: ลาก่อนครับ ขอให้โชคดีกับการเรียนนะครับ!" << endl;
+                        keepRunning = false;
+                        exit(0);
+                        }
+        
+
+                        if (!found) {
+                            cout << "AI: ขออภัยครับ ผมไม่เข้าใจคำที่คุณพูดครับ" << endl;
+                        }
+
+                        if (keepRunning) {
+                            cout << "AI: คุณรายละเอียดที่คุณต้องการถามดูครับ" << endl;
+                        }
+                    }
+                }
+                if (hasKeyword(input, "2") || hasKeyword(input, "Portfolio")) {
+
+                }
+                if (hasKeyword(input, "3") || hasKeyword(input, "Portfolio")) {
+
+                }
+                if (hasKeyword(input, "4") || hasKeyword(input, "Portfolio")) {
+
+                }
+                if (hasKeyword(input, "5") || hasKeyword(input, "Portfolio")) {
+
+                }
+
+                if (!found){
+                    cout << "AI: ขออภัยครับ ผมไม่เข้าใจคำที่คุณพูดครับ" << endl;
+                }
+                if (keepRunning)  {
+                    cout << "AI: คุณลองพิมพ์ชื่อโครงการที่คุณสนใจดูครับ" << endl;
+                    
+                }
+            }
+            
+            found = true;
         } 
         
-        
-        
-        
-        else if (hasKeyword(input, "1.2") || hasKeyword(input, "นักกีฬาตามยุทธศาสตร์") ) {
-            cout << "AI: โครงการนี้เน้นรับนักกีฬาที่มีความสามารถตามยุทธศาสตร์ของมหาวิทยาลัยครับ โดยจะพิจารณาจากผลงานการแข่งขันและเกียรติประวัติทางกีฬาเป็นหลัก" << endl;
-        } else if (hasKeyword(input, "2") || hasKeyword(input, "โครงการห้องเรียนวิทยาศาสตร์ในโรงเรียน โดยการกำกับดูแลของมหาวิทยาลัย (โครงการ วมว.)") ) {
-            cout << "AI: โครงการนี้เน้นรับนักเรียนที่มาจากห้องเรียนวิทยาศาสตร์ในโรงเรียนที่ได้รับการกำกับดูแลจากมหาวิทยาลัยครับ โดยจะพิจารณาจากผลการเรียนและผลงานทางวิทยาศาสตร์เป็นหลัก" << endl;
-        } else if (hasKeyword(input, "3") || hasKeyword(input, "โครงการพิเศษอื่นๆ (โครงการรับนักเรียนผู้มีความรู้ ความสามารถพิเศษ)") ) {
-            cout << "AI: โครงการนี้เน้นรับนักเรียนที่มีความรู้ ความสามารถพิเศษในด้านต่างๆ ครับ โดยจะพิจารณาจากผลงานและเกียรติประวัติในด้านนั้นๆ เป็นหลัก" << endl;
-        } else if (hasKeyword(input, "4") || hasKeyword(input, "โครงการพิเศษอื่นๆ (โครงการรับนักเรียนผู้มีผลการเรียนดีเด่น)") ) {
-            cout << "AI: โครงการนี้เน้นรับนักเรียนที่มีผลการเรียนดีเด่นครับ โดยจะพิจารณาจากเกรดเฉลี่ยและผลงานทางวิชาการเป็นหลัก" << endl;
-        } else if (hasKeyword(input, "5") || hasKeyword(input, "โครงการพิเศษอื่นๆ (โครงการรับนักเรียนผู้มีความรู้ ความสามารถทางวิศวกรรม)") ) {
-            cout << "AI: โครงการนี้เน้นรับนักเรียนที่มีความรู้ ความสามารถทางวิศวกรรมครับ โดยจะพิจารณาจากผลงานและเกียรติประวัติในด้านวิศวกรรมเป็นหลัก" << endl;
-        } else {
-            cout << "AI: ขออภัยครับ ผมยังไม่มีข้อมูลของโครงการนี้" << endl;
+        if (hasKeyword(input, "2") || hasKeyword(input, "Quota")) {
+            
+            found = true;
         }
 
+        if (hasKeyword(input, "3") || hasKeyword(input, "admission")  ) {
+            cout << "AI: ลาก่อนครับ ขอให้โชคดีกับการเรียนนะครับ!" << endl;
+            found = true;
+            
+        }
 
-    } else if (hasKeyword(input, "ภาคพิเศษ")) {
-        cout << "AI: คณะวิศวกรรมศาสตร์ ภาคพิเศษ รับ 30 คนครับ เน้นคะแนน TGAT และ TPAT3 เกณฑ์ GPAX 3.20 ครับ" << endl;
-    } else if (hasKeyword(input, "นานาชาติ") || hasKeyword(input, "English Program")) {
-        cout << "AI: หลักสูตรนานาชาติ (English Program) รับ 20 คนครับ เน้นภาษาอังกฤษและคณิตศาสตร์ครับ" << endl;
-    } else {
-        cout << "AI: ขออภัยครับ ผมยังไม่มีข้อมูลเกณฑ์ของคณะนี้" << endl;
+        if (hasKeyword(input, "4") || hasKeyword(input, "direct admission")  | hasKeyword(input, "direct")) {
+            cout << "AI: ลาก่อนครับ ขอให้โชคดีกับการเรียนนะครับ!" << endl;
+            found = true;
+            
+        }
+
+        if (!found) {
+            cout << "AI: ขออภัยครับ ผมไม่เข้าใจคำที่คุณพูดครับ ลองพิมพ์ใหม่ได้ไหมครับ?" << endl;
+            
+        }
+
+        if (keepRunning) {
+            cout << "AI: การรับเข้าของคณะเรามีทั้งหมด 4 รอบครับ" << endl;
+            cout << "AI: 1. รอบ (Portfolio)🧑‍🎓" << endl;
+            cout << "AI: 2. รอบ (Quota) 🧑‍🎓" << endl;
+            cout << "AI: 3. รอบรับตรงร่วมกับ (admission) 🧑‍🎓" << endl;
+            cout << "AI: 4. รอบรับตรงอิสระ(direct admission) 🧑‍🎓" << endl;
+        }
     }
+
+   
 }
 
 void  handleMajorDetails() {
@@ -75,7 +157,7 @@ void  handleMajorDetails() {
     if (hasKeyword(input, "โยธา") || hasKeyword(input, "Civil")) {
         CivilMajorDetails();
     } else {
-        cout << "AI: ขออภัยครับ ผมยังไม่มีข้อมูลเกณฑ์ของคณะนี้" << endl;
+        cout << "AI: " << endl;
     }
 }
 
@@ -166,11 +248,11 @@ int main() {
         }
 
         if (!found) {
-            cout << "AI: ขออภัยครับ ผมไม่เข้าใจ ลองระบุหัวข้อ 'รับเข้า' หรือ 'ทุน' ดูครับ" << endl;
+            cout << "AI: ขออภัยครับ ผมไม่เข้าใจ ลองระบุหัวข้อที่ต้องการถามใหม่ดูครับ" << endl;
         }
 
         if (keepRunning) {
-            cout << "\nAI: ต้องการถามอะไรเพิ่มเติมอีกไหมครับ?" << endl;
+            cout << "AI: ลองถามเเรื่อง 'การรับเข้า' หรือ 'นักศึกษา' ดูครับ" << endl;
         }
     }
     return 0;
