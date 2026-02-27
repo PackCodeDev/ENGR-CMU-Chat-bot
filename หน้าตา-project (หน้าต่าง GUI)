@@ -1,72 +1,449 @@
-int main() {
-    if (!glfwInit()) return 1;
-    GLFWwindow* window = glfwCreateWindow(600, 800, "ENGR CMU Chatbot (GUI Version)", NULL, NULL);
-    glfwMakeContextCurrent(window);
+// include ทั่วไปที่ต้องใช้ในการเขียน //
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cstring>
+//------------------------------------------------------------------------------------------------------------------------------------------------//
 
+
+
+// Include ImGui และ Backend ที่เพิ่มเติมมาเพื่อให้นำโค้ด C++ ใช้งานกับ imGUI ได้ //
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+#include "imgui.h"                       //ตัวสมองของ UI (เอาไว้สั่งวาดปุ่ม, วาดกล่องข้อความ) //
+#include "imgui_impl_glfw.h"             //UI Backends: สะพานเชื่อมระหว่าง ImGui กับระบบกราฟิกและหน้าต่าง (Bridge)//
+#include "imgui_impl_opengl3.h" 
+#include <GLFW/glfw3.h>                  // สร้างหน้าต่างโปรแกรม (Window) และคอยรับค่าจาก Mouse/Keyboard //
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+
+#ifdef _WIN32
+#include <windows.h>
+// บอก Windows ว่าเราจะจัดการพิกเซลเองแบบละเอียด (High DPI Aware)
+extern "C" {
+    __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001; // บังคับใช้การ์ดจอแยก (Predator มีตัวนี้)
+}
+#endif
+
+
+
+// --- [ส่วนที่ 1: สมองของบอท (Logic Class)] --- //
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+class ChatbotLogic {                      //: เริ่มต้นประกาศคลาสเพื่อรวมศูนย์ "Logic" หรือตรรกะการทำงานไว้ที่เดียว ไม่ให้ไปปนกับส่วนแสดงผล (UI)//
+public:                                   // เปิดสาธารณะ //
+    int state = -1;                       //ตัวแปรสำหรับเช็คว่าตอนนี้เราคุยกันถึงไหนแล้ว โดยเริ่มที่ -1 (โหมดถามชื่อ) ซึ่งเป็นเทคนิคที่ใช้ควบคุม Flow การทำงาน//
+    std::string userName;                 //ตัวแปรสำหรับเก็บชื่อผู้ใช้งานที่บอทถามมา//
+    std::vector<std::string> chatHistory; //ตัวนี้คือ "ลิ้นชักเก็บความจำ" ครับ เป็นอาร์เรย์ที่ยืดหดได้สำหรับเก็บประวัติการแชททั้งหมด//
+
+    ChatbotLogic() {                      //นี่คือฟังก์ชันพิเศษที่จะทำงานทันทีที่คุณสร้างบอทขึ้นมา (สร้างเสร็จปุ๊บ ทำปั๊บ)//
+        chatHistory.push_back("Chatbot : สวัสดีครับ! ขอทราบชื่อของคุณหน่อยครับ");
+        //*chatHistory.push_back คือการสั่งให้ เพิ่มข้อมูลใหม่เข้าไปต่อท้ายสุด ของ std::vector ซึ่ง chatHistory ถูกประกาศเป็น std::vector<std::string>*//
+    }
+
+    void processInput(std::string input) { //ฟังก์ชันนี้เปรียบเหมือน "หู" ที่คอยรับข้อความที่คุณพิมพ์มาจากหน้าจอ ImGui//
+        if (input.empty()) return;         //เป็นการป้องกัน (Guard Clause) ว่าถ้าคุณเผลอกด Enter โดยที่ไม่ได้พิมพ์อะไรเลย ให้บอทเฉยไว้ ไม่ต้องทำอะไรต่อ//
+        chatHistory.push_back("User: " + input); //เมื่อคุณพิมพ์มา บอทจะรีบจดบันทึกทันที แล้วเก็บลงประวัติเพื่อให้ UI เอาไปวาดเป็น Chat Bubble ฝั่งขวานั่นเอง//
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+
+    //[ด่านที่ 1: รับชื่อ (เหมือนเวอร์ชัน Terminal)]//
+    if (state == -1) {                     //เช็คเงื่อนไขว่า "ตอนนี้บอทกำลังรอรับชื่ออยู่ใช่ไหม?"//
+        userName = input;                  //ข้อความที่ User ไปเก็บไว้ในตัวแปร userName//
+        state = 0;                         //เปลี่ยนสถานะของโปรแกรมจาก -1 (โหมดรับชื่อ) เป็น 0 (โหมดเมนูหลัก)//
+        chatHistory.push_back("Chatbot: ยินดีที่ได้รู้จักครับ คุณ " + userName + "!");
+        addMenuMessage();                  //เรียกใช้ฟังก์ชัน addMenuMessage() (ซึ่งเป็นฟังก์ชันแยก) เพื่อพิมพ์รายการเมนู 1, 2, 3 ออกมาให้ User เลือก//
+        return; 
+        }
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+
+    //[ด่านที่ 2: เลือกเมนูหลัก (1-3)]//
+    if (state == 0) {                      //ถ้าเข้าสู่เมนูหลัก จะทำงานดังนี้//
+        if (input == "1") {                //เลือก 1 คือสถานะ "อยากเข้าศึกษา"//
+            state = 1; 
+            chatHistory.push_back("Chatbot: --- เข้าสู่โหมด Admission ---");
+            chatHistory.push_back("Chatbot: อยากทราบเรื่อง 'รอบรับ', 'คะแนน', 'เครื่องกล' หรือ 'คอมพิวเตอร์' ครับ?"); 
+        }else if (input == "2") {          //เลือก 2 คือสถานะ "นักศึกษาใหม่"//
+            state = 2; 
+            chatHistory.push_back("Chatbot: ยินดีด้วยนะลูกช้างใหม่! ข้อมูลตารางสอนจะประกาศเร็ว ๆ นี้ครับ");
+            state = 0; // ทำงานเสร็จแล้วกลับมาเมนูหลัก
+            addMenuMessage();
+        }else if (input == "3") {          //เลือก 3 คือสถานะ "ทั่วไป"//
+            state = 3; 
+            chatHistory.push_back("Chatbot: มีเรื่องอะไรที่อยากทราบเป็นพิเศษไหมครับ? พิมพ์ถามได้เลย!");
+            state = 0;
+            addMenuMessage();
+        }else{
+            chatHistory.push_back("Chatbot: กรุณาเลือกตัวเลข 1, 2 หรือ 3 เท่านั้นครับ");  //นอกเหหนือจกานี้ ให้ตี error แล้วเลือกใหม่//
+            }
+            return;
+        }
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+
+    //[ด่านที่ 3: จัดการ Keyword ในโหมด Admission]//
+    if (state == 1) {
+        if (input == "ออก") {              //หากพิมพ์ ออก จะกลับไปหน้าคำถามเลือกสถานะ//
+            state = 0;
+            chatHistory.push_back("Chatbot: กลับสู่เมนูหลักครับ");
+            addMenuMessage();
+            return;
+            }
+
+
+            //*[กล่อง keyword]*//
+            std::vector<std::string> keywords = {
+                "รอบรับ",
+                "คะแนน",
+                "เครื่องกล",
+                "คอมพิวเตอร์"
+            }; 
+
+
+            //*[[กล่องคำตอบ]*//
+            const char *responses[] = {
+                "คณะเราเปิดรับ 3 รอบหลักครับ...",
+                "คะแนนย้อนหลังดูได้ที่เว็บไซต์ reg.cmu.ac.th",
+                "วิศวะเครื่องกลเน้นการออกแบบเครื่องจักรและพลังงาน",
+                "วิศวะคอมฯ เรียนทั้ง Hardware, Software และ AI"
+            };
+
+
+            //[หากไม่มี keyword ที่ตรง]//
+            bool found = false;
+            for (size_t i = 0; i < keywords.size(); i++) {
+                if (input.find(keywords[i]) != std::string::npos) {
+                    chatHistory.push_back("Chatbot: " + std::string(*(responses + i)));
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) chatHistory.push_back("Chatbot: ไม่พบข้อมูล ลองถามเรื่อง 'รอบรับ' หรือพิมพ์ 'ออก'");
+        }
+    }
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+
+//[ฟังก์ชัน addMenuMessage ที่นำมาใช้ถามเรื่องสถานะ]//
+private:
+    void addMenuMessage() {
+        chatHistory.push_back("-----------------------------");
+        chatHistory.push_back("Chatbot: กรุณาเลือกสถานะของคุณ:");
+        chatHistory.push_back("[1] สนใจเข้าเรียน (Admission)");
+        chatHistory.push_back("[2] นักศึกษาใหม่ปี 1 (Freshman)");
+        chatHistory.push_back("[3] ถามตอบทั่วไป (General Q&A)");
+        chatHistory.push_back("-----------------------------");
+    }
+};
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+
+//[ตกแต่งหน้าตา (Theme)]//
+void SetupModernAITheme() {
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_WindowBg]         = ImVec4(0.09f, 0.09f, 0.10f, 1.00f); //สีพื้นหลังของหน้าต่าง//
+    style.Colors[ImGuiCol_ChildBg]          = ImVec4(0.11f, 0.11f, 0.12f, 1.00f); //สีพื้นหลังของกล่องแชท//
+    style.Colors[ImGuiCol_Button]           = ImVec4(0.15f, 0.15f, 0.16f, 1.00f); //สีพื้นหลังของปุ่ม//
+    style.Colors[ImGuiCol_ButtonHovered]    = ImVec4(0.20f, 0.20f, 0.22f, 1.00f); //สีพื้นหลังของปุ่มในจังหวะที่เราเอาเมาส์ไปวางทับ//
+    style.Colors[ImGuiCol_FrameBg]          = ImVec4(0.15f, 0.15f, 0.16f, 1.00f); //สีพื้นหลังของกล่องข้อความ//
+
+    style.WindowRounding = 12.0f;           //ปรับความโค้งที่มุมของหน้าต่างหลัก (Window)//
+    style.FrameRounding = 40.0f;            //ปรับความโค้งของกรอบต่าง ๆ เช่น ปุ่ม และช่อง Input Text//
+    style.ScrollbarRounding = 10.0f;        //ปรับให้แถบเลื่อน (Scrollbar) มีมุมมน ๆ ดูลื่นตาเวลาเราเลื่อนดูประวัติการแชท//
+
+    style.ItemSpacing = ImVec2(10, 15);     //การเว้นระยะห่างระหว่าง "สิ่งของ" ที่วางต่อกัน//
+    style.WindowPadding = ImVec2(20, 20);   //คือการเว้นระยะห่างจาก "ขอบหน้าต่าง" เข้ามาถึงเนื้อหาข้างใน//
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+// ฟังก์ชันวาดหน้าจอต้อนรับ (รูปซ้ายใน Mockup)
+// แก้ไข Signature ของฟังก์ชันให้รับฟอนต์ 2 ตัว
+void DrawWelcomeLayout(ChatbotLogic* brain, char* inputBuffer, ImFont* fontReg, ImFont* fontBold) {
+
+    if (fontReg) {
+        ImGui::PushFont(fontReg);
+        ImGui::SetWindowFontScale(0.5f); // ย่อเพื่อให้ฟอนต์ 48px คมชัดบนจอ Predator
+    }
+
+    ImVec2 centerPos = ImGui::GetMainViewport()->GetCenter();
+    float windowWidth = ImGui::GetMainViewport()->Size.x;
+    float windowHeight = ImGui::GetMainViewport()->Size.y;
+
+    // --- 1. โลโก้ "Gemini" ที่มุมซ้ายบน ---
+    if (fontBold) {
+        ImGui::PushFont(fontBold);
+        ImGui::SetWindowFontScale(0.4f); // ขนาดเล็กพอดีๆ มุมจอ
+        ImGui::SetCursorPos(ImVec2(30, 30));
+        ImGui::Text("ENGR-CMU Chatbot");
+        ImGui::PopFont();
+    }
+
+    // --- 2. ข้อความ "Hi [UserName]" พร้อมไอคอนดาว ---
+    if (fontReg) {
+        ImGui::PushFont(fontReg);
+        ImGui::SetWindowFontScale(0.6f);
+        
+        // จำลองไอคอนดาวหลากสี
+        std::string greeting = "สวัสดีครับ" + brain->userName;
+        float greetWidth = (ImGui::CalcTextSize(greeting.c_str()).x + 40) * 0.6f;
+        
+        ImGui::SetCursorPos(ImVec2(centerPos.x - (greetWidth / 2), centerPos.y - 150));
+        ImGui::TextColored(ImVec4(0.4f, 0.7f, 1.0f, 1.0f), "*"); // ไอคอนดาวจำลอง
+        ImGui::SameLine();
+        ImGui::Text("%s", greeting.c_str());
+        ImGui::PopFont();
+    }
+
+    // --- 3. หัวข้อหลัก "Where should we start?" ---
+    if (fontBold) {
+        ImGui::PushFont(fontBold);
+        ImGui::SetWindowFontScale(0.8f);
+        std::string mainTitle = "ผมขอทราบชื่อคุณหน่อยนะครับ...";
+        float titleWidth = ImGui::CalcTextSize(mainTitle.c_str()).x * 0.8f;
+        
+        ImGui::SetCursorPos(ImVec2(centerPos.x - (titleWidth / 2), centerPos.y - 100));
+        ImGui::Text("%s", mainTitle.c_str());
+        ImGui::PopFont();
+    }
+
+    // --- 4. กล่องข้อความ Ask Gemini 3 (ตัดปุ่มล่างออกแล้ว) ---
+    float inputWidth = windowWidth * 0.65f; // กว้าง 65% ของจอ
+    ImGui::SetCursorPos(ImVec2(centerPos.x - (inputWidth / 2), centerPos.y - 20));
+
+    // ตกแต่งกล่องให้เหมือนในรูป (สีเทาเข้ม, ขอบมนมาก)
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.12f, 0.12f, 0.12f, 1.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(25, 20));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 25.0f);
+    
+    ImGui::PushItemWidth(inputWidth);
+    if (fontReg) ImGui::PushFont(fontReg);
+    
+    // ใส่ Hint แทนคำว่า Ask Gemini 3
+    if (ImGui::InputTextWithHint("##ENGR-CMU ChatbotInput", "ENGR-CMU Chatbot", inputBuffer, 256, ImGuiInputTextFlags_EnterReturnsTrue)) {
+        brain->processInput(inputBuffer);
+        inputBuffer[0] = '\0';
+    }
+
+    if (fontReg) ImGui::PopFont();
+    ImGui::PopItemWidth();
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor();
+
+    if (fontReg) {
+        ImGui::SetWindowFontScale(1.0f); // คืนค่า Scale กลับเป็นปกติ
+        ImGui::PopFont();                // คืนค่าฟอนต์ (ห้ามลืมเด็ดขาด!)
+    }
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+
+// ฟังก์ชันวาดหน้าจอแชท (รูปขวาใน Mockup)
+void DrawChatLayout(ChatbotLogic* brain, char* inputBuffer, ImFont* fontReg) {
+
+    if (fontReg) {
+        ImGui::PushFont(fontReg);
+        ImGui::SetWindowFontScale(0.5f); 
+    }
+
+    if (fontReg != nullptr) {
+        ImGui::PushFont(fontReg);
+    }
+    
+    float windowWidth = ImGui::GetWindowWidth();
+    float windowHeight = ImGui::GetWindowHeight();
+    float footerHeight = 100.0f; // ปรับความสูง Footer นิดหน่อยเผื่อความโค้งมน
+    float chatHistoryHeight = windowHeight - footerHeight;
+
+    // --- โซนที่ 1: ประวัติการแชท ---
+    ImGui::BeginChild("ChatHistoryRegion", ImVec2(windowWidth, chatHistoryHeight), false, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+    
+    ImGui::Spacing();
+
+    for (const std::string& msg : brain->chatHistory) {
+        bool isUser = (msg.find("User:") == 0);
+        
+        // คำนวณขนาดข้อความเพื่อนำไปจัดตำแหน่งชิดซ้าย/ขวา
+        float textWidth = ImGui::CalcTextSize(msg.c_str()).x;
+        float bubblePadding = 30.0f; 
+
+        if (isUser) {
+            // >>> User: จัดชิดขวา (ตามรูป Mockup) <<<
+            ImGui::SetCursorPosX(windowWidth - textWidth - bubblePadding);
+            ImGui::TextWrapped("%s", msg.c_str()); 
+        } else {
+            // >>> Chatbot: จัดชิดซ้าย <<<
+            ImGui::SetCursorPosX(bubblePadding);
+            ImGui::TextWrapped("%s", msg.c_str());
+        }
+        ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
+    }
+    
+    if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+        ImGui::SetScrollHereY(1.0f);
+    }
+
+    ImGui::EndChild();
+
+    // --- โซนที่ 2: ช่องพิมพ์ข้อความด้านล่าง (Footer) ---
+    // ปรับตำแหน่งให้ดู "ลอย" ขึ้นมาเล็กน้อยเพื่อความ Modern
+    ImGui::SetCursorPos(ImVec2(windowWidth * 0.1f, windowHeight - 60)); 
+    
+    float inputWidth = windowWidth * 0.8f; // ให้กว้าง 80% ของจอ
+    ImGui::PushItemWidth(inputWidth);
+    
+    if (ImGui::InputText("##BottomInput", inputBuffer, 256, ImGuiInputTextFlags_EnterReturnsTrue)) {
+        brain->processInput(inputBuffer);
+        inputBuffer[0] = '\0';
+    }
+    ImGui::PopItemWidth();
+
+    if (fontReg != nullptr) ImGui::PopFont();
+
+    if (fontReg) {
+        ImGui::SetWindowFontScale(1.0f);
+        ImGui::PopFont();
+    }
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------------------------------//
+
+
+// --- [ฟังก์ชันหลัก (GUI Setup) --> หน้า UI] --- //
+int main() {
+    // --- [1. ตรวจสภาพความพร้อมระบบพื้นฐาน] ---
+    if (!glfwInit()) {
+        std::cout << "Failed to initialize GLFW" << std::endl;
+        return 1;
+    }
+
+    // --- [2. ตั้งค่าหน้าต่าง GUI ให้เต็มจอ] ---
+    glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+    glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+    GLFWwindow* window = glfwCreateWindow(1920, 1080, "ENGR CMU Chatbot (High-Res Version)", NULL, NULL);
+
+    if (window == NULL) {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return 1;
+    }
+
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1); // เปิด V-Sync ให้ภาพสมูท
+
+    // --- [3. ติดตั้งระบบ ImGui] ---
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    SetupModernAITheme(); // เรียกใช้ธีม Modern ที่เราออกแบบไว้
 
-    // 1. ดึง IO ของ ImGui มาจัดการเรื่อง Font
-ImGuiIO& io = ImGui::GetIO();
+    // --- [4. โหลดฟอนต์ภาษาไทย] ---
+    // --- [ลบของเก่าทิ้ง แล้วใช้ชุดนี้ชุดเดียวเพื่อจบทุกปัญหา] ---
+    ImFontConfig config;
+    config.OversampleH = 1; 
+    config.OversampleV = 1; 
+    config.PixelSnapH = true;
 
-// 2. โหลดไฟล์ Font ภาษาไทย (เช่น Tahoma, Arial หรือ TH Sarabun) 
-// ต้องระบุ Path ที่อยู่ของไฟล์ .ttf ในเครื่องคุณ (ปกติ Windows จะอยู่ที่ C:/Windows/Fonts/)
-io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\tahoma.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesThai());
+    // --- [ใช้ 2 บรรทัดนี้เพื่อแก้ปัญหาไม้เอกหาย] ---
+    // 1. ดันตัวอักษรลงมาให้พ้นขอบบนของกล่องพิกเซล
+    config.GlyphOffset.y = 10.0f; 
+    
+    // 2. สั่งให้จองพื้นที่ความกว้างพื้นฐานเป็น 0 เพื่อไม่ให้ไปเบียดวรรณยุกต์ตัวข้างๆ
+    config.GlyphMinAdvanceX = 0.0f; 
 
-// 3. (Optional) หากคุณมีไฟล์ Font ในโฟลเดอร์โปรเจค ก็ระบุชื่อไฟล์ได้เลย
-// io.Fonts->AddFontFromFileTTF("THSarabunNew.ttf", 20.0f, NULL, io.Fonts->GetGlyphRangesThai());
+    // โหลดฟอนต์ขนาดใหญ่ (48px) เพื่อแก้ภาพแตก
+    ImFont* fontRegular = io.Fonts->AddFontFromFileTTF("Sarabun/Sarabun-Regular.ttf", 48.0f, &config, io.Fonts->GetGlyphRangesThai());
+    ImFont* fontBold = io.Fonts->AddFontFromFileTTF("Sarabun/Sarabun-Bold.ttf", 64.0f, &config, io.Fonts->GetGlyphRangesThai());
 
+    // --- [บล็อกเดิมที่คุณถาม: ใช้เป็นแผนสำรองได้เหมือนเดิม] ---
+    if (fontRegular == nullptr || fontBold == nullptr) {
+        std::cout << "Error: Could not load Sarabun fonts! Using default..." << std::endl;
+        fontRegular = io.Fonts->AddFontDefault();
+        fontBold = fontRegular; 
+    }
+
+    // --- [5. เชื่อมต่อ Backend (ต้องทำก่อนเริ่ม Loop)] ---
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
-    // จองพื้นที่ใน Heap สำหรับสมองบอท (Lecture 17)
-    ChatbotLogic *brain = new ChatbotLogic();
-    static char inputBuffer[256] = "";
+    unsigned char* pixels;
+    int width, height;
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
+    GLuint font_texture;
+    glGenTextures(1, &font_texture);
+    glBindTexture(GL_TEXTURE_2D, font_texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+    io.Fonts->TexID = (ImTextureID)(intptr_t)font_texture;
+
+    // --- [6. เตรียมข้อมูลและสมองของบอท] ---
+    ChatbotLogic *brain = new ChatbotLogic(); // จอง Memory แบบ Heap (Lecture 17)
+    static char inputBuffer[256] = ""; 
+    std::cout << "Success: Chatbot is running!" << std::endl;
+
+    // -------------------------------------------------------------------------
+    // --- [START Main Loop: วงจรชีวิตของโปรแกรม] ---
+    // -------------------------------------------------------------------------
     while (!glfwWindowShouldClose(window)) {
+        // กฎเหล็กขั้นตอนที่ 1: รับเหตุการณ์จากเมาส์และคีย์บอร์ด
         glfwPollEvents();
+
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+
+        // กฎเหล็กขั้นตอนที่ 2: เตรียมเฟรมใหม่ (สำคัญมาก! เพื่อแก้ปัญหา Assertion failed)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // ตั้งค่าหน้าต่างแชทให้เต็มจอ
-        ImGui::SetNextWindowPos(ImVec2(0, 0));
-        ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
-        ImGui::Begin("Chatbot Console", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+        // --- [เริ่มการวาดหน้าจอหลัก (Canvas)] ---
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->Pos);
+        ImGui::SetNextWindowSize(viewport->Size);
 
-        // แสดงประวัติการสนทนา
-        ImGui::BeginChild("ChatRegion", ImVec2(0, -ImGui::GetFrameHeightWithSpacing() * 2));
-        for (const auto& log : brain->chatHistory) {
-            ImGui::TextWrapped("%s", log.c_str());
+        // รวม Flags ของหน้าต่าง Background ไว้ที่เดียว
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | 
+                                        ImGuiWindowFlags_NoCollapse | 
+                                        ImGuiWindowFlags_NoResize | 
+                                        ImGuiWindowFlags_NoMove | 
+                                        ImGuiWindowFlags_NoBringToFrontOnFocus | 
+                                        ImGuiWindowFlags_NoNavFocus | 
+                                        ImGuiWindowFlags_NoBackground;
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        
+        ImGui::Begin("MainRootCanvas", NULL, window_flags);
+        ImGui::PopStyleVar(2);
+
+        // --- [จุดตัดสินใจ: เลือกวาดหน้าจอตาม Mockup ที่คุณวาดมา] ---
+        bool isChatStarted = (brain->chatHistory.size() > 1);
+
+        // ใน Main Loop...
+        if (!isChatStarted) {
+        // ส่งทั้ง fontRegular และ fontBold เข้าไป
+        DrawWelcomeLayout(brain, inputBuffer, fontRegular, fontBold);
+        } else {
+        // หน้าแชทใช้แค่ตัวปกติก็พอ
+        DrawChatLayout(brain, inputBuffer, fontRegular);
         }
-        if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) ImGui::SetScrollHereY(1.0f);
-        ImGui::EndChild();
 
-        ImGui::Separator();
+        ImGui::End(); // ปิด MainRootCanvas
 
-        // ช่องรับข้อมูล
-        if (ImGui::InputText("##Input", inputBuffer, 256, ImGuiInputTextFlags_EnterReturnsTrue)) {
-            brain->processInput(inputBuffer);
-            memset(inputBuffer, 0, sizeof(inputBuffer));
-            ImGui::SetKeyboardFocusHere(-1); 
-        }
-        ImGui::SameLine();
-        ImGui::TextDisabled("(กด Enter)");
-
-        ImGui::End();
-
+        // กฎเหล็กขั้นตอนที่ 3: สั่งวาดข้อมูลลงจอจริง
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
+    // --- [END Main Loop] ---
 
-    // คืนพื้นที่หน่วยความจำ (Lecture 17)
-    delete brain;
+    // --- [7. คืนความจำให้ระบบ (Cleanup)] ---
+    delete brain; // คืนหน่วยความจำ (Lecture 17)
     brain = NULL;
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+
     glfwDestroyWindow(window);
     glfwTerminate();
 
