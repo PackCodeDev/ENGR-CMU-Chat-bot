@@ -6,123 +6,172 @@
 
 using namespace std;
 
-struct Major{
+struct Major {
     string key;
     string displayName;
     string description;
     string imageSuffix;
+    string deepDetail; 
 };
 
-void openImage(string path){
+void openImage(string path) {
     HINSTANCE result = ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
-    if((INT_PTR)result <= 32){
-        cout << "บอท: (โน้ต: ไม่พบไฟล์รูปภาพที่ " << path << ")" << endl;
-    }else{
-        cout << "บอท: ผมเปิดรูปแผนการเรียนให้แล้วครับ!" << endl;
+    if ((INT_PTR)result <= 32) {
+        cout << "AI: ขออภัยครับ หากติดตรงนี้สามารถแจ้งผ่านทางแอดมินได้เลยครับ" << endl;
+    } else {
+        cout << "AI: เรียบร้อยครับ! ผมเปิดรูปแผนการเรียนให้ดูแล้วนะ" << endl;
     }
 }
 
+// ไม่สนใจอักษรเล็กใหญ่ ภาษาอังกฤษ
 bool hasKeyword(string input, string keyword) {
-    if(input.empty() || keyword.empty()) return false;
+    if (input.empty() || keyword.empty()) return false;
     return input.find(keyword) != string::npos;
 }
 
-int main(){
+int main() {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
 
+    // 1. ภาคปกติ (Regular Majors)
     vector<Major> regularMajors = {
-        {"คอมพิวเตอร์", "Computer", "เรียนเกี่ยวกับด้าน Hardware, Software รวมถึงระบบเครือข่ายและการจัดการข้อมูล และการเขียนโปรแกรม", "_regular.jpg"},
-        {"เครื่องกล", "Mechanical", "เป็นหัวใจของอุตสาหกรรมทุกประเภท เกี่ยวข้องกับการเคลื่อนที่ พลังงาน และการออกแบบเครื่องจักรต่างๆ", "_regular.jpg"},
-        {"เซมิคอนดักเตอร์", "Semiconductor", "เทคโนโลยีชิปและอุปกรณ์อิเล็กทรอนิกส์", "_regular.jpg"},
-        {"บูรณาการ", "Integrated", "หลักสูตรที่ยืดหยุ่น เน้นการนำองค์ความรู้หลายแขนงมาประยุกต์ใช้เพื่อตอบโจทย์อุตสาหกรรมสมัยใหม่", "_regular.jpg"},
-        {"ไฟฟ้า", "Electrical", "ครอบคลุมตั้งแต่ความรู้ระบบไฟฟ้ากำลังที่ใช้ในเมือง ไปจนถึงระบบสื่อสารและอิเล็กทรอนิกส์ขนาดเล็ก", "_regular.jpg"},
-        {"โยธา", "Civil", "เน้นการออกแบบและควบคุมการก่อสร้างโครงสร้างพื้นฐาน ตั้งแต่บ้าน อาคารสูง ไปจนถึงเขื่อนและสะพาน", "_regular.jpg"},
-        {"สิ่งแวดล้อม", "Environmental", "มุ่งเน้นการแก้ปัญหามลพิษและการจัดการทรัพยากรธรรมชาติเพื่อความยั่งยืน", "_regular.jpg"},
-        {"หุ่นยนต์", "REAI", "รวมเอาเครื่องกล ไฟฟ้า และคอมพิวเตอร์เข้าด้วยกัน เพื่อสร้างระบบอัตโนมัติที่ชาญฉลาด", "_regular.jpg"},
-        {"เหมืองแร่", "Mining&Petroleum Engineering", "เรียนเกี่ยวกับการสำรวจ สกัด และแปรรูปทรัพยากรธรณีและพลังงานจากใต้ดิน", "_regular.jpg"},
-        {"อุตสาหการ", "Industrial Engineering", "เรียนรู้วิธีการบริหารจัดการ คน เครื่องจักร และงบประมาณ ให้ทำงานร่วมกันได้อย่างมีประสิทธิภาพสูงสุด", "_regular.jpg"}
+        {"คอมพิวเตอร์", "Computer Engineering", "Software, AI, Cloud, และ Data Science", "_reg.jpg", 
+         "● ปี 1: ปูพื้นฐาน Calculus, Physics และ Computer Programming (C/Python) ฝึก Logic เบื้องต้น\n"
+         "● ปี 2: เข้าสู่แกนหลัก Computer Engineering เจอ Data Structures, Discrete Math, Digital Logic และเริ่ม Circuit\n"
+         "● ปี 3: ปีมหาโหด! เรียน Operating Systems, Database, Network, Software Engineering และ Microprocessors\n"
+         "● ปี 4: เลือกวิชาเลือกเฉพาะทาง (AI, Security, Cloud) และทำ Senior Project ตลอดทั้งปี"},
+        {"เครื่องกล", "Mechanical Engineering", "พลังงาน, ยานยนต์, และการออกแบบเครื่องจักร", "_reg.jpg", 
+         "● ปี 1: เน้น Physics, Calculus และวิชา Engineering Drawing (หัดวาดแบบวิศวกรรมทั้งมือและ CAD)\n"
+         "● ปี 2: เริ่มวิชาคำนวณแรงหลัก Statics, Dynamics, Thermodynamics และพื้นฐานวัสดุวิศวกรรม\n"
+         "● ปี 3: เจาะลึก Fluid Mechanics, Heat Transfer, Machine Design และเครื่องจักรกลความร้อน\n"
+         "● ปี 4: เลือกสายเจาะลึก (Automotive/Energy) และทำโครงงานวิศวกรรมเครื่องกล"},
+        {"ไฟฟ้า", "Electrical Engineering", "ระบบไฟฟ้ากำลัง, อิเล็กทรอนิกส์ และสมาร์ทคอนโทรล", "_reg.jpg", 
+         "● ปี 1: พื้นฐานวิศวกรรม เน้นฟิสิกส์ไฟฟ้าและแม่เหล็ก และคณิตศาสตร์วิศวกรรม\n"
+         "● ปี 2: เข้าสู่หัวใจอย่าง Circuit Analysis 1-2, Digital Circuit และสัญญาณและระบบ (Signals)\n"
+         "● ปี 3: เรียน Electromagnetic Fields, Machines, ระบบควบคุม และการส่งจ่ายกำลังไฟฟ้า\n"
+         "● ปี 4: แยกสายกำลังหรืออิเล็กทรอนิกส์ขั้นสูง และทำ Senior Project"},
+        {"โยธา", "Civil Engineering", "ออกแบบโครงสร้าง, ถนน, การสำรวจ และงานฐานราก", "_reg.jpg", 
+         "● ปี 1: พื้นฐานวิศวกรรมและ Drawing เพื่อหัดอ่านและวาดแบบแปลนก่อสร้าง\n"
+         "● ปี 2: เริ่มคำนวณ Mechanics of Solids และออกฝึกสำรวจ (Surveying) กลางแจ้ง\n"
+         "● ปี 3: ออกแบบคอนกรีตเสริมเหล็ก (RC Design), โครงสร้างเหล็ก และวิศวกรรมฐานราก (Soil Mech)\n"
+         "● ปี 4: การบริหารงานก่อสร้าง, ชลศาสตร์ และทำโครงการจบวิศวกรรมโยธา"},
+        {"อุตสาหการ", "Industrial Engineering", "การเพิ่มประสิทธิภาพการผลิต, บริหารจัดการ และโลจิสติกส์", "_reg.jpg", 
+         "● ปี 1: พื้นฐานวิศวกรรมทั่วไป และวิชาเคมีสำหรับวิศวกร\n"
+         "● ปี 2: สถิติวิศวกรรม (Engineering Stat), กรรมวิธีการผลิต และพื้นฐานความปลอดภัย\n"
+         "● ปี 3: ปีแห่งการวางแผน! เรียน Operations Research (OR), คุมคุณภาพ (QC), เศรษฐศาสตร์วิศวกรรม\n"
+         "● ปี 4: การจัดการโลจิสติกส์, การออกแบบโรงงาน และ Senior Project"},
+        {"สิ่งแวดล้อม", "Environmental Engineering", "การจัดการน้ำ, อากาศ, มลพิษ และสิ่งแวดล้อมยั่งยืน", "_reg.jpg", 
+         "● ปี 1: เน้นพื้นฐานเคมีสิ่งแวดล้อมและชีววิทยามากเป็นพิเศษ\n"
+         "● ปี 2: ระบบประปา, ระบบระบายน้ำ, จุลชีววิทยาสิ่งแวดล้อม และกลศาสตร์ของไหล\n"
+         "● ปี 3: ระบบบำบัดน้ำเสียขั้นสูง, มลพิษทางอากาศ และการจัดการขยะมูลฝอยและของเสียอันตราย\n"
+         "● ปี 4: การประเมินผลกระทบสิ่งแวดล้อม (EIA), พลังงานสะอาด และ Senior Project"},
+        {"เหมืองแร่", "Mining & Petroleum Engineering", "ทรัพยากรธรณี, การขุดเจาะ และวิศวกรรมปิโตรเลียม", "_reg.jpg", 
+         "● ปี 1: พื้นฐานธรณีวิทยา (Physical Geology) และพื้นฐานวิศวกรรม\n"
+         "● ปี 2: การทำเหมืองเปิด, เหมืองใต้ดิน, การวิเคราะห์สินแร่ และการสำรวจธรณี\n"
+         "● ปี 3: การระเบิดหิน, Rock Mechanics, การแต่งแร่ และเศรษฐศาสตร์ทรัพยากรธรณี\n"
+         "● ปี 4: ออกแบบเหมือง, วิศวกรรมปิโตรเลียมเบื้องต้น และโครงงานจบการศึกษา"},
+        {"หุ่นยนต์", "REAI (Robotics & AI)", "บูรณาการหุ่นยนต์, ปัญญาประดิษฐ์ และระบบอัตโนมัติ", "_reg.jpg", 
+         "● ปี 1: เริ่มฝึก Robotics Programming ทันทีควบคู่ไปกับพื้นฐาน Physics/Math\n"
+         "● ปี 2: เรียนเรื่อง Sensor, Actuators, Embedded Systems และระบบควบคุมหุ่นยนต์\n"
+         "● ปี 3: เจาะลึก AI for Robotics, Machine Vision, Kinematics และการออกแบบกลไกแขนกล\n"
+         "● ปี 4: เน้นการทำ Project-Based ร่วมกับภาคอุตสาหกรรมนวัตกรรมหุ่นยนต์สมัยใหม่"},
+        {"บูรณาการ", "Integrated Engineering", "การเรียนรู้แบบพหุวิทยาการเพื่อตอบโจทย์นวัตกรรม", "_reg.jpg", 
+         "● ปี 1-4: เน้นการเรียนแบบโมดูล (Module) และ Project-based Learning \nเรียนรู้ข้ามศาสตร์ระหว่างคอมพิวเตอร์ ไฟฟ้า และเครื่องกล"}
     };
 
+    // 2. ภาคพิเศษ (Special Programs)
     vector<Major> specialMajors = {
-        {"อุตสาหการ", "Industrial", "เน้นการจัดการระบบการผลิตและห่วงโซ่อุปทานที่เชื่อมโยงกันทั่วโลก เรียนวันเสาร์-อาทิตย์ เน้นคนทำงาน", "_special.jpg"},
-        {"ไฟฟ้า", "Electrical", "ยกระดับวิศวกรรมไฟฟ้าแบบเดิมเข้าสู่ยุคพลังงานสะอาดและระบบดิจิทัล ภาคพิเศษสำหรับผู้ทำงานแล้ว", "_special.jpg"},
-        {"เครื่องกล", "Mechanical", "เป็นการนำพื้นฐานวิศวกรรมเครื่องกลมาบวกกับทักษะการบริหารจัดการแบบนักบริหาร", "_special.jpg"}
+        {"เครื่องกล", "Mechanical & Project Management", "เครื่องกลและการบริหารโครงการวิศวกรรม", "_spec.jpg", 
+         "● ปี 1-2: เน้นวิชาแกนวิศวกรรมเครื่องกล (Thermo, Fluid, Statics)\n● ปี 3-4: เสริมทักษะบริหารจัดการโครงการ (Project Management)"},
+        {"โยธา", "Civil Engineering (Special)", "วิศวกรรมโยธา (ภาคพิเศษ)", "_spec.jpg", 
+         "● ปี 1-4: หลักสูตรเหมือนภาคปกติทุกประการ แต่เน้นคาบเรียนที่ยืดหยุ่น"},
+        {"อุตสาหการ", "IE & Logistics Management", "อุตสาหการและการจัดการโลจิสติกส์", "_spec.jpg", 
+         "● ปี 1-2: แกนวิศวกรรมอุตสาหการ\n● ปี 3-4: เจาะลึกการบริหารคลังสินค้า และระบบขนส่งอัจฉริยะ"},
+        {"ไฟฟ้า", "Smart Grid Technology", "ไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ", "_spec.jpg", 
+         "● ปี 1-2: พื้นฐานไฟฟ้าและอิเล็กทรอนิกส์\n● ปี 3-4: เน้นระบบ Smart Grid และพลังงานทดแทน"}
     };
 
+    // 3. ภาคนานาชาติ (International Programs)
     vector<Major> interMajors = {
-        {"เครื่องกล", "Mechanical", "เน้นเรื่องการวางแผนโครงการ, การบริหารความเสี่ยง, และเศรษฐศาสตร์สำหรับวิศวกร (หลักสูตรภาษาอังกฤษ)", "_international.jpg"},
-        {"บูรณาการ", "Integrated", "เน้นการแก้ปัญหาที่ต้องใช้ความรู้หลายด้าน เช่น หุ่นยนต์การแพทย์ หรือเทคโนโลยีด้านอาหาร", "_international.jpg"},
-        {"ไฟฟ้า", "Electrical", "วิเคราะห์โครงสร้าง, เทคโนโลยีก่อสร้างสมัยใหม่ และภาษาอังกฤษทางวิศวกรรม", "_international.jpg"},
-        {"โยธา", "Civil Engineering", "วิศวกรรมโยธาอินเตอร์ เน้นการออกแบบและก่อสร้างโครงสร้างพื้นฐานตามมาตรฐานสากล", "_international.jpg"},
-        {"isne", "ISNE", "เน้นความปลอดภัยของข้อมูล ซึ่งเป็นหัวใจสำคัญของโลกดิจิทัลปัจจุบัน", "_international.jpg"},
-        {"โลจิสติกส์", "Industrial Engineering and Logistics Management", "การบริหารคลังสินค้า, ระบบขนส่ง, และการปรับปรุงกระบวนการแบบ Lean", "_international.jpg"}
+        {"ระบบสารสนเทศ", "ISNE & Cyber Security", "ระบบสารสนเทศและความปลอดภัยไซเบอร์ (Inter)", "_inter.jpg", 
+         "● ปี 1: Computing Fundamentals\n● ปี 2: Cyber Security\n● ปี 3: Network Security, Cloud Infrastructure\n● ปี 4: International Internship"},
+        {"บูรณาการ", "Inter & Multi-disciplinary", "บูรณาการและพหุวิทยาการ (International)", "_inter.jpg", 
+         "● ปี 1-4: เรียนเป็นภาษาอังกฤษทั้งหมด เน้น Systems Thinking และงานวิจัยข้ามศาสตร์"},
+        {"เซมิคอนดักเตอร์", "Semiconductor Engineering", "วิศวกรรมเซมิคอนดักเตอร์ (Inter)", "_inter.jpg", 
+         "● ปี 1: Physics of Semiconductor\n● ปี 2: IC Design, VLSI\n● ปี 3: Semiconductor Fabrication\n● ปี 4: Internship ในอุตสาหกรรมชิปประมวลผล"}
     };
 
-    string input;
+    string input, userName;
     string currentMode = "SELECT_PROGRAM";
     vector<Major>* currentList = nullptr;
-    string programSuffix = "";
+    string programName = "";
+    Major* selectedMajor = nullptr;
 
-    cout << "บอท: สวัสดีครับ! ผมเป็น AI แนะนำหลักสูตรวิศวะฯ ยินดีที่ได้ช่วยเหลือครับ" << endl;
-    cout << "บอท: ตอนนี้คุณสนใจ 'ภาคปกติ', 'ภาคพิเศษ' หรือ 'นานาชาติ' ดีครับ?" << endl;
+    cout << "AI: สวัสดีครับ! ผมเป็น AI ผู้ช่วยแนะนำหลักสูตรวิศวกรรมศาสตร์ มช. นะครับ" << endl;
+    cout << "AI: ก่อนที่เราจะเริ่มกัน ไม่ทราบว่าคุณชื่ออะไรครับ?" << endl;
+    cout << "คุณ: "; getline(cin, userName);
+    if(userName.empty()) userName = "คุณผู้ใช้งาน";
 
-    while(true){
-        cout << "\nคุณ: ";
-        if(!getline(cin, input) || input.empty()) continue;
+    cout << "\nAI: ยินดีที่ได้รู้จักครับคุณ " << userName << "!" << endl;
+    cout << "AI: ตอนนี้คุณสนใจดูข้อมูลภาคไหนอยู่ครับ? (ปกติ / พิเศษ / นานาชาติ)" << endl;
 
-        if(hasKeyword(input, "ออก") || hasKeyword(input, "พอแล้ว") || hasKeyword(input, "Exit") || hasKeyword(input, "exit")){
-            cout << "บอท: ขอบคุณที่แวะมาปรึกษาครับ ขอให้ได้เรียนในคณะที่ฝันนะ!" << endl;
+    while (true) {
+        cout << "\n" << userName << ": ";
+        if (!getline(cin, input) || input.empty()) continue;
+
+        if (hasKeyword(input, "ออก") || hasKeyword(input, "พอแล้ว") || hasKeyword(input, "จบ")) {
+            cout << "AI: ขอบคุณมากครับคุณ " << userName << " ที่มาพูดคุยกับผม ขอให้โชคดีกับเส้นทาง Entaneer นะครับ!" << endl;
             break;
         }
 
-        if(hasKeyword(input, "เริ่มใหม่") || hasKeyword(input, "เปลี่ยนภาค")){
+        if (hasKeyword(input, "เริ่มใหม่") || hasKeyword(input, "เปลี่ยนภาค")) {
             currentMode = "SELECT_PROGRAM";
-            cout << "บอท: ได้เลยครับ! กลับมาเริ่มที่เลือกภาคใหม่ คุณเลือกภาคไหนดี?" << endl;
+            currentList = nullptr;
+            cout << "AI: ได้เลยครับ ย้อนกลับมาให้เลือกภาคใหม่แล้ว คุณสนใจภาคไหนครับ? (ปกติ/พิเศษ/นานาชาติ(อินเตอร์))" << endl;
             continue;
         }
 
-        if(currentMode == "SELECT_PROGRAM"){
-            if(hasKeyword(input, "ปกติ") || hasKeyword(input, "normal") || hasKeyword(input, "ภาคปกติ") || hasKeyword(input, "Normal")){
-                currentList = &regularMajors;
-                programSuffix = "ปกติ";
-                currentMode = "SELECT_MAJOR";
-                cout << "บอท: ภาคปกติมีสาขาเยอะมากครับ เช่น คอมพิวเตอร์, โยธา, เครื่องกล... คุณสนใจสาขาไหนครับ?" << endl;
-            } 
-            else if(hasKeyword(input, "พิเศษ") || hasKeyword(input, "special") || hasKeyword(input, "ภาคพิเศษ") || hasKeyword(input, "Special")){
-                currentList = &specialMajors;
-                programSuffix = "พิเศษ";
-                currentMode = "SELECT_MAJOR";
-                cout << "บอท: ภาคพิเศษมี อุตสาหการ, ไฟฟ้า และเครื่องกล ครับ สนใจตัวไหนดี?" << endl;
-            } 
-            else if(hasKeyword(input, "นานาชาติ") || hasKeyword(input, "อินเตอร์") || hasKeyword(input, "inter") || hasKeyword(input, "Inter")){
-                currentList = &interMajors;
-                programSuffix = "นานาชาติ";
-                currentMode = "SELECT_MAJOR";
-                cout << "บอท: ภาคนานาชาติมีทั้ง ISNE, โลจิสติกส์, โยธา... พิมพ์ชื่อสาขามาได้เลยครับ" << endl;
-            } 
-            else{
-                cout << "บอท: ขออภัยครับ ผมเข้าใจแค่ 'ภาคปกติ', 'ภาคพิเศษ' หรือ 'นานาชาติ' ครับ" << endl;
+        if (currentMode == "SELECT_PROGRAM") {
+            if (hasKeyword(input, "ปกติ") || (hasKeyword(input, "ภาคปกติ")) {
+                currentList = &regularMajors; programName = "ภาคปกติ"; currentMode = "SELECT_MAJOR";
+                cout << "AI: ภาคปกติมีสาขาเยอะเลยครับ เช่น คอม, เครื่องกล, ไฟฟ้า, โยธา, หุ่นยนต์... อยากดูสาขาไหนก่อนดีครับ?" << endl;
+            } else if (hasKeyword(input, "พิเศษ") || (hasKeyword(input, "ภาคพิเศษ")) {
+                currentList = &specialMajors; programName = "ภาคพิเศษ"; currentMode = "SELECT_MAJOR";
+                cout << "AI: ภาคพิเศษจะมี เครื่องกล, โยธา, อุตสาหการ และไฟฟ้าครับ สนใจสาขาไหนแจ้งได้เลย" << endl;
+            } else if (hasKeyword(input, "นานาชาติ") || hasKeyword(input, "อินเตอร์")) {
+                currentList = &interMajors; programName = "นานาชาติ"; currentMode = "SELECT_MAJOR";
+                cout << "AI: ภาคนานาชาติมี ISNE, บูรณาการ และเซมิคอนดักเตอร์ครับ อยากดูตัวไหนดี?" << endl;
+            } else {
+                cout << "AI: ผมเข้าใจแค่ 'ปกติ', 'พิเศษ' หรือ 'นานาชาติ(อินเตอร์)' ครับ ลองระบุใหม่อีกทีนะ" << endl;
             }
         }
-        else if(currentMode == "SELECT_MAJOR"){
+        else if (currentMode == "SELECT_MAJOR") {
             bool found = false;
-            for(const auto& m : *currentList){
-                if(hasKeyword(input, m.key) || hasKeyword(input, m.displayName)){
-                    cout << "\n--- ข้อมูลสาขาที่พบ ---" << endl;
-                    cout << "สาขา: " << m.displayName << " (" << programSuffix << ")" << endl;
-                    cout << "รายละเอียด: " << m.description << endl;
+            for (auto& m : *currentList) {
+                if (hasKeyword(input, m.key)) {
+                    selectedMajor = &m;
+                    cout << "\nAI: ได้เลยครับ ข้อมูลของสาขา " << m.displayName << " คือ..." << endl;
+                    cout << "AI: " << m.description << endl;
 
                     string fullPath = "studyplan_photo\\" + m.displayName + m.imageSuffix;
                     openImage(fullPath);
 
-                    cout << "\nบอท: สนใจสาขาอื่นอีกไหม? หรือพิมพ์ 'เริ่มใหม่' เพื่อเปลี่ยนภาคได้ครับ" << endl;
-                    found = true;
-                    break;
+                    cout << "\nAI: คุณ " << userName << " อยากให้ผม 'เจาะลึก' Roadmap วิชาเรียน 4 ปีของสาขานี้ไหมครับ?" << endl;
+                    currentMode = "CONFIRM_DEEP_DIVE"; found = true; break;
                 }
             }
-            if(!found){
-                cout << "บอท: ไม่พบสาขา '" << input << "' ในภาค" << programSuffix << " ครับ ลองระบุใหม่นะ" << endl;
+            if (!found) cout << "AI: ผมหาชื่อสาขาไม่เจอเลยครับ ลองพิมพ์ชื่อหลัก เช่น 'คอม' หรือ 'โยธา' ดูนะครับ" << endl;
+        }
+        else if (currentMode == "CONFIRM_DEEP_DIVE") {
+            if (hasKeyword(input, "ใช่") || hasKeyword(input, "สนใจ") || hasKeyword(input, "จัดมา")) {
+                cout << "\n--- [ ข้อมูลเจาะลึกวิชาเรียน: " << selectedMajor->displayName << " ] ---" << endl;
+                cout << selectedMajor->deepDetail << endl;
+                cout << "------------------------------------------------------------" << endl;
+                cout << "\nAI: หวังว่าข้อมูลนี้จะช่วยได้นะ! สนใจดูสาขาอื่นใน" << programName << " ต่อไหม? หรือจะ 'เริ่มใหม่' ดีครับ?" << endl;
+                currentMode = "SELECT_MAJOR";
+            } else {
+                cout << "AI: รับทราบครับ งั้นเลือกดูสาขาอื่นใน" << programName << " ต่อได้เลยนะ" << endl;
+                currentMode = "SELECT_MAJOR";
             }
         }
     }
