@@ -5,6 +5,7 @@
 #include <conio.h> // สำหรับใช้ _getch()
 #include <cstdlib>
 
+// ฟังก์ชันเช็คคำสำคัญ
 using namespace std;
 
 // ฟังก์ชันเช็คคำสำคัญ
