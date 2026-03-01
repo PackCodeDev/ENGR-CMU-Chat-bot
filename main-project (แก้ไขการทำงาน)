@@ -88,10 +88,38 @@ public:
 
 private:
     void addMenuMessage() {
-        // [จุดแก้ไข] มัดรวมข้อความเมนูทั้งหมดให้อยู่ใน String ก้อนเดียวด้วย \n เพื่อให้แสดงในกล่องเดียวกัน
         chatHistory.push_back("Chatbot: กรุณาเลือกสถานะของคุณ:\n[1] สนใจเข้าเรียน (Admission)\n[2] นักศึกษาใหม่ปี 1 (Freshman)\n[3] ถามตอบทั่วไป (General Q&A)");
     }
 };
+
+bool DrawCustomSendButton(const char* id, float btnSize) {
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.22f, 0.22f, 0.26f, 1.0f)); 
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.32f, 0.32f, 0.38f, 1.0f)); 
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.15f, 0.15f, 0.18f, 1.0f)); 
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, btnSize / 2.0f);
+    
+    ImVec2 btnPos = ImGui::GetCursorScreenPos();
+    bool pressed = ImGui::Button(id, ImVec2(btnSize, btnSize));
+    
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor(3);
+
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    ImVec2 center = ImVec2(btnPos.x + (btnSize / 2.0f) - 1.0f, btnPos.y + (btnSize / 2.0f));
+    
+    float arrowWidth = 5.0f;
+    float arrowHeight = 7.0f;
+    float lineThickness = 3.0f; 
+    
+    ImVec2 p1 = ImVec2(center.x - arrowWidth + 2.0f, center.y - arrowHeight); 
+    ImVec2 p2 = ImVec2(center.x + arrowWidth, center.y);                      
+    ImVec2 p3 = ImVec2(center.x - arrowWidth + 2.0f, center.y + arrowHeight); 
+
+    drawList->AddLine(p1, p2, IM_COL32(255, 255, 255, 255), lineThickness);
+    drawList->AddLine(p2, p3, IM_COL32(255, 255, 255, 255), lineThickness);
+
+    return pressed;
+}
 
 void DrawWelcomeLayout(ChatbotLogic* brain, char* inputBuffer, ImFont* font) {
     ImVec2 centerPos = ImGui::GetMainViewport()->GetCenter();
@@ -103,12 +131,17 @@ void DrawWelcomeLayout(ChatbotLogic* brain, char* inputBuffer, ImFont* font) {
     ImGui::TextDisabled("ENGR-CMU Chatbot");
 
     float startX = centerPos.x - (windowWidth * 0.35f); 
+    
+    ImGui::SetWindowFontScale(0.65f); 
+
     ImGui::SetCursorPos(ImVec2(startX, centerPos.y - 180));
     ImGui::TextColored(ImVec4(0.4f, 0.7f, 1.0f, 1.0f), "*"); 
     ImGui::SameLine(); ImGui::Text("สวัสดีครับ...");
     
     ImGui::SetCursorPos(ImVec2(startX, centerPos.y - 120));
     ImGui::Text("ผมขอทราบชื่อคุณหน่อยนะครับ...");
+
+    ImGui::SetWindowFontScale(0.5f); 
 
     float inputWidth = windowWidth * 0.7f;
     float boxHeight = 70.0f; 
@@ -124,7 +157,8 @@ void DrawWelcomeLayout(ChatbotLogic* brain, char* inputBuffer, ImFont* font) {
     float padY = (boxHeight - ImGui::GetFontSize()) / 2.0f; 
     if (padY < 0.0f) padY = 0.0f;
 
-    ImGui::SetCursorScreenPos(ImVec2(screenPos.x + 10.0f, screenPos.y));
+    // [แก้จุดที่ 1] เลื่อนระยะแกน Y ขึ้นไปนิดนึงเพื่อชดเชยให้ข้อความอยู่ "ตรงกลางกล่องพอดีเป๊ะ"
+    ImGui::SetCursorScreenPos(ImVec2(screenPos.x + 10.0f, screenPos.y - 6.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(20.0f, padY)); 
     ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0, 0, 0, 0)); 
     
@@ -136,15 +170,10 @@ void DrawWelcomeLayout(ChatbotLogic* brain, char* inputBuffer, ImFont* font) {
     ImGui::PopStyleVar();
 
     ImGui::SameLine();
+    // คืนค่าตำแหน่ง Y ให้ปุ่มกลับมาอยู่ตรงกลางเหมือนเดิม
     ImGui::SetCursorScreenPos(ImVec2(screenPos.x + inputWidth - btnSize - 10.0f, screenPos.y + 10.0f));
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.25f, 0.30f, 1.0f)); 
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.35f, 0.35f, 0.40f, 1.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, btnSize / 2.0f); 
     
-    bool btnPressed = ImGui::Button(">", ImVec2(btnSize, btnSize));
-    
-    ImGui::PopStyleVar();
-    ImGui::PopStyleColor(2);
+    bool btnPressed = DrawCustomSendButton("##WelcomeBtn", btnSize);
 
     if (enterPressed || btnPressed) {
         brain->processInput(inputBuffer);
@@ -161,17 +190,22 @@ void DrawChatLayout(ChatbotLogic* brain, char* inputBuffer, ImFont* font) {
     
     if (font) ImGui::PushFont(font);
 
-    // [จุดแก้ไข] ขยายขนาดฟอนต์ให้ใหญ่ขึ้นมาอีกหน่อย (0.4f) 
-    float chatScale = 0.40f; 
-
-    ImGui::SetCursorPos(ImVec2(50, 40));
-    ImGui::SetWindowFontScale(0.35f); 
+    // --- [1] Header: ตำแหน่งเดียวกับหน้า Welcome ---
+    ImGui::SetCursorPos(ImVec2(50, 50)); 
+    ImGui::SetWindowFontScale(0.5f); 
     ImGui::TextDisabled("ENGR-CMU Chatbot");
 
-    ImGui::SetCursorPos(ImVec2(0, 100));
-    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0)); 
-    ImGui::BeginChild("ChatArea", ImVec2(0, windowHeight - 100 - 100), false, 0); 
+    // --- [2] จัดการพื้นที่แชท (Chat Zone) ---
+    float chatAreaStartY = 140.0f; 
+    // เพิ่มค่า inputBarSpace เป็น 160.0f เพื่อเว้นที่ว่างด้านล่างให้กล่อง Input ที่ยกสูงขึ้น
+    float inputBarSpace = 160.0f;  
     
+    ImGui::SetCursorPos(ImVec2(0, chatAreaStartY));
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0)); 
+    
+    ImGui::BeginChild("ChatArea", ImVec2(0, windowHeight - chatAreaStartY - inputBarSpace), false, 0); 
+    
+    float chatScale = 0.50f; 
     ImGui::SetWindowFontScale(chatScale); 
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 20)); 
 
@@ -187,26 +221,20 @@ void DrawChatLayout(ChatbotLogic* brain, char* inputBuffer, ImFont* font) {
         if (wrapWidth < 300.0f) wrapWidth = 300.0f; 
 
         ImVec2 textSize = ImGui::CalcTextSize(displayText.c_str(), NULL, false, wrapWidth);
-        
         float paddingX = 20.0f; 
-        float paddingY = 15.0f;
+        float paddingY = 18.0f; 
         float bubbleWidth = textSize.x + (paddingX * 2);
         float bubbleHeight = textSize.y + (paddingY * 2);
 
-        if (isUser) {
-            ImGui::SetCursorPosX(windowWidth - bubbleWidth - 50.0f);
-        } else {
-            ImGui::SetCursorPosX(50.0f);
-        }
+        if (isUser) ImGui::SetCursorPosX(windowWidth - bubbleWidth - 50.0f);
+        else ImGui::SetCursorPosX(50.0f);
 
         ImVec2 startPos = ImGui::GetCursorScreenPos();
         ImGui::Dummy(ImVec2(bubbleWidth, bubbleHeight));
         float nextY = ImGui::GetCursorPosY(); 
 
         ImU32 bgColor = isUser ? IM_COL32(45, 45, 50, 255) : IM_COL32(31, 31, 36, 255);
-        ImGui::GetWindowDrawList()->AddRectFilled(
-            startPos, ImVec2(startPos.x + bubbleWidth, startPos.y + bubbleHeight), bgColor, 20.0f
-        );
+        ImGui::GetWindowDrawList()->AddRectFilled(startPos, ImVec2(startPos.x + bubbleWidth, startPos.y + bubbleHeight), bgColor, 20.0f);
 
         ImGui::SetCursorScreenPos(ImVec2(startPos.x + paddingX, startPos.y + paddingY));
         ImGui::PushTextWrapPos(startPos.x + paddingX + wrapWidth);
@@ -223,27 +251,23 @@ void DrawChatLayout(ChatbotLogic* brain, char* inputBuffer, ImFont* font) {
         ImGui::SetScrollHereY(1.0f); 
         lastChatCount = brain->chatHistory.size();
     }
-
     ImGui::EndChild();
     ImGui::PopStyleColor();
 
+    // --- [3] ยกกล่อง "Ask chatbot" ขึ้นมาอีก (Input Bar) ---
     ImGui::SetWindowFontScale(chatScale); 
-    
     float inputWidth = windowWidth * 0.65f;
     float boxHeight = 60.0f; 
     float btnSize = 42.0f; 
     
-    ImGui::SetCursorPos(ImVec2((windowWidth - inputWidth) / 2.0f, windowHeight - boxHeight - 20.0f));
+    // ปรับเป็น 75.0f (ลอยสูงขึ้นจากเดิมที่อยู่ที่ 45.0f)
+    ImGui::SetCursorPos(ImVec2((windowWidth - inputWidth) / 2.0f, windowHeight - boxHeight - 75.0f));
     ImVec2 screenPos = ImGui::GetCursorScreenPos(); 
 
-    ImGui::GetWindowDrawList()->AddRectFilled(
-        screenPos, ImVec2(screenPos.x + inputWidth, screenPos.y + boxHeight), IM_COL32(31, 31, 36, 255), 30.0f 
-    );
+    ImGui::GetWindowDrawList()->AddRectFilled(screenPos, ImVec2(screenPos.x + inputWidth, screenPos.y + boxHeight), IM_COL32(31, 31, 36, 255), 30.0f);
 
     float padY = (boxHeight - ImGui::GetFontSize()) / 2.0f; 
-    if (padY < 0.0f) padY = 0.0f;
-
-    ImGui::SetCursorScreenPos(ImVec2(screenPos.x + 10.0f, screenPos.y));
+    ImGui::SetCursorScreenPos(ImVec2(screenPos.x + 10.0f, screenPos.y - 6.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(20.0f, padY)); 
     ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0, 0, 0, 0)); 
     
@@ -256,14 +280,7 @@ void DrawChatLayout(ChatbotLogic* brain, char* inputBuffer, ImFont* font) {
 
     ImGui::SameLine();
     ImGui::SetCursorScreenPos(ImVec2(screenPos.x + inputWidth - btnSize - 9.0f, screenPos.y + 9.0f));
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.25f, 0.30f, 1.0f)); 
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.35f, 0.35f, 0.40f, 1.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, btnSize / 2.0f);
-    
-    bool btnPressed = ImGui::Button(">", ImVec2(btnSize, btnSize));
-    
-    ImGui::PopStyleVar();
-    ImGui::PopStyleColor(2);
+    bool btnPressed = DrawCustomSendButton("##ChatBtn", btnSize);
 
     if (enterPressed || btnPressed) {
         brain->processInput(inputBuffer);
@@ -291,29 +308,42 @@ int main() {
     
     ImGui::GetStyle().Colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.05f, 0.06f, 1.0f);
 
+    // ==========================================
+    // สูตรแก้ไม้เอกทับสระ (จับแยกชั้นแกน Y)
+    // ==========================================
+    
+    // ชั้นที่ 1: โหลดพยัญชนะและสระ (ดึงตัวอักษรลงมา 5 Pixel เพื่อให้มีพื้นที่หลังคาเหลือ)
     ImFontConfig cfgBase;
     cfgBase.OversampleH = 2; 
     cfgBase.OversampleV = 2;
+    cfgBase.GlyphOffset.y = 5.0f; // ดึงลงมา 
+
     static const ImWchar base_ranges[] = {
-        0x0020, 0x00FF, 
-        0x0E00, 0x0E47, 
-        0x0E4D, 0x0E7F, 
+        0x0020, 0x00FF, // ภาษาอังกฤษ
+        0x0E00, 0x0E47, // พยัญชนะและสระ (หยุดก่อนถึงวรรณยุกต์)
+        0x0E4D, 0x0E7F, // สัญลักษณ์อื่นๆ
         0
     };
     ImFont* fontThai = io.Fonts->AddFontFromFileTTF("Sarabun/Sarabun-Regular.ttf", 64.0f, &cfgBase, base_ranges);
     
+    // ชั้นที่ 2: โหลดเฉพาะ "วรรณยุกต์" (ดันวรรณยุกต์ขึ้นไป 8 Pixel เพื่อหนีสระบน)
     ImFontConfig cfgTone;
     cfgTone.OversampleH = 2; 
     cfgTone.OversampleV = 2;
-    cfgTone.MergeMode = true;       
-    cfgTone.GlyphOffset.y = -20.0f; 
+    cfgTone.MergeMode = true; // สั่งให้รวมร่างกับชั้นที่ 1       
+    
+    // จุดนี้สำคัญ! ยิ่งติดลบเยอะ ไม้เอกยิ่งลอยสูงขึ้น
+    // ระยะห่างรวมระหว่างสระกับไม้เอกตอนนี้คือ 5 - (-8) = 13 Pixel
+    cfgTone.GlyphOffset.y = 0.0f; 
+    
     static const ImWchar tone_ranges[] = {
-        0x0E48, 0x0E4C, 
+        0x0E48, 0x0E4C, // วรรณยุกต์ (ไม้เอก ไม้โท ไม้ตรี ไม้จัตวา ทัณฑฆาต)
         0
     };
     io.Fonts->AddFontFromFileTTF("Sarabun/Sarabun-Regular.ttf", 64.0f, &cfgTone, tone_ranges);
 
     if (!fontThai) fontThai = io.Fonts->AddFontDefault();
+    // ==========================================
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
