@@ -1,4 +1,25 @@
-ChatbotLogic() {
+#include <iostream>
+#include <string>
+#include <vector>
+
+// 1. บังคับให้ Windows แสดงผลแบบคมชัด 1:1
+#ifdef _WIN32
+#include <windows.h>
+extern "C" { __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001; }
+#endif
+
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include <GLFW/glfw3.h>
+
+class ChatbotLogic {
+public:
+    int state = -1;
+    std::string userName = "";
+    std::vector<std::string> chatHistory;
+
+    ChatbotLogic() {
         chatHistory.push_back("Chatbot: สวัสดีครับ! ขอทราบชื่อของคุณหน่อยครับ");
     }
 
@@ -6,7 +27,6 @@ ChatbotLogic() {
         if (input.empty()) return;
         chatHistory.push_back("User: " + input);
 
-        // ด่านที่ 1: รับชื่อ (เหมือนเวอร์ชัน Terminal)
         if (state == -1) {
             userName = input;
             state = 0;
@@ -15,17 +35,15 @@ ChatbotLogic() {
             return;
         }
 
-        // ด่านที่ 2: เลือกเมนูหลัก (1-3)
         if (state == 0) {
             if (input == "1") { 
                 state = 1; 
-                chatHistory.push_back("Chatbot: --- เข้าสู่โหมด Admission ---");
-                chatHistory.push_back("Chatbot: อยากทราบเรื่อง 'รอบรับ', 'คะแนน', 'เครื่องกล' หรือ 'คอมพิวเตอร์' ครับ?");
+                chatHistory.push_back("Chatbot: --- เข้าสู่โหมด Admission ---\nอยากทราบเรื่อง 'รอบรับ', 'คะแนน', 'เครื่องกล' หรือ 'คอมพิวเตอร์' ครับ?");
             } 
             else if (input == "2") { 
                 state = 2; 
                 chatHistory.push_back("Chatbot: ยินดีด้วยนะลูกช้างใหม่! ข้อมูลตารางสอนจะประกาศเร็ว ๆ นี้ครับ");
-                state = 0; // ทำงานเสร็จแล้วกลับมาเมนูหลัก
+                state = 0; 
                 addMenuMessage();
             } 
             else if (input == "3") { 
@@ -40,7 +58,6 @@ ChatbotLogic() {
             return;
         }
 
-        // ด่านที่ 3: จัดการ Keyword ในโหมด Admission (ใช้ Pointer ตาม Lecture 16)
         if (state == 1) {
             if (input == "ออก") {
                 state = 0;
@@ -49,7 +66,6 @@ ChatbotLogic() {
                 return;
             }
 
-            // ใช้ Vector เก็บ Keyword (Lecture 17)
             std::vector<std::string> keywords = {"รอบรับ", "คะแนน", "เครื่องกล", "คอมพิวเตอร์"};
             const char *responses[] = {
                 "คณะเราเปิดรับ 3 รอบหลักครับ...",
@@ -72,13 +88,271 @@ ChatbotLogic() {
 
 private:
     void addMenuMessage() {
-        chatHistory.push_back("-------------------------");
-        chatHistory.push_back("Chatbot: กรุณาเลือกสถานะของคุณ:");
-        chatHistory.push_back("[1] สนใจเข้าเรียน (Admission)");
-        chatHistory.push_back("[2] นักศึกษาใหม่ปี 1 (Freshman)");
-        chatHistory.push_back("[3] ถามตอบทั่วไป (General Q&A)");
-        chatHistory.push_back("-------------------------");
+        // [จุดแก้ไข] มัดรวมข้อความเมนูทั้งหมดให้อยู่ใน String ก้อนเดียวด้วย \n เพื่อให้แสดงในกล่องเดียวกัน
+        chatHistory.push_back("Chatbot: กรุณาเลือกสถานะของคุณ:\n[1] สนใจเข้าเรียน (Admission)\n[2] นักศึกษาใหม่ปี 1 (Freshman)\n[3] ถามตอบทั่วไป (General Q&A)");
     }
 };
 
-// --- [ส่วนที่ 2: ฟังก์ชันหลัก (GUI Setup)] ---
+void DrawWelcomeLayout(ChatbotLogic* brain, char* inputBuffer, ImFont* font) {
+    ImVec2 centerPos = ImGui::GetMainViewport()->GetCenter();
+    float windowWidth = ImGui::GetMainViewport()->Size.x;
+
+    if (font) { ImGui::PushFont(font); ImGui::SetWindowFontScale(0.5f); }
+
+    ImGui::SetCursorPos(ImVec2(50, 50));
+    ImGui::TextDisabled("ENGR-CMU Chatbot");
+
+    float startX = centerPos.x - (windowWidth * 0.35f); 
+    ImGui::SetCursorPos(ImVec2(startX, centerPos.y - 180));
+    ImGui::TextColored(ImVec4(0.4f, 0.7f, 1.0f, 1.0f), "*"); 
+    ImGui::SameLine(); ImGui::Text("สวัสดีครับ...");
+    
+    ImGui::SetCursorPos(ImVec2(startX, centerPos.y - 120));
+    ImGui::Text("ผมขอทราบชื่อคุณหน่อยนะครับ...");
+
+    float inputWidth = windowWidth * 0.7f;
+    float boxHeight = 70.0f; 
+    float btnSize = 50.0f; 
+    
+    ImGui::SetCursorPos(ImVec2(centerPos.x - (inputWidth / 2), centerPos.y - 20));
+    ImVec2 screenPos = ImGui::GetCursorScreenPos(); 
+
+    ImGui::GetWindowDrawList()->AddRectFilled(
+        screenPos, ImVec2(screenPos.x + inputWidth, screenPos.y + boxHeight), IM_COL32(31, 31, 36, 255), 35.0f 
+    );
+
+    float padY = (boxHeight - ImGui::GetFontSize()) / 2.0f; 
+    if (padY < 0.0f) padY = 0.0f;
+
+    ImGui::SetCursorScreenPos(ImVec2(screenPos.x + 10.0f, screenPos.y));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(20.0f, padY)); 
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0, 0, 0, 0)); 
+    
+    ImGui::PushItemWidth(inputWidth - btnSize - 30.0f); 
+    if (ImGui::IsWindowAppearing()) ImGui::SetKeyboardFocusHere();
+    bool enterPressed = ImGui::InputTextWithHint("##WelcomeIn", "ASK ENGR-CMU Chatbot", inputBuffer, 256, ImGuiInputTextFlags_EnterReturnsTrue);
+    ImGui::PopItemWidth();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar();
+
+    ImGui::SameLine();
+    ImGui::SetCursorScreenPos(ImVec2(screenPos.x + inputWidth - btnSize - 10.0f, screenPos.y + 10.0f));
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.25f, 0.30f, 1.0f)); 
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.35f, 0.35f, 0.40f, 1.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, btnSize / 2.0f); 
+    
+    bool btnPressed = ImGui::Button(">", ImVec2(btnSize, btnSize));
+    
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor(2);
+
+    if (enterPressed || btnPressed) {
+        brain->processInput(inputBuffer);
+        inputBuffer[0] = '\0';
+    }
+
+    if (font) { ImGui::SetWindowFontScale(1.0f); ImGui::PopFont(); }
+}
+
+void DrawChatLayout(ChatbotLogic* brain, char* inputBuffer, ImFont* font) {
+    ImVec2 viewportSize = ImGui::GetMainViewport()->Size;
+    float windowWidth = viewportSize.x;
+    float windowHeight = viewportSize.y;
+    
+    if (font) ImGui::PushFont(font);
+
+    // [จุดแก้ไข] ขยายขนาดฟอนต์ให้ใหญ่ขึ้นมาอีกหน่อย (0.4f) 
+    float chatScale = 0.40f; 
+
+    ImGui::SetCursorPos(ImVec2(50, 40));
+    ImGui::SetWindowFontScale(0.35f); 
+    ImGui::TextDisabled("ENGR-CMU Chatbot");
+
+    ImGui::SetCursorPos(ImVec2(0, 100));
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0)); 
+    ImGui::BeginChild("ChatArea", ImVec2(0, windowHeight - 100 - 100), false, 0); 
+    
+    ImGui::SetWindowFontScale(chatScale); 
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 20)); 
+
+    for (const auto& msg : brain->chatHistory) {
+        bool isUser = (msg.find("User: ") == 0);
+        bool isChatbot = (msg.find("Chatbot: ") == 0);
+        
+        std::string displayText = msg;
+        if (isUser) displayText = msg.substr(6);
+        else if (isChatbot) displayText = msg.substr(9);
+
+        float wrapWidth = windowWidth * 0.60f; 
+        if (wrapWidth < 300.0f) wrapWidth = 300.0f; 
+
+        ImVec2 textSize = ImGui::CalcTextSize(displayText.c_str(), NULL, false, wrapWidth);
+        
+        float paddingX = 20.0f; 
+        float paddingY = 15.0f;
+        float bubbleWidth = textSize.x + (paddingX * 2);
+        float bubbleHeight = textSize.y + (paddingY * 2);
+
+        if (isUser) {
+            ImGui::SetCursorPosX(windowWidth - bubbleWidth - 50.0f);
+        } else {
+            ImGui::SetCursorPosX(50.0f);
+        }
+
+        ImVec2 startPos = ImGui::GetCursorScreenPos();
+        ImGui::Dummy(ImVec2(bubbleWidth, bubbleHeight));
+        float nextY = ImGui::GetCursorPosY(); 
+
+        ImU32 bgColor = isUser ? IM_COL32(45, 45, 50, 255) : IM_COL32(31, 31, 36, 255);
+        ImGui::GetWindowDrawList()->AddRectFilled(
+            startPos, ImVec2(startPos.x + bubbleWidth, startPos.y + bubbleHeight), bgColor, 20.0f
+        );
+
+        ImGui::SetCursorScreenPos(ImVec2(startPos.x + paddingX, startPos.y + paddingY));
+        ImGui::PushTextWrapPos(startPos.x + paddingX + wrapWidth);
+        ImGui::Text("%s", displayText.c_str());
+        ImGui::PopTextWrapPos();
+
+        ImGui::SetCursorPosY(nextY); 
+        ImGui::Dummy(ImVec2(0.0f, 0.0f)); 
+    }
+    ImGui::PopStyleVar();
+
+    static size_t lastChatCount = 0;
+    if (lastChatCount != brain->chatHistory.size()) {
+        ImGui::SetScrollHereY(1.0f); 
+        lastChatCount = brain->chatHistory.size();
+    }
+
+    ImGui::EndChild();
+    ImGui::PopStyleColor();
+
+    ImGui::SetWindowFontScale(chatScale); 
+    
+    float inputWidth = windowWidth * 0.65f;
+    float boxHeight = 60.0f; 
+    float btnSize = 42.0f; 
+    
+    ImGui::SetCursorPos(ImVec2((windowWidth - inputWidth) / 2.0f, windowHeight - boxHeight - 20.0f));
+    ImVec2 screenPos = ImGui::GetCursorScreenPos(); 
+
+    ImGui::GetWindowDrawList()->AddRectFilled(
+        screenPos, ImVec2(screenPos.x + inputWidth, screenPos.y + boxHeight), IM_COL32(31, 31, 36, 255), 30.0f 
+    );
+
+    float padY = (boxHeight - ImGui::GetFontSize()) / 2.0f; 
+    if (padY < 0.0f) padY = 0.0f;
+
+    ImGui::SetCursorScreenPos(ImVec2(screenPos.x + 10.0f, screenPos.y));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(20.0f, padY)); 
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0, 0, 0, 0)); 
+    
+    ImGui::PushItemWidth(inputWidth - btnSize - 30.0f);
+    if (ImGui::IsWindowAppearing()) ImGui::SetKeyboardFocusHere();
+    bool enterPressed = ImGui::InputTextWithHint("##ChatIn", "Ask ENGR-CMU Chatbot", inputBuffer, 256, ImGuiInputTextFlags_EnterReturnsTrue);
+    ImGui::PopItemWidth();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar();
+
+    ImGui::SameLine();
+    ImGui::SetCursorScreenPos(ImVec2(screenPos.x + inputWidth - btnSize - 9.0f, screenPos.y + 9.0f));
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.25f, 0.30f, 1.0f)); 
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.35f, 0.35f, 0.40f, 1.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, btnSize / 2.0f);
+    
+    bool btnPressed = ImGui::Button(">", ImVec2(btnSize, btnSize));
+    
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor(2);
+
+    if (enterPressed || btnPressed) {
+        brain->processInput(inputBuffer);
+        inputBuffer[0] = '\0';
+        ImGui::SetKeyboardFocusHere(-1); 
+    }
+
+    if (font) { ImGui::SetWindowFontScale(1.0f); ImGui::PopFont(); } 
+}
+
+int main() {
+    #ifdef _WIN32
+    SetProcessDPIAware(); 
+    #endif
+
+    if (!glfwInit()) return 1;
+    glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+    GLFWwindow* window = glfwCreateWindow(1920, 1080, "ENGR CMU Chatbot", NULL, NULL);
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    
+    ImGui::GetStyle().Colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.05f, 0.06f, 1.0f);
+
+    ImFontConfig cfgBase;
+    cfgBase.OversampleH = 2; 
+    cfgBase.OversampleV = 2;
+    static const ImWchar base_ranges[] = {
+        0x0020, 0x00FF, 
+        0x0E00, 0x0E47, 
+        0x0E4D, 0x0E7F, 
+        0
+    };
+    ImFont* fontThai = io.Fonts->AddFontFromFileTTF("Sarabun/Sarabun-Regular.ttf", 64.0f, &cfgBase, base_ranges);
+    
+    ImFontConfig cfgTone;
+    cfgTone.OversampleH = 2; 
+    cfgTone.OversampleV = 2;
+    cfgTone.MergeMode = true;       
+    cfgTone.GlyphOffset.y = -20.0f; 
+    static const ImWchar tone_ranges[] = {
+        0x0E48, 0x0E4C, 
+        0
+    };
+    io.Fonts->AddFontFromFileTTF("Sarabun/Sarabun-Regular.ttf", 64.0f, &cfgTone, tone_ranges);
+
+    if (!fontThai) fontThai = io.Fonts->AddFontDefault();
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+
+    ChatbotLogic* brain = new ChatbotLogic();
+    char inputBuffer[256] = "";
+
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::SetNextWindowPos(ImVec2(0, 0));
+        ImGui::SetNextWindowSize(io.DisplaySize);
+        ImGui::Begin("Canvas", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
+
+        if (brain->chatHistory.size() <= 1) {
+            DrawWelcomeLayout(brain, inputBuffer, fontThai);
+        } else {
+            DrawChatLayout(brain, inputBuffer, fontThai);
+        }
+
+        ImGui::End();
+        ImGui::Render();
+
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClearColor(0.05f, 0.05f, 0.06f, 1.0f); 
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        glfwSwapBuffers(window);
+    }
+
+    delete brain;
+    ImGui_ImplOpenGL3_Shutdown(); ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    glfwTerminate();
+    return 0;
+}
