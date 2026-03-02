@@ -1,0 +1,132 @@
+//-------------------------------------------------------------------------------------------//
+#pragma once
+#include <iostream>
+#include <string>
+#include <vector>
+
+// สถานะย่อยสำหรับระบบ Admission เท่านั้น (ขั้นตอนการคุย ลำดับชั้น)
+enum AdmissionState {
+    ADM_STATE_SELECT_PROGRAM,     // เลือกหลักสูตร
+    ADM_STATE_SELECT_MAJOR,       // เลือกสาขา
+    ADM_STATE_SELECT_ROUND,       // เลือกรอบ
+    ADM_STATE_SELECT_PROJECT,     // เลือกโครงการ
+    ADM_STATE_PROJECT_DETAILS     // ถามรายละเอียด
+};
+
+//-------------------------------------------------------------------------------------------//
+class AdmissionHandler {
+public:
+    AdmissionState currentState = ADM_STATE_SELECT_PROGRAM;
+    std::string selectedMajor = "";
+    std::string selectedRound = "";
+    std::string selectedProject = "";
+
+    bool hasKeyword(std::string input, std::string keyword) {
+        return input.find(keyword) != std::string::npos;
+    }
+
+    // ฟังก์ชันนี้จะรับข้อความและ "ประวัติแชทหลัก" เข้ามา เพื่อพิมพ์ตอบกลับไปที่หน้าจอโดยตรง
+    // คืนค่า true = ทำงานต่อ, คืนค่า false = ผู้ใช้พิมพ์ "ออก" (ให้ main.cpp ดึงกลับเมนูหลัก)
+    bool processAdmission(std::string input, std::vector<std::string>& chatHistory) {
+        
+        // ฟังก์ชันช่วยพิมพ์ตอบกลับ
+        auto reply = [&](std::string text) {
+            chatHistory.push_back("Chatbot: " + text);
+        };
+
+        // ถ้าพิมพ์ "ออก" ให้คืนค่า false เพื่อส่งสัญญาณกลับไปให้ ChatbotLogic หลัก
+        if (hasKeyword(input, "ออก") || hasKeyword(input, "กลับ") || hasKeyword(input, "เมนูหลัก")) {
+            currentState = ADM_STATE_SELECT_PROGRAM; // รีเซ็ตสถานะเผื่อเข้ามาใหม่
+            selectedMajor = ""; selectedRound = ""; selectedProject = "";
+            return false; 
+        }
+//-------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------//
+                                                   
+                                      //เราจะแก้ไขข้อมูลในนี้นะเคิ้บบ//
+
+
+        switch (currentState) {
+            case ADM_STATE_SELECT_PROGRAM:
+                if (hasKeyword(input, "ปกติ") || hasKeyword(input, "ภาคปกติ")) {
+                    reply("สนใจเข้าวิศวกรรมสาขาไหนครับ? (เช่น โยธา, ไฟฟ้า, เครื่องกล)");
+                    currentState = ADM_STATE_SELECT_MAJOR;
+                } else {
+                    reply("คณะเรามี 3 หลักสูตร: 1. ภาคปกติ 2. ภาคพิเศษ 3. นานาชาติ\nลองพิมพ์ชื่อหลักสูตรที่สนใจดูครับ หรือพิมพ์ 'ออก' เพื่อกลับเมนูหลัก");
+                }
+                break;
+//-------------------------------------------------------------------------------------------//
+/*หากจะเพิ่มข้อมูลสาขา เราจะเพิ่มใน case ADM_STATE_SELECT_MAJOR: เขียนโดยใช้ case เลือกว่าอยู่ขั้นสาขา เพิ่มข้อมูลโดยใช้ if(.....){}else if ...........
+  หรือง่ายๆก็คือเพิ่มข้อมูลตามหัวข้อลำดับขั้นของ enum AdmissionState*/
+
+
+
+            case ADM_STATE_SELECT_MAJOR:
+                if (hasKeyword(input, "โยธา") || hasKeyword(input, "Civil")) {
+                    selectedMajor = "โยธา";
+                    reply("อยากสมัครวิศวกรรมโยธาในรอบไหนครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
+                    currentState = ADM_STATE_SELECT_ROUND;
+                } 
+                else if (hasKeyword(input, "ไฟฟ้า") || hasKeyword(input, "Electric")) {
+                    selectedMajor = "ไฟฟ้า";
+                    reply("อยากสมัครวิศวกรรมไฟฟ้าในรอบไหนครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
+                    currentState = ADM_STATE_SELECT_ROUND;
+                }
+                else {
+                    reply("ลองพิมพ์ชื่อสาขาใหม่ดูนะครับ (เช่น โยธา, ไฟฟ้า)");
+                }
+                break;
+
+            case ADM_STATE_SELECT_ROUND:
+                if (hasKeyword(input, "1") || hasKeyword(input, "Portfolio")) {
+                    selectedRound = "Portfolio";
+                    if (selectedMajor == "โยธา") reply("รอบ Portfolio สาขาโยธา มี 5 โครงการครับ:\n1. นักกีฬา\n2. วมว.\n3. ความสามารถพิเศษ\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "ไฟฟ้า") reply("รอบ Portfolio สาขาไฟฟ้า มี 4 โครงการครับ:\n1. นักกีฬา\n2. ความสามารถพิเศษ\nอยากสมัครโครงการไหนครับ?");
+                    currentState = ADM_STATE_SELECT_PROJECT;
+                }
+                else {
+                    reply("พิมพ์ 1, 2, 3 หรือ 4 เพื่อเลือกรอบครับ");
+                }
+                break;
+
+            case ADM_STATE_SELECT_PROJECT:
+                if (hasKeyword(input, "1") || hasKeyword(input, "นักกีฬา")) {
+                    selectedProject = "นักกีฬา";
+                    reply("โครงการนักกีฬา:\n✔ จบ ม.6\n✔ มีความสามารถด้านกีฬาโดดเด่น\nสนใจรายละเอียดอะไรเพิ่มไหมครับ? (เช่น อาชีพ, ค่าเทอม, เอกสาร)");
+                    currentState = ADM_STATE_PROJECT_DETAILS;
+                }
+                else {
+                    reply("พิมพ์หมายเลขโครงการที่คุณสนใจดูครับ");
+                }
+                break;
+
+            case ADM_STATE_PROJECT_DETAILS:
+                if (hasKeyword(input, "อาชีพ") || hasKeyword(input, "ทำงาน")) {
+                    if (selectedMajor == "โยธา") reply("เป็นวิศวกรก่อสร้าง, วิศวกรโครงการ ครับ");
+                    else if (selectedMajor == "ไฟฟ้า") reply("เป็นวิศวกรไฟฟ้ากำลัง, วิศวกรสื่อสาร ครับ");
+                } 
+                else if (hasKeyword(input, "ค่าธรรมเนียม") || hasKeyword(input, "ค่าเทอม")) {
+                    reply("ค่าธรรมเนียมการศึกษา ภาคการศึกษาแรก 23,000 บาท ครับ");
+                } 
+                else if (hasKeyword(input, "เอกสาร")) {
+                    reply("เอกสารที่ต้องใช้:\n1. ใบสมัคร\n2. สำเนาบัตรประชาชน\n3. Portfolio");
+                }
+                else if (hasKeyword(input, "อื่น")) {
+                    reply("อยากเปลี่ยนไปดูโครงการไหน พิมพ์หมายเลขโครงการมาได้เลยครับ");
+                    currentState = ADM_STATE_SELECT_PROJECT;
+                }
+                else {
+                    reply("ลองถามคำว่า 'ค่าเทอม', 'เอกสาร', 'อาชีพ' หรือพิมพ์ 'อื่น' ดูนะครับ");
+                }
+                break;
+        }
+
+                                      //จนถึงตรงนี้นะเคิ้บบ//
+
+
+//-------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------//
+        return true; // คืนค่า true เพื่อบอกว่ายังอยู่ในโหมด Admission ต่อ
+    }
+};
+//-------------------------------------------------------------------------------------------//
