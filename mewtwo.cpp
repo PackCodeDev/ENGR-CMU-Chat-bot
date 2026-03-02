@@ -65,43 +65,43 @@ class WaitSelect{
                     currentState = SELECT_DETAIL;
                 }
                                                 //Electrical
-                else if(hasKeyword(input, "") && selectedProgram == "ปกติ"){
+                else if(hasKeyword(input, "ไฟฟ้า") && selectedProgram == "ปกติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
                                                 //Civil
-                else if(hasKeyword(input, "") && selectedProgram == "ปกติ"){
+                else if(hasKeyword(input, "โยธา") && selectedProgram == "ปกติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
                                                 //Industrial
-                else if(hasKeyword(input, "") && selectedProgram == "ปกติ"){
+                else if(hasKeyword(input, "อุตสาหการ") && selectedProgram == "ปกติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
                                                 //Environmental
-                else if(hasKeyword(input, "") && selectedProgram == "ปกติ"){
+                else if(hasKeyword(input, "สิ่งแวดล้อม") && selectedProgram == "ปกติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
                                                 //Mining & Petroleum
-                else if(hasKeyword(input, "") && selectedProgram == "ปกติ"){
+                else if(hasKeyword(input, "เหมืองแร่") && selectedProgram == "ปกติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
                                                 //REAI (Robotics & AI)
-                else if(hasKeyword(input, "") && selectedProgram == "ปกติ"){
+                else if(hasKeyword(input, "REAI") && selectedProgram == "ปกติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
                                                 //Integrated
-                else if(hasKeyword(input, "") && selectedProgram == "ปกติ"){
+                else if(hasKeyword(input, "บูรณาการณ์") && selectedProgram == "ปกติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
@@ -110,19 +110,19 @@ class WaitSelect{
 //                                                ภาคพิเศษ
 
                                                 //Industrial
-                else if(hasKeyword(input, "") && selectedProgram == "พิเศษ"){
+                else if(hasKeyword(input, "อุตสาหการ") && selectedProgram == "พิเศษ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
                                                 //Electrical
-                else if(hasKeyword(input, "") && selectedProgram == "พิเศษ"){
+                else if(hasKeyword(input, "ไฟฟ้า") && selectedProgram == "พิเศษ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
                                                 //Mechanical
-                else if(hasKeyword(input, "") && selectedProgram == "พิเศษ"){
+                else if(hasKeyword(input, "เครื่องกล") && selectedProgram == "พิเศษ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
@@ -131,37 +131,37 @@ class WaitSelect{
 //                                                นานาชาติ
 
                                                 //Mechanical
-                else if(hasKeyword(input, "") && selectedProgram == "นานาชาติ"){
+                else if(hasKeyword(input, "เครื่องกล") && selectedProgram == "นานาชาติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
                                                 //Integrated
-                else if(hasKeyword(input, "") && selectedProgram == "นานาชาติ"){
+                else if(hasKeyword(input, "บูรณาการณ์") && selectedProgram == "นานาชาติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
-                                                //Industrial
-                else if(hasKeyword(input, "") && selectedProgram == "นานาชาติ"){
+                                                //Electrical
+                else if(hasKeyword(input, "ไฟฟ้า") && selectedProgram == "นานาชาติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
                                                 //Civil
-                else if(hasKeyword(input, "") && selectedProgram == "นานาชาติ"){
+                else if(hasKeyword(input, "โยธา") && selectedProgram == "นานาชาติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
                                                 //ISNE
-                else if(hasKeyword(input, "") && selectedProgram == "นานาชาติ"){
+                else if(hasKeyword(input, "ISNE") && selectedProgram == "นานาชาติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
                 }
                                                 //Industrial
-                else if(hasKeyword(input, "") && selectedProgram == "นานาชาติ"){
+                else if(hasKeyword(input, "อุตสาหการ") && selectedProgram == "นานาชาติ"){
                     selectedMajor = "";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับ ครับ?");
                     currentState = SELECT_DETAIL;
@@ -170,7 +170,7 @@ class WaitSelect{
 //=========================================================================================================================================
 
                 else{
-                    reply("ลองพิมพ์ชื่อสาขาใหม่ดูนะครับ (เช่น โยธา)");
+                    reply("ลองพิมพ์ชื่อสาขาใหม่ดูนะครับ (เช่น )");
                 }
                 break;
 
