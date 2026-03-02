@@ -1,6 +1,8 @@
 #include<iostream>
 #include<string>
 #include<vector>
+#include <windows.h>
+
 using namespace std;
 
 enum ShowState {
@@ -19,6 +21,7 @@ class WaitSelect{
     bool hasKeyword(std::string input, std::string keyword) {
         return input.find(keyword) != std::string::npos;
     };
+    
     bool processAdmission(std::string input, std::vector<std::string>& chatHistory){
         auto reply = [&](std::string text) {
             chatHistory.push_back("Chatbot: " + text);
@@ -212,3 +215,112 @@ class WaitSelect{
         return true;
     }
 };
+WaitSelect chatbot;
+std::vector<std::string> chatHistory;
+
+HWND hEditInput, hButtonSend, hEditChat;
+
+#define ID_EDIT_INPUT 101
+#define ID_BUTTON_SEND 102
+#define ID_EDIT_CHAT 103
+
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+    switch(uMsg) {
+
+        case WM_CREATE:
+            hEditChat = CreateWindowW(L"EDIT", L"",
+                WS_VISIBLE | WS_CHILD | WS_BORDER | ES_MULTILINE | ES_AUTOVSCROLL | WS_VSCROLL,
+                10, 10, 460, 250,
+                hwnd, (HMENU)ID_EDIT_CHAT, NULL, NULL);
+
+            hEditInput = CreateWindowW(L"EDIT", L"",
+                WS_VISIBLE | WS_CHILD | WS_BORDER,
+                10, 270, 360, 25,
+                hwnd, (HMENU)ID_EDIT_INPUT, NULL, NULL);
+
+            hButtonSend = CreateWindowW(L"BUTTON", L"Send",
+                WS_VISIBLE | WS_CHILD,
+                380, 270, 90, 25,
+                hwnd, (HMENU)ID_BUTTON_SEND, NULL, NULL);
+            break;
+
+        case WM_COMMAND:
+            if (LOWORD(wParam) == ID_BUTTON_SEND) {
+
+                wchar_t buffer[256];
+                GetWindowTextW(hEditInput, buffer, 256);
+
+                std::wstring winput = buffer;
+
+        // convert wide string → UTF-8 string
+        int size_needed = WideCharToMultiByte(CP_UTF8, 0, 
+        winput.c_str(), -1, NULL, 0, NULL, NULL);
+
+        std::string input(size_needed, 0);
+
+                WideCharToMultiByte(CP_UTF8, 0,winput.c_str(), -1,&input[0], size_needed,NULL, NULL);
+
+                chatbot.processAdmission(input, chatHistory);
+
+                SetWindowTextW(hEditChat, L"");
+
+                std::wstring allText;
+                for (auto &msg : chatHistory) {
+                    int size_needed = MultiByteToWideChar(CP_UTF8, 0, msg.c_str(), -1, NULL, 0);
+
+                std::wstring wmsg(size_needed, 0);
+
+                MultiByteToWideChar(CP_UTF8, 0,msg.c_str(), -1,&wmsg[0], size_needed);
+                allText += wmsg + L"\r\n";
+                }
+
+                SetWindowTextW(hEditChat, allText.c_str());
+                SetWindowTextW(hEditInput, L"");
+            }
+            break;
+
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            break;
+    }
+
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+int WINAPI wWinMain(HINSTANCE hInstance,
+                    HINSTANCE,
+                    PWSTR,
+                    int nCmdShow)
+{
+    const wchar_t CLASS_NAME[] = L"ChatbotWindow";
+
+    WNDCLASS wc = {};
+    wc.lpfnWndProc = WindowProc;
+    wc.hInstance = hInstance;
+    wc.lpszClassName = CLASS_NAME;
+
+    RegisterClass(&wc);
+
+    HWND hwnd = CreateWindowEx(
+        0,
+        CLASS_NAME,
+        L"Admission Chatbot",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, 500, 350,
+        NULL,
+        NULL,
+        hInstance,
+        NULL
+    );
+
+    ShowWindow(hwnd, nCmdShow);
+
+    MSG msg = {};
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    return 0;
+}
