@@ -4061,7 +4061,7 @@ void MechanMajorDetails() {
                      cout << "AI: เป็นโครงการที่เปิดรับ นักเรียนจากโรงเรียนในพื้นที่ภาคเหนือ" << endl;
                     cout << "    ✔ กำลังเรียนหรือจบ ม.6 สายวิทย์-คณิต" << endl;
                     cout << "    ✔ เรียนในโรงเรียน ภาคเหนือ" << endl;
-                    cout << "    รหัสโครงการ 00420605201015" << endl;
+                    cout << "    รหัสโครงการ 00420604201015" << endl;
                     cout << "    คณะวิศวกรรมศาสตร์ สาขา วิศวกรรมอุตสาหการ หลักสูตร ไทย รูปแบบของหลักสูตร ปกติ" << endl;
                     cout << "AI: คุณสนใจรายละเอียดเพิ่มเติมเกี่ยวกับโครงการนี้ไหมครับ?" << endl;
                     while (keepRunning) {
@@ -4073,7 +4073,7 @@ void MechanMajorDetails() {
 
                         if (hasKeyword(input, "แนวทางการประกอบอาชีพ") || hasKeyword(input, "อาชีพ") || hasKeyword(input, "แนวทาง") ) {
         
-                        cout << "AI : วิศวกรนักออกแบบเครื่องจักรกล (Machine Design Engineer), วิศวกรซ่อมบำรุงเครื่องจักร (Maintenance Engineer), วิศวกรพลังงาน (Energy Engineer), วิศวกรระบบอัตโนมัติ (Automation Engineer), วิศวกรบริหารโครงการ (Project Engineer" << endl;
+                        cout << "AI : วิศวกรโรงงาน, วิศวกรฝ่ายควบคุมคุณภาพ, วิศวกรควบคุมกระบวนการผลิต , วิศวกรโลจิสติกส์, วิศวกรความปลอดภัย" << endl;
 
                         found = true;
                         
@@ -4090,7 +4090,7 @@ void MechanMajorDetails() {
 
                         if (hasKeyword(input, "จำนวนรับเข้า") || hasKeyword(input, "จำนวนรับ") || hasKeyword(input, "จำนวนที่รับ") || hasKeyword(input, "จำนวนรับ")) {
         
-                        cout << "AI : จำนวนรับเข้า 120 คน" << endl;
+                        cout << "AI : จำนวนรับเข้า 80 คน" << endl;
 
                         found = true;
                         
@@ -4184,7 +4184,7 @@ void MechanMajorDetails() {
                     cout << "       • ระดับโรงเรียน" << endl;
                     cout << "       • ระดับจังหวัด" << endl;
                     cout << "       • ระดับภาค" << endl;
-                    cout << "    รหัสโครงการ 00420605204015" << endl;
+                    cout << "    รหัสโครงการ 00420604204015" << endl;
                     cout << "    คณะวิศวกรรมศาสตร์ สาขา วิศวกรรมเครื่องกล หลักสูตร ไทย รูปแบบของหลักสูตร ปกติ" << endl;
                     cout << "AI: คุณสนใจรายละเอียดเพิ่มเติมเกี่ยวกับโครงการนี้ไหมครับ?" << endl;
                     while (keepRunning) {
@@ -4196,7 +4196,7 @@ void MechanMajorDetails() {
 
                         if (hasKeyword(input, "แนวทางการประกอบอาชีพ") || hasKeyword(input, "อาชีพ") || hasKeyword(input, "แนวทาง") || hasKeyword(input, "ทำงาน")) {
         
-                        cout << "AI :วิศวกรนักออกแบบเครื่องจักรกล (Machine Design Engineer), วิศวกรซ่อมบำรุงเครื่องจักร (Maintenance Engineer), วิศวกรพลังงาน (Energy Engineer), วิศวกรระบบอัตโนมัติ (Automation Engineer), วิศวกรบริหารโครงการ (Project Engineer)" << endl;
+                        cout << "AI :วิศวกรโรงงาน, วิศวกรฝ่ายควบคุมคุณภาพ, วิศวกรควบคุมกระบวนการผลิต , วิศวกรโลจิสติกส์, วิศวกรความปลอดภัย" << endl;
 
                         found = true;
                         
@@ -4339,7 +4339,7 @@ void MechanMajorDetails() {
                      cout << "AI: เป็นรอบที่ใช้ คะแนนสอบส่วนกลางเป็นหลักสมัครผ่านระบบกลางของ ระบบ TCAS" << endl;
                     cout << "    • ไม่ต้องใช้ Portfolio" << endl;
                     cout << "    • ใช้ คะแนนสอบ แข่งขันกับผู้สมัครทั่วประเทศ" << endl;
-                    cout << "    รหัสโครงการ 00430601301010" << endl;
+                    cout << "    รหัสโครงการ 00430604301010" << endl;
                     cout << "    คณะวิศวกรรมศาสตร์ สาขา วิศวกรรมอุตสาหการ หลักสูตร ไทย รูปแบบของหลักสูตร ปกติ" << endl;
                     cout << "AI: คุณสนใจรายละเอียดเพิ่มเติมเกี่ยวกับโครงการนี้ไหมครับ?" << endl;
                     while (keepRunning) {
@@ -4351,7 +4351,7 @@ void MechanMajorDetails() {
 
                         if (hasKeyword(input, "แนวทางการประกอบอาชีพ") || hasKeyword(input, "อาชีพ") || hasKeyword(input, "แนวทาง") ) {
         
-                        cout << "AI : วิศวกรนักออกแบบเครื่องจักรกล (Machine Design Engineer), วิศวกรซ่อมบำรุงเครื่องจักร (Maintenance Engineer), วิศวกรพลังงาน (Energy Engineer), วิศวกรระบบอัตโนมัติ (Automation Engineer), วิศวกรบริหารโครงการ (Project Engineer)" << endl;
+                        cout << "AI : วิศวกรโรงงาน, วิศวกรฝ่ายควบคุมคุณภาพ, วิศวกรควบคุมกระบวนการผลิต , วิศวกรโลจิสติกส์, วิศวกรความปลอดภัย" << endl;
 
                         found = true;
                         
@@ -4368,7 +4368,7 @@ void MechanMajorDetails() {
 
                         if (hasKeyword(input, "จำนวนรับเข้า") || hasKeyword(input, "จำนวนรับ") || hasKeyword(input, "จำนวนที่รับ") || hasKeyword(input, "จำนวนรับ")) {
         
-                        cout << "AI : จำนวนรับเข้า 10 คน" << endl;
+                        cout << "AI : จำนวนรับเข้า 40 คน" << endl;
 
                         found = true;
                         
