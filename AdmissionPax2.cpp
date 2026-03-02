@@ -3185,7 +3185,7 @@ void MechanMajorDetails() {
    
 }
 
-void MechanMajorDetails() {
+void IEchanMajorDetails() {
     string input;
     string name;
     bool keepRunning = true;
@@ -4527,6 +4527,12 @@ void  handleMajorDetails() {
             found = true;
         } 
         
+        if (hasKeyword(input, "อุตสาหการ") || hasKeyword(input, "Industrial") || hasKeyword(input, "IE")) {
+        
+        IEchanMajorDetails();
+
+            found = true;
+        } 
 
         if (!found) {
              cout << "AI: ขออภัยครับ ผมไม่เข้าใจคำที่คุณพูดครับ ลองพิมพ์ใหม่ได้ไหมครับ?" << endl;
