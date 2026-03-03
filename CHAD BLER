@@ -76,6 +76,30 @@ public:
                     reply("อยากสมัครวิศวกรรมเครื่องกลในรอบไหนครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
                     currentState = ADM_STATE_SELECT_ROUND;
                 }
+
+                                                 // โซนโปรเจกต์ของ "อุตสาหการ"
+
+                else if (hasKeyword(input, "อุตสาหการ") || hasKeyword(input, "Industrial") || hasKeyword(input, "IE")) {
+                    selectedMajor = "อุตสาหการ";
+                    reply("อยากสมัครวิศวกรรมอุตสาหการในรอบไหนครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
+                    currentState = ADM_STATE_SELECT_ROUND;
+                }
+
+                                                 // โซนโปรเจกต์ของ "คอมพิวเตอร์"
+
+                else if (hasKeyword(input, "คอมพิวเตอร์") || hasKeyword(input, "Computer")) {
+                    selectedMajor = "คอมพิวเตอร์";
+                    reply("อยากสมัครวิศวกรรมคอมพิวเตอร์ในรอบไหนครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
+                    currentState = ADM_STATE_SELECT_ROUND;
+                }
+
+                                                                 // โซนโปรเจกต์ของ "สิ่งเเวดล้อม"
+
+                else if (hasKeyword(input, "สิ่งเเวดล้อม") || hasKeyword(input, "Environmental")) {
+                    selectedMajor = "สิ่งเเวดล้อม";
+                    reply("อยากสมัครวิศวกรรมสิ่งแวดล้อมในรอบไหนครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
+                    currentState = ADM_STATE_SELECT_ROUND;
+                }
 // ============================================================================================================================== //
 
                                            // รอเพิ่มสาขา ไฟฟ้า, เครื่องกล ในอนาคตตรงนี้ //
@@ -98,6 +122,9 @@ public:
                     if (selectedMajor == "โยธา")reply("รอบ Portfolio สาขาโยธามี 5 โครงการครับ:\n1. นักกีฬา\n2. วมว.\n3. ความสามารถพิเศษ\n4. ผลการเรียนดีเด่น\n5. ความสามารถทางวิศวกรรม\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
                     else if (selectedMajor == "ไฟฟ้า") reply("รอบ Portfolio สาขาไฟฟ้ามี 4 โครงการครับ:\n1. นักกีฬา\n2. ความสามารถพิเศษ\n3. ผลการเรียนดีเด่น\n4. ความสามารถทางวิศวกรรม\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
                     else if (selectedMajor == "เครื่องกล") reply("รอบ Portfolio สาขาเครื่องกลมี 5 โครงการครับ:\n1. นักกีฬา\n2. ความสามารถพิเศษ\n3. ผลการเรียนดีเด่น\n4. หุ่นยนต์และเทคโนโลยี\n5. ความสามารถทางวิศวกรรม\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "อุตสาหการ") reply("รอบ Portfolio สาขาอุตสาหการมี 7 โครงการครับ:\n1. นักกีฬา\n2. ความสามารถพิเศษ\n3. หุ่นยนต์และเทคโนโลยี\n4. ผลการเรียนดีเด่น\n5. ผู้มีความสามารถทางภาษาอังกฤษ\n6. Women in Engineering\n7. ความสามารถทางวิศวกรรม\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "คอมพิวเตอร์") reply("รอบ Portfolio สาขาคอมพิวเตอร์มี 5 โครงการครับ:\n1. นักกีฬา\n2. อัจฉริยภาพทางคอมพิวเตอร์\n3. ผลการเรียนดีเด่น\n4. ความสามารถทางวิศวกรรม\n5. ร่วมมือสร้างสังคมแห่งการเรียนรู้นวัตกรรมด้านพลังงานและสิ่งแวดล้อม\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "สิ่งเเวดล้อม") reply("รอบ Portfolio สาขาสิ่งแวดล้อมมี 5 โครงการครับ:\n1. นักกีฬา\n2. ผลการเรียนดีเด่น \n3. ผลการเรียนวิชาฟิสิกส์และเคมีดีเด่น \n4. ความสามารถทางวิศวกรรม\n5. ร่วมมือสร้างสังคมแห่งการเรียนรู้นวัตกรรมด้านพลังงานและสิ่งแวดล้อม\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
                     //เพิ่มเติมตรงนี้----------------------------------------------------------
 
                     currentState = ADM_STATE_SELECT_PROJECT;
@@ -110,6 +137,9 @@ public:
                     if (selectedMajor == "โยธา") reply("รอบ Quota สาขาโยธามี 2 โครงการครับ:\n1. โควตาภาคเหนือ\n2. ผู้มีความสามารถด้านกีฬา\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
                     else if (selectedMajor == "ไฟฟ้า") reply("รอบ Quota สาขาไฟฟ้ามี 2 โครงการครับ:\n1. โควตาภาคเหนือ\n2. ผู้มีความสามารถด้านกีฬา\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
                     else if (selectedMajor == "เครื่องกล") reply("รอบ Quota สาขาเครื่องกลมี 2 โครงการครับ:\n1. โควตาภาคเหนือ\n2. ผู้มีความสามารถด้านกีฬา\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "อุตสาหการ") reply("รอบ Quota สาขาอุตสาหการมี 2 โครงการครับ:\n1. โควตาภาคเหนือ\n2. ผู้มีความสามารถด้านกีฬา\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "คอมพิวเตอร์") reply("รอบ Quota สาขาคอมพิวเตอร์มี 4 โครงการครับ:\n1. โควตาภาคเหนือ\n2. ผู้มีความสามารถด้านกีฬา\n3.  การรับนักเรียนพิการ\n4. ควตานอกเขต 17 จังหวัดภาคเหนือ\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "สิ่งเเวดล้อม") reply("รอบ Quota สาขาสิ่งแวดล้อมมี 2 โครงการครับ:\n1. โควตาภาคเหนือ\n2. ผู้มีความสามารถด้านกีฬา\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
                     //เพิ่มเติมตรงนี้----------------------------------------------------------
 
                     currentState = ADM_STATE_SELECT_PROJECT;
@@ -121,6 +151,9 @@ public:
                     if (selectedMajor == "โยธา") reply("รอบ Admission สาขาโยธามี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
                     else if (selectedMajor == "ไฟฟ้า") reply("รอบ Admission สาขาไฟฟ้ามี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
                     else if (selectedMajor == "เครื่องกล") reply("รอบ Admission สาขาเครื่องกลมี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
+                    else if (selectedMajor == "อุตสาหการ") reply("รอบ Admission สาขาอุตสาหการมี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
+                    else if (selectedMajor == "คอมพิวเตอร์") reply("รอบ Admission สาขาคอมพิวเตอร์มี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
+                    else if (selectedMajor == "สิ่งเเวดล้อม") reply("รอบ Admission สาขาสิ่งแวดล้อมมี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
                     //เพิ่มเติมตรงนี้----------------------------------------------------------
 
                     currentState = ADM_STATE_SELECT_PROJECT;
@@ -232,6 +265,109 @@ public:
                     }
                 }
 
+                // --- โซนสาขา อุสาหการ ---
+                    else if (selectedMajor == "อุสาหการ") {
+                        if (hasKeyword(input, "1") || hasKeyword(input, "นักกีฬา") || hasKeyword(input, "ความสามารถดีเด่น")) {
+                            selectedProject = "นักกีฬา_Port_Ind";
+                            reply("โครงการนักกีฬา:\n✔ จบ ม.6 หรือเทียบเท่า\n✔ มีความสามารถด้านกีฬาโดดเด่นระดับชาติ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else if (hasKeyword(input, "2") || hasKeyword(input, "พิเศษ") || hasKeyword(input, "ผู้มีความรู้")) {
+                            selectedProject = "พิเศษ_Port_Ind";
+                            reply("โครงการความสามารถพิเศษ:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีผลงานพิเศษ/นวัตกรรม\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else if (hasKeyword(input, "3") || hasKeyword(input, "หุ่นยนต์") || hasKeyword(input, "เทคโนโลยี")) {
+                            selectedProject = "หุ่นยนต์_Port_Ind";
+                            reply("โครงการความสามารถด้านหุ่นยนต์:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีผลงานด้านหุ่นยนต์ / Robotics / Automation\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else if (hasKeyword(input, "4") || hasKeyword(input, "เรียนดี")|| hasKeyword(input, "ผลการเรียนดีเด่น")) {
+                            selectedProject = "เรียนดี_Port_Ind";
+                            reply("โครงการผลการเรียนดีเด่น:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ GPAX ค่อนข้างสูง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else if (hasKeyword(input, "5") || hasKeyword(input, "ภาษาอังกฤษ") || hasKeyword(input, "ความสามารถทางภาษาอังกฤษ")) {
+                            selectedProject = "ภาษาอังกฤษ_Port_Ind";
+                            reply("โครงการความสามารถทางภาษาอังกฤษ:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีผลงานด้านภาษาอังกฤษ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else if (hasKeyword(input, "6") || hasKeyword(input, "Women in Engineering")|| hasKeyword(input, "Women")) {
+                            selectedProject = "Women_in_Engineering_Port_Ind";
+                            reply("โครงการผู้หญิงในวิศวกรรม:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีผลงานด้านผู้หญิงในวิศวกรรม\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else if (hasKeyword(input, "7") || hasKeyword(input, "วิศวกรรม")) {
+                            selectedProject = "วิศวกรรม_Port_Ind";
+                            reply("โครงการความสามารถทางวิศวกรรม:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีผลงานด้านวิศวกรรม/เทคโนโลยี\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        } 
+                        else { reply("สาขาอุตสาหการมี 7 โครงการ พิมพ์หมายเลข 1-7 ที่คุณสนใจดูครับ"); }
+                    }
+                }
+
+                 // --- โซนสาขา คอมพิวเตอร์ ---
+                    else if (selectedMajor == "คอมพิวเตอร์") {
+                        if (hasKeyword(input, "1") || hasKeyword(input, "นักกีฬา")) {
+                            selectedProject = "นักกีฬา_Port_Comp";
+                            reply("โครงการนักกีฬา:\n✔ จบ ม.6 หรือเทียบเท่า\n✔ มีความสามารถด้านกีฬาโดดเด่นระดับชาติ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else if (hasKeyword(input, "2") || hasKeyword(input, "อัจฉริยภาพ")|| hasKeyword(input, "คอมพิวเตอร์ ")) {
+                            selectedProject = "อัจฉริยภาพ_Port_Comp";
+                            reply("ครงการรับนักเรียนที่มีอัจฉริยภาพทางคอมพิวเตอร์:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มี ผลงานด้านคอมพิวเตอร์หรือเทคโนโลยี\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else if (hasKeyword(input, "3") || hasKeyword(input, "เรียนดี")) {
+                            selectedProject = "เรียนดี_Port_Comp";
+                            reply("โครงการผลการเรียนดีเด่น:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ GPAX ค่อนข้างสูง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else if (hasKeyword(input, "4") || hasKeyword(input, "วิศวกรรม")) {
+                            selectedProject = "วิศวกรรม_Port_Comp";
+                            reply("โครงการความสามารถทางวิศวกรรม:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีผลงานด้านวิศวกรรม/เทคโนโลยี\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        } 
+                        else if (hasKeyword(input, "5") || hasKeyword(input, "เรียนรู้นวัตกรรม") || hasKeyword(input, "พลังงาน")|| hasKeyword(input, "สิ่งแวดล้อม")) {
+                            selectedProject = "ร่วมมือสร้างสังคมแห่งการเรียนรู้นวัตกรรมด้านพลังงานและสิ่งแวดล้อม_Port_Comp";
+                            reply("ครงการความร่วมมือสร้างสังคมแห่งการเรียนรู้นวัตกรรมด้านพลังงานและสิ่งแวดล้อม:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มี ความสนใจหรือผลงานด้านพลังงาน / สิ่งแวดล้อม / นวัตกรรม\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        
+                        else { reply("สาขาคอมพิวเตอร์มี 5 โครงการ พิมพ์หมายเลข 1-5 ที่คุณสนใจดูครับ"); }
+                    }
+                }
+
+                // --- โซนสาขา สิ่งเเวดล้อม ---
+                    else if (selectedMajor == "สิ่งเเวดล้อม") {
+                        if (hasKeyword(input, "1") || hasKeyword(input, "นักกีฬา")) {
+                            selectedProject = "นักกีฬา_Port_Env";
+                            reply("โครงการนักกีฬา:\n✔ จบ ม.6 หรือเทียบเท่า\n✔ มีความสามารถด้านกีฬาโดดเด่นระดับชาติ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else if (hasKeyword(input, "2") || hasKeyword(input, "เรียนดี")|| hasKeyword(input, "ผลการเรียนดีเด่น")) {
+                            selectedProject = "เรียนดี_Port_Env";
+                            reply("โครงการผลการเรียนดีเด่น:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ GPAX ค่อนข้างสูง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else if (hasKeyword(input, "3") || hasKeyword(input, "ฟิสิกส์") || hasKeyword(input, "เคมี")) {
+                            selectedProject = "ฟิสิกส์เคมี_Port_Env";
+                            reply("โครงการผลการเรียนวิชาฟิสิกส์และเคมีดีเด่น:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีผลการเรียนวิชาฟิสิกส์และเคมีดีเด่น\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else if (hasKeyword(input, "4") || hasKeyword(input, "วิศวกรรม")) {
+                            selectedProject = "วิศวกรรม_Port_Env";
+                            reply("โครงการความสามารถทางวิศวกรรม:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีผลงานด้านวิศวกรรม/เทคโนโลยี\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        } 
+                        else if (hasKeyword(input, "5") || hasKeyword(input, "เรียนรู้นวัตกรรม") || hasKeyword(input, "พลังงาน")|| hasKeyword(input, "สิ่งแวดล้อม")) {
+                            selectedProject = "ร่วมมือสร้างสังคมแห่งการเรียนรู้นวัตกรรมด้านพลังงานและสิ่งแวดล้อม_Port_Env";
+                            reply("โครงการความร่วมมือสร้างสังคมแห่งการเรียนรู้นวัตกรรมด้านพลังงานและสิ่งแวดล้อม:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มี ความสนใจหรือผลงานด้านพลังงาน / สิ่งแวดล้อม / นวัตกรรม\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS;
+                        }
+                        else { reply("สาขาสิ่งแวดล้อมมี 5 โครงการ พิมพ์หมายเลข 1-5 ที่คุณสนใจดูครับ"); }
+                    }
+
                 //เพิ่มเติมตรงนี้----------------------------------------------------------
 
 // ============================================================================================================================== //
@@ -247,7 +383,21 @@ public:
                         selectedProject = "กีฬา_Quota";
                         reply("โควตากีฬา:\n✔ เรียน ม.6 สายวิทย์-คณิต\n✔ มีผลงานกีฬาระดับโรงเรียน/จังหวัด/ภาค\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
                         currentState = ADM_STATE_PROJECT_DETAILS;
-                    } else { reply("พิมพ์ 1 หรือ 2 เพื่อเลือกโครงการครับ"); }
+                    } 
+                    
+                    // Quota computer มี 4 โครงการ
+                    else if (hasKeyword(input, "3") || hasKeyword(input, "พิการ") || hasKeyword(input, "การรับนักเรียนพิการ")) {
+                        selectedProject = "พิการ_Quota_Comp";
+                        reply("โควตาการรับนักเรียนพิการ:\n✔ เรียน ม.6 สายวิทย์-คณิต\n✔ เป็นนักเรียนพิการตามที่ กสพท. กำหนด\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                        currentState = ADM_STATE_PROJECT_DETAILS;
+                    }
+                    else if (hasKeyword(input, "4") || hasKeyword(input, "นอกเขต") || hasKeyword(input, "17 จังหวัดภาคเหนือ")) {
+                        selectedProject = "นอกเขต_Quota_Comp";
+                        reply("โควตานอกเขต 17 จังหวัดภาคเหนือ:\n✔ เรียน ม.6 สายวิทย์-คณิต ในโรงเรียนที่ไม่ใช่ 17 จังหวัดภาคเหนือ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                        currentState = ADM_STATE_PROJECT_DETAILS;
+                    }
+
+                    else { reply("พิมพ์ 1 หรือ 2 เพื่อเลือกโครงการครับ"); }
                 }
                 else if (selectedRound == "Admission") {
                     if (hasKeyword(input, "1") || hasKeyword(input, "รับตรง")) {
@@ -267,6 +417,9 @@ public:
                     if (selectedMajor == "โยธา") reply("สามารถประกอบอาชีพได้หลากหลาย เช่น วิศวกรก่อสร้าง, วิศวกรโครงการ, วิศวกรด้านผลิตภัณฑ์วัสดุ, วิศวกรสำรวจเส้นทาง หรือที่ปรึกษางานก่อสร้าง/ผู้รับเหมา ครับ");
                     else if (selectedMajor == "ไฟฟ้า") reply("วิศวกรไฟฟ้ากำลัง, วิศวกรไฟฟ้าสื่อสารและโทรคมนาคม, วิศวกรอิเล็กทรอนิกส์ด้านการออกแบบและผลิตชิ้นส่วนอิเล็กทรอนิกส์, วิศวกรด้านสมองกลฝังตัวและปัญญาประดิษฐ์, วิศวกรด้านการวิเคราะห์และออกแบบระบบไฟฟ้า ครับ");
                     else if (selectedMajor == "เครื่องกล") reply("วิศวกรนักออกแบบเครื่องจักรกล, วิศวกรซ่อมบำรุงเครื่องจักร, วิศวกรพลังงาน, วิศวกรระบบอัตโนมัติ, วิศวกรบริหารโครงการ ครับ");
+                    else if (selectedMajor == "อุตสาหการ") reply("วิศวกรโรงงาน, วิศวกรฝ่ายควบคุมคุณภาพ, วิศวกรควบคุมกระบวนการผลิต , วิศวกรโลจิสติกส์, วิศวกรความปลอดภัย ครับ");
+                    else if (selectedMajor == "คอมพิวเตอร์") reply("วิศวกรซอฟต์แวร์, วิศวกรระบบเครือข่าย, วิศวกรความปลอดภัยไซเบอร์, วิศวกรปัญญาประดิษฐ์, วิศวกรด้านข้อมูล ครับ");
+                    else if (selectedMajor == "สิ่งเเวดล้อม") reply("วิศวกรสิ่งแวดล้อม, วิศวกรพลังงานทดแทน, วิศวกรจัดการทรัพยากรน้ำ, วิศวกรจัดการของเสีย, วิศวกรด้านการประเมินผลกระทบสิ่งแวดล้อม ครับ");
                     //เพิ่มเติมตรงนี้----------------------------------------------------------
 
 
@@ -312,6 +465,50 @@ public:
                         else if (selectedProject == "รับตรง_Admin") reply("จำนวนรับเข้า 10 คน ครับ");
                     }
 
+                     // --- เพิ่มส่วนของอุตสาหการ ---
+                    else if (selectedMajor == "อุตสาหการ") {
+                        if (selectedProject == "นักกีฬา_Port_Ind") reply("จำนวนรับเข้า 2 คน ครับ");
+                        else if (selectedProject == "พิเศษ_Port_Ind") reply("แบบ 1.1: 15 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "หุ่นยนต์_Port_Ind") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "เรียนดี_Port_Ind") reply("แบบ 1.1: 25 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ภาษาอังกฤษ_Port_Ind") reply("แบบ 1.1: 5 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "Women_in_Engineering_Port_Ind") reply("แบบ 1.1: 10 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "วิศวกรรม_Port_Ind") reply("แบบ 1.1: 10 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ภาคเหนือ_Quota") reply("จำนวนรับเข้า 80 คน ครับ");
+                        else if (selectedProject == "กีฬา_Quota") reply("จำนวนรับเข้า 2 คน ครับ");
+                        else if (selectedProject == "รับตรง_Admin") reply("จำนวนรับเข้า 40 คน ครับ");
+                    }
+
+                    // --- เพิ่มส่วนของคอมพิวเตอร์ ---
+                    else if (selectedMajor == "คอมพิวเตอร์") {
+                         if (selectedProject == "นักกีฬา_Port_Comp") reply("จำนวนรับเข้า 1 คน ครับ");
+                        else if (selectedProject == "อัจฉริยภาพ_Port_Comp") reply("แบบ 1.1: 27 คน\nแบบ 1.2: 3 คน ครับ");
+                        else if (selectedProject == "เรียนดี_Port_Comp") reply("แบบ 1.1: 22 คน\nแบบ 1.2: 3 คน ครับ");
+                        else if (selectedProject == "วิศวกรรม_Port_Comp") reply("แบบ 1.1: 10 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ร่วมมือสร้างสังคมแห่งการเรียนรู้นวัตกรรมด้านพลังงานและสิ่งแวดล้อม_Port_Comp") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ภาคเหนือ_Quota") reply("จำนวนรับเข้า 30 คน ครับ");
+                        else if (selectedProject == "กีฬา_Quota") reply("จำนวนรับเข้า 1 คน ครับ");
+                        else if (selectedProject == "พิการ_Quota_Comp") reply("จำนวนรับเข้า 2 คน ครับ");
+                        else if (selectedProject == "นอกเขต_Quota_Comp") reply("จำนวนรับเข้า 10 คน ครับ");
+                        else if (selectedProject == "รับตรง_Admin") reply("จำนวนรับเข้า 10 คน ครับ");
+                    }
+
+                    // --- เพิ่มส่วนของสิ่งเเวดล้อม---
+                    else if (selectedMajor == "สิ่งเเวดล้อม") {
+                        if (selectedProject == "นักกีฬา_Port_Env") reply("จำนวนรับเข้า 2 คน ครับ");
+                        else if (selectedProject == "เรียนดี_Port_Env") reply("แบบ 1.1: 20 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ฟิสิกส์เคมี_Port_Env") reply("แบบ 1.1: 15 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "วิศวกรรม_Port_Env") reply("แบบ 1.1: 10 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ร่วมมือสร้างสังคมแห่งการเรียนรู้นวัตกรรมด้านพลังงานและสิ่งแวดล้อม_Port_Env") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ภาคเหนือ_Quota") reply("จำนวนรับเข้า 35 คน ครับ");
+                        else if (selectedProject == "กีฬา_Quota") reply("จำนวนรับเข้า 2 คน ครับ");
+                        else if (selectedProject == "รับตรง_Admin") reply("จำนวนรับเข้า 5 คน ครับ");
+                    }
+
+
+
+
+
                     //เพิ่มเติมตรงนี้----------------------------------------------------------
 
 // ============================================================================================================================== //
@@ -329,6 +526,31 @@ public:
                     else if (selectedProject == "พิเศษ_Port_Mech" || selectedProject == "หุ่นยนต์_Port_Mech") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.25");
                     else if (selectedProject == "เรียนดี_Port_Mech") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.75");
                     else if (selectedProject == "วิศวกรรม_Port_Mech") reply("ต้องผ่านหลักสูตรอบรมระยะสั้น Entaneer Academy เกรดไม่น้อยกว่า B จำนวน 3 วิชา");
+
+                    // --- เพิ่มเกรดของอุสหการ ---
+                    else if (selectedProject == "นักกีฬา_Port_Ind") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                    else if (selectedProject == "พิเศษ_Port_Ind") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                    else if (selectedProject == "หุ่นยนต์_Port_Ind") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                    else if (selectedProject == "เรียนดี_Port_Ind") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.50 ครับ");
+                    else if (selectedProject == "ภาษาอังกฤษ_Port_Ind") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                    else if (selectedProject == "Women_in_Engineering_Port_Ind") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.25 ครับ");
+                    else if (selectedProject == "วิศวกรรม_Port_Ind") reply("ต้องผ่านหลักสูตรอบรมระยะสั้น Entaneer Academy เกรดไม่น้อยกว่า B จำนวน 3 วิชา ครับ");
+
+                    // --- เพิ่มเกรดของคอมพิวเตอร์ ---
+                    else if (selectedProject == "นักกีฬา_Port_Comp") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                    else if (selectedProject == "อัจฉริยภาพ_Port_Comp") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                    else if (selectedProject == "เรียนดี_Port_Comp") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.50 ครับ");
+                    else if (selectedProject == "วิศวกรรม_Port_Comp") reply("ต้องผ่านหลักสูตรอบรมระยะสั้น Entaneer Academy เกรดไม่น้อยกว่า B จำนวน 3 วิชา ครับ");
+                    else if (selectedProject == "ร่วมมือสร้างสังคมแห่งการเรียนรู้นวัตกรรมด้านพลังงานและสิ่งแวดล้อม_Port_Comp") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                   
+                   // --- เพิ่มเกรดของสิ่งเเวดล้อม ---
+                    else if (selectedProject == "นักกีฬา_Port_Env") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                    else if (selectedProject == "เรียนดี_Port_Env") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.50 ครับ");
+                    else if (selectedProject == "ฟิสิกส์เคมี_Port_Env") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                    else if (selectedProject == "วิศวกรรม_Port_Env") reply("ต้องผ่านหลักสูตรอบรมระยะสั้น Entaneer Academy เกรดไม่น้อยกว่า B จำนวน 3 วิชา ครับ");
+                    else if (selectedProject == "ร่วมมือสร้างสังคมแห่งการเรียนรู้นวัตกรรมด้านพลังงานและสิ่งแวดล้อม_Port_Env") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+
+                    //เพิ่มเติมตรงนี้----------------------------------------------------------
 
                 }
 
@@ -389,6 +611,69 @@ public:
                         } 
                         else { reply("โครงการนี้พิจารณาจากผลงานและ Portfolio เป็นหลักครับ"); }
                     }
+
+                    / คะแนนสอบ: สาขา อุตสาหการ
+                    else if (selectedMajor == "อุตสาหการ") {
+                        if (selectedRound == "Quota") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics, English >= 45\nสัดส่วน: TPAT3(15%), Math1(20%), Phy(20%), Chem(15%), Bio(5%), Soc(5%), Thai(5%), Eng(15%)");
+                        } 
+                        else if (selectedRound == "Admission") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics, English >= 45\nสัดส่วน: TGAT(20%), TPAT3(40%), Math1(20%), Phy(20%)");
+                        } 
+                        else if (selectedProject == "พิเศษ_Port_Mech" || selectedProject == "เรียนดี_Port_Mech") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3 >= 45\nสัดส่วน: Portfolio(20%), TGAT1(16%), TGAT2(16%), TPAT3(48%)");
+                        } 
+                        else { reply("โครงการนี้พิจารณาจากผลงานและ Portfolio เป็นหลักครับ"); }
+                    }
+
+                    // คะแนนสอบ: สาขา คอมพิวเตอร์ รอบโควตามีหลายโครงการเเต่ละโครงการมีเกณฑ์ต่างกัน
+                    else if (selectedMajor == "คอมพิวเตอร์") {
+                        if (selectedRound == "Quota") {
+                            reply("คุณต้องการเข้าโควตาโครงการไหนครับ? ");
+                            if (hasKeyword(input, "3") || hasKeyword(input, "พิการ") || hasKeyword(input, "การรับนักเรียนพิการ")) {
+                                selectedProject = "พิการ_Quota_Comp";
+                                reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics, English >= 45\nสัดส่วน: TPAT3(15%), Math1(20%), Phy(20%), Chem(5%), Bio(5%), Soc(5%), Thai(10%), Eng(20%)");
+                                currentState = ADM_STATE_PROJECT_DETAILS;
+                            }
+                            else if (hasKeyword(input, "4") || hasKeyword(input, "นอกเขต") || hasKeyword(input, "17 จังหวัดภาคเหนือ")) {
+                                selectedProject = "นอกเขต_Quota_Comp";
+                                reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics, English >= 45\nสัดส่วน: TPAT3(15%), Math1(20%), Phy(20%), Chem(5%), Bio(5%), Soc(5%), Thai(10%), Eng(20%)");
+                                currentState = ADM_STATE_PROJECT_DETAILS;
+                            }
+                            else if (hasKeyword(input, "1") || hasKeyword(input, "ภาคเหนือ")) {
+                                selectedProject = "ภาคเหนือ_Quota";
+                                reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics, English >= 45\nสัดส่วน: TPAT3(15%), Math1(20%), Phy(20%), Chem(15%), Bio(5%), Soc(5%), Thai(5%), Eng(15%)");
+                                currentState = ADM_STATE_PROJECT_DETAILS;
+                            }
+                            else if (hasKeyword(input, "2") || hasKeyword(input, "กีฬา")) {
+                                selectedProject = "กีฬา_Quota";
+                                reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics, English >= 45\nสัดส่วน: TPAT3(15%), Math1(20%), Phy(20%), Chem(15%), Bio(5%), Soc(5%), Thai(5%), Eng(15%)");
+                                currentState = ADM_STATE_PROJECT_DETAILS;
+                           } 
+                             else { reply("พิมพ์ 1 หรือ 2 เพื่อเลือกโครงการครับ"); }
+                            } 
+                        else if (selectedRound == "Admission") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics, English >= 45\nสัดส่วน: TGAT(20%), TPAT3(40%), Math1(20%), Phy(20%)");
+                        } 
+                        else if (selectedProject == "อัจฉริยภาพ_Port_Comp" || selectedProject == "เรียนดี_Port_Comp") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3 >= 45\nสัดส่วน: Portfolio(30%), TGAT1(10%), TGAT2(10%), TPAT3(50%)");
+                        } 
+                           else { reply("โครงการนี้พิจารณาจากผลงานและ Portfolio เป็นหลักครับ"); }
+                    }
+
+                    // คะแนนสอบ: สาขา สิ่งเเวดล้อม
+                    else if (selectedMajor == "สิ่งเเวดล้อม") {
+                        if (selectedRound == "Quota") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics, English >= 45\nสัดส่วน: TPAT3(15%), Math1(20%), Phy(20%), Chem(15%), Bio(5%), Soc(5%), Thai(5%), Eng(15%)");
+                        } 
+                        else if (selectedRound == "Admission") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics, English >= 45\nสัดส่วน: TGAT(20%), TPAT3(40%), Math1(20%), Phy(20%)");
+                        } 
+                        else { reply("โครงการนี้พิจารณาจากผลงานและ Portfolio เป็นหลักครับ"); }
+                    }
+
+
+
 
                     //เพิ่มเติมตรงนี้----------------------------------------------------------
 
