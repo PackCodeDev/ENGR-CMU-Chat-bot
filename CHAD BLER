@@ -10,6 +10,15 @@ enum AdmissionState {
     ADM_STATE_SELECT_ROUND,       // เลือกรอบ
     ADM_STATE_SELECT_PROJECT,     // เลือกโครงการ
     ADM_STATE_PROJECT_DETAILS     // ถามรายละเอียด
+    ADM_STATE_SELECT_MAJOR_SPECIAL // เลือกสาขาในภาคพิเศษ 
+    ADM_STATE_SELECT_ROUND_SPECIAL // เลือกรอบในภาคพิเศษ
+    ADM_STATE_SELECT_PROJECT_SPECIAL // เลือกโครงการในภาคพิเศษ
+    ADM_STATE_PROJECT_DETAILS_SPECIAL // ถามรายละเอียดในภาคพิเศษ
+    ADM_STATE_SELECT_MAJOR_INTL // เลือกสาขาในภาคนานาชาติ
+    ADM_STATE_SELECT_ROUND_INTL // เลือกรอบในภาคนานาชาติ
+    ADM_STATE_SELECT_PROJECT_INTL // เลือกโครงการในภาคนานาชาติ
+    ADM_STATE_PROJECT_DETAILS_INTL // ถามรายละเอียดในภาคนานาชาติ
+
 };
 
 class AdmissionHandler {
@@ -44,7 +53,12 @@ public:
                 if (hasKeyword(input, "ปกติ") || hasKeyword(input, "ภาคปกติ")) {
                     reply("สนใจเข้าวิศวกรรมสาขาไหนครับ? (เช่น โยธา, ไฟฟ้า, เครื่องกล)");
                     currentState = ADM_STATE_SELECT_MAJOR;
-                } else {
+                }
+                else if (hasKeyword(input, "พิเศษ") || hasKeyword(input, "ภาคพิเศษ")) {
+                    reply("สนใจเข้าวิศวกรรมสาขาไหนครับ? (เช่น โยธา, ไฟฟ้า, เครื่องกล)");
+                    currentState = ADM_STATE_SELECT_MAJOR_SPECIAL;
+                
+                 else {
                     reply("คณะเรามี 3 หลักสูตร: 1. ภาคปกติ 2. ภาคพิเศษ 3. นานาชาติ\nลองพิมพ์ชื่อหลักสูตรที่สนใจดูครับ หรือพิมพ์ 'ออก' เพื่อกลับเมนูหลัก");
                 }
                 break;
@@ -867,7 +881,696 @@ public:
                 }
                 break;
 // ============================================================================================================================== //
-        }
+// ============================================================================================================================== //
+// ============================================================================================================================== //
+// ============================================================================================================================== //
+
+
+ 
+                                                            //ของภาคพิเศษ
+
+
+        ADM_STATE_SELECT_MAJOR_SPECIAL: 
+            if (hasKeyword(input, "อุตสาหการ") || hasKeyword(input, "Industrial") || hasKeyword(input, "IE")) {
+                    selectedMajor = "อุตสาหการ";
+                    reply("อยากสมัครวิศวกรรมอุตสาหการในรอบไหนครับ?\n2. Quota\n3. Admission ภาคพิเศษเปิดรับเเต่2รอบนี้ครับ");
+                    currentState = ADM_STATE_SELECT_ROUND_SPECIAL;
+                }
+        
+        ADM_STATE_SELECT_ROUND_SPECIAL: 
+            // ============================================================================================================================== //
+                else if (hasKeyword(input, "2") || hasKeyword(input, "Quota")) {
+                    selectedRound = "Quota";
+                    else if (selectedMajor == "อุตสาหการ") reply("รอบ Quota สาขาอุตสาหการมี 1 โครงการครับ:\n1. โควตาภาคเหนือ\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    
+                    //เพิ่มเติมตรงนี้----------------------------------------------------------
+
+                    currentState = ADM_STATE_SELECT_PROJECT_SPECIAL;
+                }
+
+// ============================================================================================================================== //
+                else if (hasKeyword(input, "3") || hasKeyword(input, "Admission") || hasKeyword(input, "admission")) {
+                    selectedRound = "Admission";
+                    else if (selectedMajor == "อุตสาหการ") reply("รอบ Admission สาขาอุตสาหการมี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
+                   
+                    //เพิ่มเติมตรงนี้----------------------------------------------------------
+
+                    currentState = ADM_STATE_SELECT_PROJECT_SPECIAL;
+                }
+
+// ============================================================================================================================== //
+        ADM_STATE_SELECT_PROJECT_SPECIAL:
+
+                else if (selectedRound == "Quota") {
+                    if (hasKeyword(input, "1") || hasKeyword(input, "ภาคเหนือ")) {
+                        selectedProject = "ภาคเหนือ_Quota";
+                        reply("โควตาภาคเหนือ:\n✔ เรียน ม.6 สายวิทย์-คณิต ในโรงเรียนภาคเหนือ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                        currentState = ADM_STATE_PROJECT_DETAILS;
+                    }
+                }
+                else if (selectedRound == "Admission") {
+                    if (hasKeyword(input, "1") || hasKeyword(input, "รับตรง")) {
+                        selectedProject = "รับตรง_Admin";
+                        reply("รับตรงร่วมกัน:\n✔ ใช้คะแนนสอบแข่งขัน ไม่ต้องใช้ Portfolio\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                        currentState = ADM_STATE_PROJECT_DETAILS;
+                    } else { reply("พิมพ์ 1 เพื่อดูรายละเอียดครับ"); }
+                }
+                break;
+        
+// ============================================================================================================================== //
+        ADM_STATE_PROJECT_DETAILS_SPECIAL:
+                if (hasKeyword(input, "อาชีพ") || hasKeyword(input, "งาน") || hasKeyword(input, "ทำงานอะไร")) {
+                    if (selectedMajor == "อุตสาหการ") reply("วิศวกรอุตสาหการ (Industrial Engineer), วิศวกรระบบ (Systems Engineer), วิศวกรคุณภาพ (Quality Engineer), วิศวกรซัพพลายเชน (Supply Chain Engineer), วิศวกรความปลอดภัย (Safety Engineer) ครับ");
+                else if (hasKeyword(input, "ค่าธรรมเนียม") || hasKeyword(input, "ค่าใช้จ่าย") || hasKeyword(input, "ค่าเทอม")) {
+                    reply("ค่าธรรมเนียมการศึกษา ภาคการศึกษาแรก 35,000 บาท ครับ");
+                }
+
+                // --- เรื่องจำนวนรับ (เช็คตามสาขาและโปรเจกต์) ---
+                else if (hasKeyword(input, "จำนวนรับเข้า") || hasKeyword(input, "จำนวนรับ") || hasKeyword(input, "จำนวน")) {
+                    if (selectedMajor == "อุตสาหการ") {
+
+                        // --- เพิ่มส่วนของเครื่องอุตสาหการา ---
+                        if (selectedProject == "ภาคเหนือ_Quota") reply("จำนวนรับเข้า 10 คน ครับ");
+                        else if (selectedProject == "รับตรง_Admin") reply("จำนวนรับเข้า 60 คน ครับ");
+                        
+                    }
+
+                // --- เรื่องคุณสมบัติ ---
+                else if (hasKeyword(input, "คุณสมบัติ")) {
+                    if (selectedRound == "Admission") {
+                        reply("รับผู้สำเร็จ ม.6, ปวช. หรือ กศน. ระดับมัธยมปลาย ครับ");
+                    } else {
+                        reply("โปรดดูรายละเอียดคุณสมบัติเพิ่มเติม ทางเว็บไซต์: https://admission.reg.cmu.ac.th/tcas/ ครับ");
+                    }
+                }
+
+                // --- เรื่องคะแนนสอบ (แยกสาขาใครสาขามันอย่างชัดเจน) ---
+                else if (hasKeyword(input, "คะเเนน") || hasKeyword(input, "คะแนนสอบ")) {
+                    
+                    // คะแนนสอบ: สาขา อุตสาหการ
+                    if (selectedMajor == "อุตสาหการ") {
+                        if (selectedRound == "Quota") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics, English >= 45 ทุกวิชา\nสัดส่วน: TPAT3(20%), Math1(20%), Phy(20%), Chem(10%), Bio(5%), Soc(5%), Thai(5%), Eng(15%)");
+                        } 
+                        else if (selectedRound == "Admission") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics, English >= 35\nสัดส่วน: TGAT(20%), TPAT3(40%), Math1(20%), Phy(20%)");
+                        } 
+                        
+                        else { reply("ภาคพิเศษเปิดรับเข้าเพียง 2 รอบครับ"); }
+                    }
+                
+                // --- เรื่องเอกสาร (ใช้ร่วมกันได้ทุกสาขา) ---
+                else if (hasKeyword(input, "เอกสาร")) {
+                    reply("เอกสารส่งออนไลน์เท่านั้น:\n1. ใบสมัคร\n2. สำเนาบัตรประชาชน\n3. ใบแสดงผลการเรียน\n4. Portfolio (ไม่เกิน 10 หน้า)\n5. หลักฐานผลงานตามที่โครงการกำหนด\n(วันสัมภาษณ์ใช้บัตรประชาชนตัวจริงครับ)");
+                }
+                
+                // --- ปุ่มย้อนกลับ (เปลี่ยนโครงการ) ---
+                else if (hasKeyword(input, "โครงการอื่น") || hasKeyword(input, "อื่น")) {
+                    reply("ได้เลยครับ สนใจโครงการไหนเพิ่มเติมพิมพ์หมายเลขมาได้เลยครับ (พิมพ์ 'ออก' เพื่อกลับเมนูหลัก)");
+                    currentState = ADM_STATE_SELECT_PROJECT;
+                }
+
+                // --- เผื่อผู้ใช้พิมพ์ผิด หรือถามนอกเหนือจากที่มี ---
+                else {
+                    reply("ลองถามคำว่า 'ค่าเทอม', 'เกรด', 'คะแนนสอบ', 'จำนวนรับ', 'เอกสาร', 'อาชีพ' หรือพิมพ์ 'โครงการอื่น' ดูนะครับ");
+                }
+                break;
+// ============================================================================================================================== //
+// ============================================================================================================================== //
+// ============================================================================================================================== //
+// ============================================================================================================================== //
+
+
+
+ 
+                                                            //ของภาคนานาชาติ
+
+
+        ADM_STATE_SELECT_MAJOR_INTL: 
+            q                                    // โซนโปรเจกต์ของ "เครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ)"
+            if (hasKeyword(input, "วิศวกรรมเครื่องกลและการบริหารโครงการวิศวกรรม (นานาชาติ ช่องทาง TCAS)") || hasKeyword(input, "เครื่องกล") || hasKeyword(input, "Mechanical") || hasKeyword(input, "Mech")) {
+                    selectedMajor = "เครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ)";
+                    reply("อยากสมัครวิศวกรรมเครื่องกลและการบริหารโครงการวิศวกรรมในรอบไหนครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
+                    currentState = ADM_STATE_SELECT_ROUND_INTL;
+            }
+
+
+                                                 // โซนโปรเจกต์ของ "โยธา(นานาชาติ)"
+
+            else if (hasKeyword(input, "โยธา")  || hasKeyword(input, "Civil") || hasKeyword(input, "Civ") || hasKeyword(input, "โยธา(นานาชาติ)")) {
+                    selectedMajor = "โยธา(นานาชาติ)";
+                    reply("อยากสมัครวิศวกรรมโยธาในรอบไหนครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
+                    currentState = ADM_STATE_SELECT_ROUND_INTL;
+            }
+
+                                                 // โซนโปรเจกต์ของ "อุตสาหการและการจัดการโลจิสติกส์นานาชาติ)"
+
+            else if (hasKeyword(input, "อุตสาหการ") || hasKeyword(input, "Industrial") || hasKeyword(input, "Ind") || hasKeyword(input, "อุตสาหการ(นานาชาติ)")|| hasKeyword(input, "อุตสาหการและการจัดการโลจิสติกส์นานาชาติ)")) {
+                    selectedMajor = "อุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ)";
+                    reply("อยากสมัครวิศวกรรมอุตสาหการในรอบไหนครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
+                    currentState = ADM_STATE_SELECT_ROUND_INTL;
+            }
+
+                                                 // โซนโปรเจกต์ของ " วิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ)"
+            else if (hasKeyword(input, "ไฟฟ้า") || hasKeyword(input, "Electrical") || hasKeyword(input, "Ele") || hasKeyword(input, "ไฟฟ้า(นานาชาติ)")|| hasKeyword(input, "วิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ)")) {
+                    selectedMajor = "วิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ)";
+                    reply("อยากสมัครวิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะในรอบไหนครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
+                    currentState = ADM_STATE_SELECT_ROUND_INTL;
+
+                                                // โซนโปรเจกต์ของ " ระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ)"
+            else if (hasKeyword(input, "ไซเบอร์") || hasKeyword(input, "Cyber") || hasKeyword(input, "Cybersecurity") || hasKeyword(input, "ระบบสารสนเทศ")) {
+                    selectedMajor = "ระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ)";
+                    reply("อยากสมัครวิศวกรรมระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์ในรอบไหนครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
+                    currentState = ADM_STATE_SELECT_ROUND_INTL;
+
+                                                // โซนโปรเจกต์ของ " การออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ)"
+            else if (hasKeyword(input, "สถาปัตยกรรม") || hasKeyword(input, "Architecture") || hasKeyword(input, "Design")) {
+                    selectedMajor = "การออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ)";
+                    reply("อยากสมัครวิศวกรรมการออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่ในรอบไหนครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
+                    currentState = ADM_STATE_SELECT_ROUND_INTL;
+
+                                                // โซนโปรเจกต์ของ "วิศวกรรมบูรณาการและพหุวิทยาการ(นานาชาติ)"
+            else if (hasKeyword(input, "วิศวกรรมบูรณา") || hasKeyword(input, "multidisciplinary") || hasKeyword(input, "วิศวกรรมบูรณาการและพหุวิทยาการ(นานาชาติ)")) {
+                    selectedMajor = "วิศวกรรมบูรณาการและพหุวิทยาการ(นานาชาติ)";
+                    reply("วิศวกรรมบูรณาการและพหุวิทยาการเปิดรับเฉพาะรอบ Quota ครับ\nอยากสมัครวิศวกรรมบูรณาการและพหุวิทยาการในรอบ Quota ครับ?\n1. Portfolio\n2. Quota\n3. Admission\n4. Direct Admission");
+                    currentState = ADM_STATE_SELECT_ROUND_INTL;
+
+            else {
+                    reply("ลองพิมพ์ชื่อสาขาใหม่ดูนะครับ (เช่น โยธา)");
+                }
+                break;
+
+// ============================================================================================================================== //
+        
+        ADM_STATE_SELECT_ROUND_INTL: 
+            if (hasKeyword(input, "1") || hasKeyword(input, "Portfolio")) {
+                    selectedRound = "Portfolio";
+
+                    if (selectedMajor == "เครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ)")reply("รอบ Portfolio สาขาโเครื่องกลและการบริหารโครงการวิศวกรรมมี 4 โครงการครับ:\n1. Women in Engineering\n2. ผลการเรียนดีเด่น \n3. ความสามารถพิเศษ\n4. ความสามารถทางภาษาอังกฤษ\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "โยธา(นานาชาติ)") reply("รอบ Portfolio สาขาโยธามี 4 โครงการครับ:\n1. ความสามารถพิเศษ \n2. ผลการเรียนดีเด่น \n3. ผความสามารถทางภาษาอังกฤษ\n4. Women in Engineering\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "อุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ)") reply("รอบ Portfolio สาขาอุตสาหการและการจัดการโลจิสติกส์นานาชาติมี 4 โครงการครับ:\n1. ความสามารถพิเศษ \n2. ผลการเรียนดีเด่น \n3. ผความสามารถทางภาษาอังกฤษ\n4. Women in Engineering\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "วิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ)") reply("รอบ Portfolio สาขาวิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะมี 4 โครงการครับ:\n1. ความสามารถทางภาษาอังกฤษ \n2. ความสามารถทางด้านอิเล็กทรอนิกส์ \n3. ผลการเรียนดีเด่น\n4. Women in Engineering\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "ระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ)") reply("รอบ Portfolio สาขาระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์มี 4 โครงการครับ:\n1. อัจฉริยภาพทางคอมพิวเตอร์ \n2. ผมีความสามารถทางภาษาอังกฤษ  \n3. ผลการเรียนดีเด่น\n4. Women in Engineering\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "การออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ)") reply("รอบ Portfolio สาขาการออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่มี 4 โครงการครับ:\n1. การรับด้วยแฟ้มสะสมผลงาน\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    
+
+
+                    //เพิ่มเติมตรงนี้----------------------------------------------------------
+
+                    currentState = ADM_STATE_SELECT_PROJECT_INTL;
+                }
+
+// ============================================================================================================================== //
+                else if (hasKeyword(input, "2") || hasKeyword(input, "Quota")) {
+                    selectedRound = "Quota";
+
+                    if (selectedMajor == "เครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ)") reply("รอบ Quota สาขาเครื่องกลและการบริหารโครงการวิศวกรรมมี 1 โครงการครับ:\n1. โควตาภาคเหนือ\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "โยธา(นานาชาติ)") reply("รอบ Quota สาขาโยธามี 2 โครงการครับ:\n1. โควตาภาคเหนือ\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "อุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ)") reply("รอบ Quota สาขาอุตสาหการและการจัดการโลจิสติกส์นานาชาติมี 1 โครงการครับ:\n1. โควตาภาคเหนือ\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "วิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ)") reply("รอบ Quota สาขาวิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะมี 1 โครงการครับ:\n1. โควตาภาคเหนือ\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "ระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ)") reply("รอบ Quota สาขาระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์มี 1 โครงการครับ:\n1. โควตาภาคเหนือ\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "การออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ)") reply("รอบ Quota สาขาการออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่มี 1 โครงการครับ:\n1. โควตาภาคเหนือค่าเทอม ค่าเทอม 65000 บาท\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    else if (selectedMajor == "วิศวกรรมบูรณาการและพหุวิทยาการ(นานาชาติ)") reply("รอบ Quota สาขาวิศวกรรมบูรณาการและพหุวิทยาการมี 1 โครงการครับ:\n1. โควตาภาคเหนือค่าเทอม ค่าเทอม 50000 บาท\nอยากสมัครโครงการไหนครับ? (พิมพ์ตัวเลข)");
+                    //เพิ่มเติมตรงนี้----------------------------------------------------------
+
+                    currentState = ADM_STATE_SELECT_PROJECT_INTL;
+                }
+
+// ============================================================================================================================== //
+                else if (hasKeyword(input, "3") || hasKeyword(input, "Admission") || hasKeyword(input, "admission")) {
+                    selectedRound = "Admission";
+                    if (selectedMajor == "เครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ)") reply("รอบ Admission สาขาเครื่องกลและการบริหารโครงการวิศวกรรมมี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
+                    else if (selectedMajor == "โยธา(นานาชาติ)") reply("รอบ Admission สาขาโยธามี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
+                    else if (selectedMajor == "อุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ)") reply("รอบ Admission สาขาอุตสาหการและการจัดการโลจิสติกส์นานาชาติมี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
+                    else if (selectedMajor == "วิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ)") reply("รอบ Admission สาขาวิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะมี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
+                    else if (selectedMajor == "ระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ)") reply("รอบ Admission สาขาระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์มี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
+                    else if (selectedMajor == "การออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ)") reply("รอบ Admission สาขาการออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่มี 1 โครงการครับ:\n1. รับตรงร่วมกัน\nพิมพ์ 1 เพื่อดูรายละเอียดครับ");
+                    //เพิ่มเติมตรงนี้----------------------------------------------------------
+
+                    currentState = ADM_STATE_SELECT_PROJECT_INTL ;
+                }
+
+// ============================================================================================================================== //
+// ============================================================================================================================== //
+                else if (hasKeyword(input, "4") || hasKeyword(input, "Direct") || hasKeyword(input, "direct")) {
+                    reply("โปรดติดตามคณะสาขาที่เปิด และคุณสมบัติการรับ TCAS รอบที่ 4 ปีการศึกษา 2569 อีกครั้งในวันที่ 28 พฤษภาคม 2569 ครับ\n(ลองพิมพ์เลือกรอบอื่นดูนะครับ 1, 2 หรือ 3)");
+                }
+                else {
+                    reply("พิมพ์ 1, 2, 3 หรือ 4 เพื่อเลือกรอบครับ หรือพิมพ์ 'ออก' เพื่อกลับเมนูหลัก");
+                }
+                break;
+
+// ============================================================================================================================== //
+        ADM_STATE_SELECT_PROJECT_INTL:
+                if (selectedRound == "Portfolio") {
+
+                    // --- โซนสาขา เครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ) ---
+                    if (selectedMajor == "เครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ)") {
+                        if (hasKeyword(input, "1") || hasKeyword(input, "Women")) {
+                            selectedProject = "Women_Port_Mech_INL";
+                            reply("โครงการWomen:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีความสามารถพิเศษในด้านเพศหญิง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ? (อาชีพ, ค่าเทอม, จำนวนรับ, เกรด, เอกสาร, อื่นๆ)");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        else if (hasKeyword(input, "2") || hasKeyword(input, "ผลการเรียนดีเด่น")) {
+                            selectedProject = "ผลการเรียนดีเด่น_Port_Mech_INL";
+                            reply("โครงการผลการเรียนดีเด่น:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ GPAX ค่อนข้างสูง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+
+                        else if (hasKeyword(input, "3") || hasKeyword(input, "ความสามารถพิเศษ")) {
+                            selectedProject = "ความสามารถพิเศษ_Port_Mech_INL";
+                            reply("โครงการความสามารถพิเศษ:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีผลงานพิเศษ/นวัตกรรม\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        else if (hasKeyword(input, "4") || hasKeyword(input, "ความสามารถทางภาษาอังกฤษ")) {
+                            selectedProject = "ความสามารถทางภาษาอังกฤษ_Port_Mech_INL";
+                            reply("โครงการความสามารถทางภาษาอังกฤษ:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีความสามารถทางภาษาอังกฤษ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        
+                        } 
+                        else { reply("สาขาเครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ)มี 5 โครงการ พิมพ์หมายเลข 1-5 ที่คุณสนใจดูครับ"); }
+                    }
+
+                    // --- โซนสาขา โยธา(นานาชาติ) ---
+                    else if (selectedMajor == "โยธา(นานาชาติ)") {
+                        if (hasKeyword(input, "1") || hasKeyword(input, "ความสามารถพิเศษ")) {
+                            selectedProject = "ความสามารถพิเศษ_Port_Civil_INL";
+                            reply("โโครงการความสามารถพิเศษ:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีผลงานพิเศษ/นวัตกรรม\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        else if (hasKeyword(input, "2") || hasKeyword(input, "ผลการเรียนดีเด่น")) {
+                            selectedProject = "ผลการเรียนดีเด่น_Port_Civil_INL";
+                            reply("โครงการผลการเรียนดีเด่น:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ GPAX ค่อนข้างสูง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        
+                        else if (hasKeyword(input, "3") || hasKeyword(input, "วิศวกรรม")) {
+                            selectedProject = "ความสามารถทางภาษาอังกฤษ_Port_Civil_INL";
+                            reply("โครงการความสามารถทางภาษาอังกฤษ:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีความสามารถทางภาษาอังกฤษ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+
+                        else if (hasKeyword(input, "4") || hasKeyword(input, "เรียนดี")) {
+                            selectedProject = "Women_Port_Civil_INL";
+                            reply("โครงการเพศหญิง:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีความสามารถพิเศษในด้านเพศหญิง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        else { reply("สาขาโยธา(นานาชาติ) มี 4 โครงการ พิมพ์หมายเลข 1-4 ที่คุณสนใจดูครับ"); }
+                    }
+
+                    // --- โซนสาขา อุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ) ---
+                    else if (selectedMajor == "อุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ)") {
+                        if (hasKeyword(input, "1") || hasKeyword(input, "ความสามารถพิเศษ")) {
+                            selectedProject = "ความสามารถพิเศษ_Port_Ind_INL";
+                            reply("โครงการความสามารถพิเศษ:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีผลงานพิเศษ/นวัตกรรม\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        else if (hasKeyword(input, "2") || hasKeyword(input, "ผลการเรียนดีเด่น")) {
+                            selectedProject = "ผลการเรียนดีเด่น_Port_Ind_INL";
+                            reply("โครงการผลการเรียนดีเด่น:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ GPAX ค่อนข้างสูง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        
+                        else if (hasKeyword(input, "3") || hasKeyword(input, "วิศวกรรม")) {
+                            selectedProject = "ความสามารถทางภาษาอังกฤษ_Port_Ind_INL";
+                            reply("โครงการความสามารถทางภาษาอังกฤษ:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีความสามารถทางภาษาอังกฤษ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+
+                        else if (hasKeyword(input, "4") || hasKeyword(input, "Women")) {
+                            selectedProject = "Women_Port_Ind_INL";
+                            reply("โครงการเพศหญิง:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีความสามารถพิเศษในด้านเพศหญิง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        else { reply("สาขาอุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ) มี 4 โครงการ พิมพ์หมายเลข 1-4 ที่คุณสนใจดูครับ"); }
+                    }
+
+                    // --- โซนสาขา ฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ) ---
+                    else if (selectedMajor == "ไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ)") {
+                        if (hasKeyword(input, "1") || hasKeyword(input, "ภาษาอังกฤษ")) {
+                            selectedProject = "ความสามารถทางภาษาอังกฤษ_Port_Ele_INL";
+                            reply("โครงการความสามารถทางภาษาอังกฤษ:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีความสามารถทางภาษาอังกฤษ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        else if (hasKeyword(input, "2") || hasKeyword(input, "อิเล็กทรอนิกส์")) {
+                            selectedProject = "ความสามารถทางด้านอิเล็กทรอนิกส์_Port_Ele_INL";
+                            reply("โครงการความสามารถทางด้านอิเล็กทรอนิกส์:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีความสามารถทางด้านอิเล็กทรอนิกส์\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+
+                        else if (hasKeyword(input, "3") || hasKeyword(input, "ผลการเรียนดีเด่น")) {
+                            selectedProject = "ผลการเรียนดีเด่น_Port_Ele_INL";
+                            reply("โครงการผลการเรียนดีเด่น:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ GPAX ค่อนข้างสูง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        
+
+                        else if (hasKeyword(input, "4") || hasKeyword(input, "เWomen")) {
+                            selectedProject = "Women_Port_Ele_INL";
+                            reply("โครงการเพศหญิง:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีความสามารถพิเศษในด้านเพศหญิง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        else { reply("สาขาวิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ) มี 4 โครงการ พิมพ์หมายเลข 1-4 ที่คุณสนใจดูครับ"); }
+                    }
+
+                    // --- โซนสาขา ระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ) ---
+                    else if (selectedMajor == "ระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ)") {
+                        if (hasKeyword(input, "1") || hasKeyword(input, "อัจฉริยภาพทางคอมพิวเตอร์")|| hasKeyword(input, "อัจฉริยภาพ")) {
+                            selectedProject = "อัจฉริยภาพทางคอมพิวเตอร์_Port_Cyber_INL";
+                            reply("โครงการอัจฉริยภาพทางคอมพิวเตอร์:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีความสามารถทางอัจฉริยภาพทางคอมพิวเตอร์\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+
+                        else if (hasKeyword(input, "2") || hasKeyword(input, "ภาษาอังกฤษ")) {
+                            selectedProject = "มีความสามารถทางภาษาอังกฤษ_Port_Cyber_INL";
+                            reply("โครงการความสามารถทางภาษาอังกฤษ:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีความสามารถทางภาษาอังกฤษ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+
+                        else if (hasKeyword(input, "3") || hasKeyword(input, "ผลการเรียนดีเด่น")) {
+                            selectedProject = "ผลการเรียนดีเด่น_Port_Cyber_INL";
+                            reply("โครงการผลการเรียนดีเด่น:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ GPAX ค่อนข้างสูง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        
+
+                        else if (hasKeyword(input, "4") || hasKeyword(input, "Women")) {
+                            selectedProject = "Women_Port_Cyber_INL";
+                            reply("โครงการเพศหญิง:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีความสามารถพิเศษในด้านเพศหญิง\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        else { reply("สาขาวิศวกรรมโซนสาขา ระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ) มี 4 โครงการ พิมพ์หมายเลข 1-4 ที่คุณสนใจดูครับ"); }
+                    }
+
+                    // --- โซนสาขา การออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ) ---
+                    else if (selectedMajor == "การออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ)") {
+                        if (hasKeyword(input, "1") || hasKeyword(input, "แฟ้มสะสมผลงาน") || hasKeyword(input, "Portfolio")) {
+                            selectedProject = "การรับด้วยแฟ้มสะสมผลงาน_Port_Arch_INL";
+                            reply("โครงการการรับด้วยแฟ้มสะสมผลงาน:\n✔ กำลังเรียน ม.6 สายวิทย์-คณิต\n✔ มีแฟ้มสะสมผลงานที่แสดงถึงความสามารถทางด้านการออกแบบ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                            currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                        }
+                        
+                        else { reply("สาขาการออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ) มี 1 โครงการ พิมพ์หมายเลข 1 ที่คุณสนใจดูครับ"); }
+                    }
+
+                    
+                    
+
+
+                    
+                    
+
+                    
+
+// ============================================================================================================================== //
+
+                else if (selectedRound == "Quota") {
+                    if (hasKeyword(input, "1") || hasKeyword(input, "ภาคเหนือ")) {
+                        selectedProject = "ภาคเหนือ_Quota_INL";
+                        reply("โควตาภาคเหนือ:\n✔ เรียน ม.6 สายวิทย์-คณิต ในโรงเรียนภาคเหนือ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                        currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                    }
+                    // QuotaCyber มี 2 โครงการ
+                    else if (hasKeyword(input, "3") || hasKeyword(input, "นอกเขต") || hasKeyword(input, "โควตานอกเขต 17 จังหวัดภาคเหนือ")) {
+                        selectedProject = "นอกเขต_Quota_Cyber_INL";
+                        reply("โควตาการรับนักเรียนนอกเขต:\n✔ เรียน ม.6 สายวิทย์-คณิต\n✔ เป็นนักเรียนนอกเขต 17 จังหวัดภาคเหนือ\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                        currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                    }
+                }
+                else if (selectedRound == "Admission") {
+                    if (hasKeyword(input, "1") || hasKeyword(input, "รับตรง")) {
+                        selectedProject = "รับตรง_Admin_INL";
+                        reply("รับตรงร่วมกัน:\n✔ ใช้คะแนนสอบแข่งขัน ไม่ต้องใช้ Portfolio\n\nสนใจรายละเอียดอะไรเพิ่มไหมครับ?");
+                        currentState = ADM_STATE_PROJECT_DETAILS_INTL;
+                    } else { reply("พิมพ์ 1 เพื่อดูรายละเอียดครับ"); }
+                }
+                break;
+        
+// ============================================================================================================================== //
+        ADM_STATE_PROJECT_DETAILS_INTL:
+
+        // เช็คโปรเจกต์ตามรอบที่เลือกไว้
+          
+// ============================================================================================================================== //
+
+                if (hasKeyword(input, "อาชีพ") || hasKeyword(input, "งาน") || hasKeyword(input, "ทำงานอะไร")) {
+                    if (selectedMajor == "เครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ)") reply("วิศวกรนักออกแบบเครื่องจักรกล (Machine Design Engineer), วิศวกรซ่อมบำรุงเครื่องจักร (Maintenance Engineer), วิศวกรพลังงาน (Energy Engineer), วิศวกรระบบอัตโนมัติ (Automation Engineer), วิศวกรบริหารโครงการ (Project Engineer) ครับ");
+                    else if (selectedMajor == "โยธา(นานาชาติ)") reply("วิศวกรโยธา (Civil Engineer), วิศวกรโครงสร้าง (Structural Engineer), วิศวกรสิ่งแวดล้อม (Environmental Engineer), วิศวกรจราจร (Traffic Engineer), วิศวกรบริหารโครงการก่อสร้าง (Construction Project Engineer) ครับ");
+                    else if (selectedMajor == "อุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ)") reply("วิศวกรโรงงาน, วิศวกรฝ่ายควบคุมคุณภาพ, วิศวกรควบคุมกระบวนการผลิต , วิศวกรโลจิสติกส์, วิศวกรความปลอดภัย ครับ");
+                    else if (selectedMajor == "วิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ)") reply("วิศวกรไฟฟ้ากำลัง, วิศวกรไฟฟ้าสื่อสารและโทรคมนาคม , วิศวกรอิเล็กทรอนิกส์ด้านการออกแบบและผลิตชิ้นส่วนอิเล็กทรอนิกส์, วิศวกรด้านสมองกลฝังตัวและปัญญาประดิษฐ์, วิศวกรด้านการวิเคราะห์และออกแบบระบบไฟฟ้ ครับ");
+                    else if (selectedMajor == "ระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ)") reply("Information Systems Administrator, IT Consultant / IT Engineer, System Engineer / System Analyst, Network Engineer / Computer Network Architect, Cybersecurity Professionals ครับ");
+                    else if (selectedMajor == "การออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ)") reply("การออกแบบสถาปัตยกรรม, การทำงานวิชาชีพสร้างสรรค์แนวคิด, การนำเสนองานออกแบบ โฆษณา, การออกแบบผลิตภัณฑ์, การออกแบบสื่อสร้างสรรค์ ครับ");
+                    else if (selectedMajor == "วิศวกรรมบูรณาการและพหุวิทยาการ(นานาชาติ)") reply("วิศวกร, ผู้ประกอบการ/เจ้าของธุรกิจ, อาจารย์, นักวิจัย, นักประดิษฐ์อิสระ ครับ");
+                    
+
+                else if (hasKeyword(input, "ค่าธรรมเนียม") || hasKeyword(input, "ค่าใช้จ่าย") || hasKeyword(input, "ค่าเทอม")) {
+                    reply("ค่าธรรมเนียมการศึกษา ภาคการศึกษาแรก 50,000 บาท ครับ");
+                }
+
+                else if (hasKeyword(input, "ค่าธรรมเนียม") || hasKeyword(input, "ค่าใช้จ่าย") || hasKeyword(input, "ค่าเทอมไซเบอร์")) {
+                    reply("ค่าธรรมเนียมการศึกษา ภาคการศึกษาแรก 80,000 บาท ครับ");
+                }
+                else if (hasKeyword(input, "ค่าธรรมเนียม") || hasKeyword(input, "ค่าใช้จ่าย") || hasKeyword(input, "ค่าเทอม")) {
+                    reply("ค่าธรรมเนียมการศึกษา ภาคการศึกษาแรก 50,000 บาท ครับ");
+                }
+
+                // --- เรื่องจำนวนรับ (เช็คตามสาขาและโปรเจกต์) ---
+                else if (hasKeyword(input, "จำนวนรับเข้า") || hasKeyword(input, "จำนวนรับ") || hasKeyword(input, "จำนวน")) {
+                     if (selectedMajor == "เครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ)") {
+
+                    // --- เพิ่มส่วนของเครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ) ---
+                        if (selectedProject == "Women_Port_Mech_INL" ) reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "เรียนดี_Port_Mech_INL") reply("แบบ 1.1: 6 คน\nแบบ 1.2: 2 คน ครับ");
+                        else if (selectedProject == "พิเศษ_Port_Mech_INL") reply("แบบ 1.1: 4 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ภาษาอังกฤษ_Port_Mech_Ind") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ภาคเหนือ_Quota_INL") reply("จำนวนรับเข้า 15 คน ครับ");
+                        else if (selectedProject == "รับตรง_Admin_INL") reply("จำนวนรับเข้า 10 คน ครับ");
+                    }
+
+                    // --- เพิ่มส่วนของโยธา(นานาชาติ) ---
+                    else if (selectedMajor == "โยธา(นานาชาติ)") {
+                        if (selectedProject == "ความสามารถพิเศษ_Port_Civil_INL") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ผลการเรียนดีเด่น_Port_Civil_INL") reply("แบบ 1.1: 5 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ความสามารถทางภาษาอังกฤษ_Port_Civil_INL") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "Women_Port_Civil_INL") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ภาคเหนือ_Quota_Civil_INL") reply("จำนวนรับเข้า 15 คน ครับ");
+                        else if (selectedProject == "รับตรง_Admin_Civil_INL") reply("จำนวนรับเข้า 10 คน ครับ");
+                    }
+        
+                    // --- เพิ่มส่วนของอุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ) ---
+                    else if (selectedMajor == "อุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ)") {
+                        if (selectedProject == "ความสามารถพิเศษ_Port_Ind_INL") reply("แบบ 1.1: 4 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ผลการเรียนดีเด่น_Port_Ind_INL") reply("แบบ 1.1: 6 คน\nแบบ 1.2: 2 คน ครับ");
+                        else if (selectedProject == "ความสามารถทางภาษาอังกฤษ_Port_Ind_INL") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "Women_Port_Ind_INL") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ภาคเหนือ_Quota_Ind_INL") reply("จำนวนรับเข้า 15 คน ครับ");
+                        else if (selectedProject == "รับตรง_Admin_Ind_INL") reply("จำนวนรับเข้า 10 คน ครับ");
+
+                   // --- เพิ่มส่วนของวิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ) ---
+                    }
+
+                    else if (selectedMajor == "วิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ)") {
+                        if (selectedProject == "ความสามารถทางภาษาอังกฤษ_Port_Ele_INL") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ความสามารถทางด้านอิเล็กทรอนิกส์_Port_Ele_INL") reply("แบบ 1.1: 4 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ผลการเรียนดีเด่น_Port_Ele_INL") reply("แบบ 1.1:  8 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "Women_Port_Ele_INL") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "ภาคเหนือ_Quota_Ele_INL") reply("จำนวนรับเข้า 15 คน ครับ");
+                        else if (selectedProject == "รับตรง_Admin_Ele_INL") reply("จำนวนรับเข้า 10 คน ครับ");
+                    }
+                    
+                    // --- เพิ่มส่วนของระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ ---
+                    else if (selectedMajor == "ระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ)") {
+                        if (selectedProject == "อัจฉริยภาพทางคอมพิวเตอร์_Port_Cyber_INL") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 1 คน ครับ");
+                        else if (selectedProject == "มีความสามารถทางภาษาอังกฤษ_Port_Cyber_INL") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 1 คน ครับ");
+                        else if (selectedProject == "ผลการเรียนดีเด่น_Port_Cyber_INL") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 1 คน ครับ");
+                        else if (selectedProject == "Women_Port_Cyber_INL") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 1 คน ครับ");
+                        else if (selectedProject == "ภาคเหนือ_Quota_Cyber_INL") reply("จำนวนรับเข้า 15 คน ครับ");
+                        else if (selectedProject == "นอกเขต_Quota_Cyber_INL") reply("จำนวนรับเข้า 8 คน ครับ");
+                        else if (selectedProject == "รับตรง_Admin_Cyber_INL") reply("จำนวนรับเข้า 8 คน ครับ");
+
+                    }
+                    // --- เพิ่มส่วนของการออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ) ---
+                    else if (selectedMajor == "การออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ)") {
+                        if (selectedProject == "การรับด้วยแฟ้มสะสมผลงาน_Port_Arch_INL") reply("แบบ 1.1: 5 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "โควตาภาคเหนือ_Quota_Arch_INL") reply("แบบ 1.1: 3 คน\nแบบ 1.2: 0 คน ครับ");
+                        else if (selectedProject == "รับตรง_Admin_Arch_INL") reply("จำนวนรับเข้า 5 คน ครับ");
+                    }
+
+                    // --- เพิ่มส่วนของวิศวกรรมบูรณาการและพหุวิทยาการ(นานาชาติ) ---
+                    else if (selectedMajor == "วิศวกรรมบูรณาการและพหุวิทยาการ(นานาชาติ)") {
+                        if (selectedProject == "โควตาภาคเหนือ_Quota_Multi_INL") reply("จำนวนรับเข้า 10 คน ครับ");
+                        
+                    }
+
+
+
+                      
+
+
+// ============================================================================================================================== //
+
+
+                else if (hasKeyword(input, "เกรด") || hasKeyword(input, "ผลการเรียน")) {
+                    if (selectedProject == "นักกีฬา_Port") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00");
+                    else if (selectedProject == "วมว_Port" || selectedProject == "พิเศษ_Port") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.25");
+                    else if (selectedProject == "เรียนดี_Port") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.50");
+                    else if (selectedProject == "วิศวกรรม_Port") reply("ต้องผ่านหลักสูตรอบรมระยะสั้น Entaneer Academy เกรดไม่น้อยกว่า B จำนวน 3 วิชา");
+                    else if (selectedRound == "Quota" || selectedRound == "Admission") reply("ใช้คะแนนสอบ TGAT / TPAT หรือ A-Level ในการยื่นสมัครครับ");
+
+                    // --- เพิ่มเกรดของเครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ) ---
+                    if (selectedProject == "Women_Port_INL" ) reply("GPAX 5 เทอม ไม่น้อยกว่า 3.25");
+                        else if (selectedProject == "เรียนดี_Port_Mech_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.50 ครับ");
+                        else if (selectedProject == "พิเศษ_Port_Mech_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.50 ครับ");
+                        else if (selectedProject == "ภาษาอังกฤษ_Port_Mech_Ind") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                    
+                    // --- เพิ่มเกรดของโยธา(นานาชาติ) ---
+                    else if (selectedProject == "ความสามารถพิเศษ_Port_Civil_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                        else if (selectedProject == "ผลการเรียนดีเด่น_Port_Civil_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.50 ครับ");
+                        else if (selectedProject == "ความสามารถทางภาษาอังกฤษ_Port_Civil_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                        else if (selectedProject == "Women_Port_Civil_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.25 ครับ");
+                    
+                    // --- เพิ่มเกรดของอุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ) ---
+                    else if (selectedProject == "ความสามารถพิเศษ_Port_Ind_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                        else if (selectedProject == "ผลการเรียนดีเด่น_Port_Ind_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.50 ครับ");
+                        else if (selectedProject == "ความสามารถทางภาษาอังกฤษ_Port_Ind_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                        else if (selectedProject == "Women_Port_Ind_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.25 ครับ");   
+                
+                    // --- เพิ่มเกรดของวิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ) ---
+                    else if (selectedProject == "ความสามารถทางภาษาอังกฤษ_Port_Ele_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.25 ครับ");
+                        else if (selectedProject == "ความสามารถทางด้านอิเล็กทรอนิกส์_Port_Ele_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.25 ครับ");
+                        else if (selectedProject == "ผลการเรียนดีเด่น_Port_Ele_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.50 ครับ");
+                        else if (selectedProject == "Women_Port_Ele_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.25 ครับ");
+
+                    // --- เพิ่มเกรดของระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ) ---
+                    else if (selectedProject == "อัจฉริยภาพทางคอมพิวเตอร์_Port_Cyber_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                        else if (selectedProject == "มีความสามารถทางภาษาอังกฤษ_Port_Cyber_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                        else if (selectedProject == "ผลการเรียนดีเด่น_Port_Cyber_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                        else if (selectedProject == "Women_Port_Cyber_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                    
+                    // --- เพิ่มเกรดของระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ) ---
+                    else if (selectedProject == "การรับด้วยแฟ้มสะสมผลงาน_Port_Arch_INL") reply("GPAX 5 เทอม ไม่น้อยกว่า 3.00 ครับ");
+                        
+                    
+
+                    
+                    else { reply("โปรดดูรายละเอียดเกรดเพิ่มเติม ทางเว็บไซต์: https://admission.reg.cmu.ac.th/tcas/ ครับ"); }
+
+                
+                }
+
+
+// ============================================================================================================================== //
+
+
+                // --- เรื่องคุณสมบัติ ---
+                else if (hasKeyword(input, "คุณสมบัติ")) {
+                    if (selectedRound == "Admission") {
+                        reply("รับผู้สำเร็จ ม.6, ปวช. หรือ กศน. ระดับมัธยมปลาย ครับ");
+                    } else {
+                        reply("โปรดดูรายละเอียดคุณสมบัติเพิ่มเติม ทางเว็บไซต์: https://admission.reg.cmu.ac.th/tcas/ ครับ");
+                    }
+                }
+
+                // --- เรื่องคะแนนสอบ (แยกสาขาใครสาขามันอย่างชัดเจน) ---
+                else if (hasKeyword(input, "คะเเนน") || hasKeyword(input, "คะแนนสอบ")) {
+                    
+                    // คะแนนสอบ: สาขา เครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ)
+                    if (selectedMajor == "เครื่องกลและการบริหารโครงการวิศวกรรม(นานาชาติ)") {
+                        if (selectedRound == "Quota") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics >= 45\nEnglish >= 50\nสัดส่วน: TPAT3(20%), Math1(20%), Phy(20%), Chem(5%), Bio(5%), Soc(5%), Thai(5%), Eng(20%)");
+                        } 
+                        else if (selectedRound == "Admission") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics >= 45\nEnglish >= 50\nสัดส่วน: TGAT(10%), TPAT3(30%), Math1(20%), Phy(20%) , Eng(20%)");
+                        } 
+                        
+                    }
+
+                    // คะแนนสอบ: สาขา โยธา(นานาชาติ)
+                    else if (selectedMajor == "โยธา(นานาชาติ)") {
+                        if (selectedRound == "Quota") {
+                                reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics >= 45\nEnglish >= 50\nสัดส่วน: TPAT3(20%), Math1(20%), Phy(20%), Chem(11%), Bio(3%), Soc(3%), Thai(3%), Eng(20%)");
+                        } 
+                        else if (selectedRound == "Admission") {
+                                reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics >= 45\nEnglish >= 50\nสัดส่วน: TGAT(10%), TPAT3(30%), Math1(20%), Phy(20%) , Eng(20%)");
+                        } 
+                        else { reply("โครงการนี้พิจารณาจากผลงานและ Portfolio เป็นหลักครับ"); }
+                    }
+
+                    // คะแนนสอบ: สาขาอุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ)
+                    else if (selectedMajor == "อุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ)") {
+                        if (selectedRound == "Quota") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics >= 45\nEnglish >= 50\nสัดส่วน: TPAT3(20%), Math1(20%), Phy(20%), Chem(11%), Bio(3%), Soc(3%), Thai(3%), Eng(20%)");
+                        } 
+                        else if (selectedRound == "Admission") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics >= 45\nEnglish >= 50\nสัดส่วน: TGAT(10%), TPAT3(30%), Math1(20%), Phy(20%) , Eng(20%)");
+                        } 
+                        else { reply("โครงการนี้พิจารณาจากผลงานและ Portfolio เป็นหลักครับ"); }
+                    }
+
+                    // คะแนนสอบ: สาขาอุตสาหการและการจัดการโลจิสติกส์นานาชาติ(นานาชาติ)
+                    else if (selectedMajor == "วิศวกรรมไฟฟ้าและเทคโนโลยีโครงข่ายไฟฟ้าอัจฉริยะ(นานาชาติ)") {
+                        if (selectedRound == "Quota") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics >= 45\nEnglish >= 50\nสัดส่วน: TPAT3(20%), Math1(20%), Phy(20%), Chem(5%), Bio(5%), Soc(5%), Thai(5%), Eng(20%)");
+                        } 
+                        else if (selectedRound == "Admission") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics >= 45\nEnglish >= 50\nสัดส่วน: TGAT(10%), TPAT3(30%), Math1(20%), Phy(20%) , Eng(20%)");
+                        } 
+                        else { reply("โครงการนี้พิจารณาจากผลงานและ Portfolio เป็นหลักครับ"); }
+                    }
+                    
+                    // คะแนนสอบ: สาขาระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ)
+                    else if (selectedMajor == "ระบบสารสนเทศและความมั่นคงปลอดภัยไซเบอร์(นานาชาติ)") {
+                        if (selectedRound == "Quota") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics >= 45\nEnglish >= 50\nสัดส่วน: TPAT3(20%), Math1(20%), Phy(20%), Chem(5%), Bio(5%), Soc(5%), Thai(5%), Eng(20%)");
+                        } 
+                        else if (selectedRound == "Admission") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics >= 45\nEnglish >= 50\nสัดส่วน: TGAT(10%), TPAT3(30%), Math1(20%), Phy(20%) , Eng(20%)");
+                        } 
+                        else { reply("โครงการนี้พิจารณาจากผลงานและ Portfolio เป็นหลักครับ"); }
+                    }
+
+                    // คะแนนสอบ: สาขาการออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ)
+                    else if (selectedMajor == "การออกแบบเชิงบูรณาการสถาปัตยกรรมแนวใหม่(นานาชาติ)") {
+                        if (selectedRound == "Quota") {
+                            reply("เกณฑ์ขั้นต่ำ:  TPAT 4 , Math1 >= 45, Physics >= 40, Chem >= 35, Bio >= 35, Soc >= 35, Thai >= 35, Eng >= 50\nสัดส่วน: TPAT4(36%), Math1(18%), Phy(18%), Chem(2%), Bio(2%), Soc(2%), Thai(2%), Eng(20%)");
+                        } 
+                        else if (selectedRound == "Admission") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT 4 , Math1 >= 45, Physics >= 40, Eng >= 50\nEnglish >= 50\nสัดส่วน:, TPAT4(40%), Math1(20%), Phy(20%) , Eng(20%)");
+                        } 
+                        else { reply("โครงการนี้พิจารณาจากผลงานและ Portfolio เป็นหลักครับ"); }
+                    }
+
+                    // คะแนนสอบ: สาขาวิศวกรรมบูรณาการและพหุวิทยาการ(นานาชาติ)
+                    else if (selectedMajor == "วิศวกรรมบูรณาการและพหุวิทยาการ(นานาชาติ)") {
+                        if (selectedRound == "Quota") {
+                            reply("เกณฑ์ขั้นต่ำ: TPAT3, Math1, Physics >= 45\nEnglish >= 50\nสัดส่วน: TPAT3(15%), Math1(25%), Phy(20%), Chem(5%), Bio(5%), Soc(5%), Thai(5%), Eng(20%)");
+                        } 
+                        
+                        else { reply("วิศวกรรมบูรณาการและพหุวิทยาการเปิดรับเเค่รอบ Quota ครับ"); }
+                    }
+
+
+// ============================================================================================================================== //
+
+
+                // --- เรื่องเอกสาร (ใช้ร่วมกันได้ทุกสาขา) ---
+                else if (hasKeyword(input, "เอกสาร")) {
+                    reply("เอกสารส่งออนไลน์เท่านั้น:\n1. ใบสมัคร\n2. สำเนาบัตรประชาชน\n3. ใบแสดงผลการเรียน\n4. Portfolio (ไม่เกิน 10 หน้า)\n5. หลักฐานผลงานตามที่โครงการกำหนด\n(วันสัมภาษณ์ใช้บัตรประชาชนตัวจริงครับ)");
+                }
+                
+                // --- ปุ่มย้อนกลับ (เปลี่ยนโครงการ) ---
+                else if (hasKeyword(input, "โครงการอื่น") || hasKeyword(input, "อื่น")) {
+                    reply("ได้เลยครับ สนใจโครงการไหนเพิ่มเติมพิมพ์หมายเลขมาได้เลยครับ (พิมพ์ 'ออก' เพื่อกลับเมนูหลัก)");
+                    currentState = ADM_STATE_SELECT_PROJECT;
+                }
+
+                // --- เผื่อผู้ใช้พิมพ์ผิด หรือถามนอกเหนือจากที่มี ---
+                else {
+                    reply("ลองถามคำว่า 'ค่าเทอม', 'เกรด', 'คะแนนสอบ', 'จำนวนรับ', 'เอกสาร', 'อาชีพ' หรือพิมพ์ 'โครงการอื่น' ดูนะครับ");
+                }
+                break;
+
         return true; 
     }
 };
