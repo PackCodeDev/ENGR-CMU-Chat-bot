@@ -196,7 +196,8 @@ class WaitSelect{
                             reply("none");
                         }
                     //Mechanical
-                    }else if(hasKeyword(input, "Mech") || hasKeyword(input, "plan")){
+                    }else if(hasKeyword(input, "Mech") || hasKeyword(input, "plan"))
+                    if(selectedMajor == "เครื่องกล"){
                         if(selectedProgram == "ปกติ"){
                             reply("● ปี 1: เน้น Physics, Calculus และวิชา Engineering Drawing (หัดวาดแบบวิศวกรรมทั้งมือและ CAD)\n"
                                 "● ปี 2: เริ่มวิชาคำนวณแรงหลัก Statics, Dynamics, Thermodynamics และพื้นฐานวัสดุวิศวกรรม\n"
@@ -209,7 +210,8 @@ class WaitSelect{
                         }
                     }
                     //Semiconductor
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม")){
+                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    if(selectedMajor == "เซมิคอนดักเตอร์"){
                         if(selectedProgram == "ปกติ"){
                         reply(" ● ปี 1: Physics of Semiconductor"
                             "● ปี 2: IC Design, VLSI\n"
@@ -221,8 +223,8 @@ class WaitSelect{
                         reply("none");
                         }
                     //Integrated
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม")){
-                    
+                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    if(selectedMajor == "บูรณาการณ์"){                    
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1-4: เน้นการเรียนแบบโมดูล (Module) และ Project-based Learning\n"
                             "(เรียนรู้ข้ามศาสตร์ระหว่างสาขาต่างๆ เช่นคอมพิวเตอร์ ไฟฟ้า และเครื่องกล)");
@@ -232,8 +234,8 @@ class WaitSelect{
                         reply(" ");
                         }
                     //Electrical
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม")){
-                    
+                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    if(selectedMajor == "ไฟฟ้า"){
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1: พื้นฐานวิศวกรรม เน้นฟิสิกส์ไฟฟ้าและแม่เหล็ก และคณิตศาสตร์วิศวกรรม\n"
                             "● ปี 2: เข้าสู่หัวใจอย่าง Circuit Analysis 1-2, Digital Circuit และสัญญาณและระบบ (Signals)\n"
@@ -245,8 +247,8 @@ class WaitSelect{
                         reply(" ");
                         }
                     //Civil
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม")){
-                    
+                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    if(selectedMajor == "โยธา"){
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1: พื้นฐานวิศวกรรมและ Drawing เพื่อหัดอ่านและวาดแบบแปลนก่อสร้าง\n"
                             "● ปี 2: เริ่มคำนวณ Mechanics of Solids และออกฝึกสำรวจ (Surveying) กลางแจ้ง\n"
@@ -258,8 +260,8 @@ class WaitSelect{
                         reply(" ");
                         }
                     //Environmental
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม")){
-                    
+                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    if(selectedMajor == "สิ่งแวดล้อม"){                   
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1: เน้นพื้นฐานเคมีสิ่งแวดล้อมและชีววิทยามากเป็นพิเศษ\n"
                             "● ปี 2: ระบบประปา, ระบบระบายน้ำ, จุลชีววิทยาสิ่งแวดล้อม และกลศาสตร์ของไหล\n"
@@ -271,8 +273,8 @@ class WaitSelect{
                         reply("none");
                         }
                     //REAI
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม")){
-                    
+                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    if(selectedMajor == "REAI"){                    
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1: เริ่มฝึก Robotics Programming ทันทีควบคู่ไปกับพื้นฐาน Physics/Math\n"
                             "● ปี 2: เรียนเรื่อง Sensor, Actuators, Embedded Systems และระบบควบคุมหุ่นยนต์\n"
@@ -284,8 +286,8 @@ class WaitSelect{
                         reply("none");
                         }
                     //Mining&Petroleum
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม")){
-                    
+                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    if(selectedMajor == "เหมืองแร่"){                   
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1: พื้นฐานธรณีวิทยา (Physical Geology) และพื้นฐานวิศวกรรม\n"
                             "● ปี 2: การทำเหมืองเปิด, เหมืองใต้ดิน, การวิเคราะห์สินแร่ และการสำรวจธรณี\n"
@@ -297,8 +299,8 @@ class WaitSelect{
                         reply("none");
                         }
                     //Industrial
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม")){
-                    
+                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    if(selectedMajor == "อุตสาหการ"){                    
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1: พื้นฐานวิศวกรรมทั่วไป และวิชาเคมีสำหรับวิศวกร\n"
                             "● ปี 2: สถิติวิศวกรรม (Engineering Stat), กรรมวิธีการผลิต และพื้นฐานความปลอดภัย\n"
