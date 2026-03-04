@@ -182,8 +182,7 @@ class WaitSelect{
 //                                                คำถาม
 
             case SELECT_DETAIL:
-                if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม")){
-        
+                if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม")){        
                     if(selectedMajor == "คอมพิวเตอร์"){
                     //Computer
                         if(selectedProgram == "ปกติ"){
@@ -197,7 +196,7 @@ class WaitSelect{
                             reply("none");
                         }
                     //Mechanical
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม")){
+                    }else if(hasKeyword(input, "Mech") || hasKeyword(input, "plan")){
                         if(selectedProgram == "ปกติ"){
                             reply("● ปี 1: เน้น Physics, Calculus และวิชา Engineering Drawing (หัดวาดแบบวิศวกรรมทั้งมือและ CAD)\n"
                                 "● ปี 2: เริ่มวิชาคำนวณแรงหลัก Statics, Dynamics, Thermodynamics และพื้นฐานวัสดุวิศวกรรม\n"
