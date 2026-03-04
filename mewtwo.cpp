@@ -20,7 +20,7 @@ class WaitSelect{
         return input.find(keyword) != std::string::npos;
     };
     
-    bool processAdmission(std::string input, std::vector<std::string>& chatHistory){
+    bool processHistory(std::string input, std::vector<std::string>& chatHistory){
         auto reply = [&](std::string text) {
             chatHistory.push_back("Chatbot: " + text);
         };
@@ -322,3 +322,4 @@ class WaitSelect{
         return true;
     }
 };
+
