@@ -182,7 +182,7 @@ class WaitSelect{
 //                                                คำถาม
 
             case SELECT_DETAIL:
-                if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม")){        
+                if(hasKeyword(input, "Software") || hasKeyword(input, "คอมพิวเตอร์") || hasKeyword(input, "คอม")){        
                     if(selectedMajor == "คอมพิวเตอร์"){
                     //Computer
                         if(selectedProgram == "ปกติ"){
@@ -196,7 +196,7 @@ class WaitSelect{
                             reply("none");
                         }
                     //Mechanical
-                    }else if(hasKeyword(input, "Mech") || hasKeyword(input, "plan"))
+                    }else if(hasKeyword(input, "Mech") || hasKeyword(input, "วิศวกรรมเครื่องกล"))
                     if(selectedMajor == "เครื่องกล"){
                         if(selectedProgram == "ปกติ"){
                             reply("● ปี 1: เน้น Physics, Calculus และวิชา Engineering Drawing (หัดวาดแบบวิศวกรรมทั้งมือและ CAD)\n"
@@ -210,7 +210,7 @@ class WaitSelect{
                         }
                     }
                     //Semiconductor
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    }else if(hasKeyword(input, "Semiconductor") || hasKeyword(input, "Chip"))
                     if(selectedMajor == "เซมิคอนดักเตอร์"){
                         if(selectedProgram == "ปกติ"){
                         reply(" ● ปี 1: Physics of Semiconductor"
@@ -223,7 +223,7 @@ class WaitSelect{
                         reply("none");
                         }
                     //Integrated
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    }else if(hasKeyword(input, "เรียนรู้ข้ามศาสตร์") || hasKeyword(input, "ตัวอย่างคำถาม"))
                     if(selectedMajor == "บูรณาการณ์"){                    
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1-4: เน้นการเรียนแบบโมดูล (Module) และ Project-based Learning\n"
@@ -234,7 +234,7 @@ class WaitSelect{
                         reply(" ");
                         }
                     //Electrical
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    }else if(hasKeyword(input, "Circuit") || hasKeyword(input, "กำลังไฟฟ้า"))
                     if(selectedMajor == "ไฟฟ้า"){
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1: พื้นฐานวิศวกรรม เน้นฟิสิกส์ไฟฟ้าและแม่เหล็ก และคณิตศาสตร์วิศวกรรม\n"
@@ -247,7 +247,7 @@ class WaitSelect{
                         reply(" ");
                         }
                     //Civil
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    }else if(hasKeyword(input, "โครงสร้างเหล็ก") || hasKeyword(input, "บริหารงานก่อสร้าง"))
                     if(selectedMajor == "โยธา"){
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1: พื้นฐานวิศวกรรมและ Drawing เพื่อหัดอ่านและวาดแบบแปลนก่อสร้าง\n"
@@ -260,7 +260,7 @@ class WaitSelect{
                         reply(" ");
                         }
                     //Environmental
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    }else if(hasKeyword(input, "Environment") || hasKeyword(input, "ตัวอย่างคำถาม"))
                     if(selectedMajor == "สิ่งแวดล้อม"){                   
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1: เน้นพื้นฐานเคมีสิ่งแวดล้อมและชีววิทยามากเป็นพิเศษ\n"
@@ -273,7 +273,7 @@ class WaitSelect{
                         reply("none");
                         }
                     //REAI
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    }else if(hasKeyword(input, "AI") || hasKeyword(input, "ตัวอย่างคำถาม"))
                     if(selectedMajor == "REAI"){                    
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1: เริ่มฝึก Robotics Programming ทันทีควบคู่ไปกับพื้นฐาน Physics/Math\n"
@@ -286,7 +286,7 @@ class WaitSelect{
                         reply("none");
                         }
                     //Mining&Petroleum
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    }else if(hasKeyword(input, "Mining") || hasKeyword(input, "ตัวอย่างคำถาม"))
                     if(selectedMajor == "เหมืองแร่"){                   
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1: พื้นฐานธรณีวิทยา (Physical Geology) และพื้นฐานวิศวกรรม\n"
@@ -299,7 +299,7 @@ class WaitSelect{
                         reply("none");
                         }
                     //Industrial
-                    }else if(hasKeyword(input, "ตัวอย่างคำถาม") || hasKeyword(input, "ตัวอย่างคำถาม"))
+                    }else if(hasKeyword(input, "IE") || hasKeyword(input, "ตัวอย่างคำถาม"))
                     if(selectedMajor == "อุตสาหการ"){                    
                         if(selectedProgram == "ปกติ"){
                         reply("● ปี 1: พื้นฐานวิศวกรรมทั่วไป และวิชาเคมีสำหรับวิศวกร\n"
