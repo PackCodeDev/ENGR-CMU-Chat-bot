@@ -6,6 +6,7 @@ using namespace std;
 
 class Chatbot {
 private:
+
     bool hasDoiSchedule = false;
     string doiDate = "15 พฤศจิกายน 2569";
 
@@ -16,6 +17,7 @@ private:
     string dropTerm2 = "15 มกราคม 2570";
 
     string newsLink = "https://eng.cmu.ac.th/?page_id=21937";
+    string regLink = "https://reg.cmu.ac.th";
 
 public:
 
@@ -72,6 +74,18 @@ public:
         else if (input.find("ธันวาคม") != string::npos || input.find("ธันวา") != string::npos)
             return 16;
 
+        else if (input.find("ติดต่อ") != string::npos || input.find("ทะเบียน") != string::npos)
+            return 17;
+
+        else if (input.find("wifi") != string::npos || input.find("WiFi") != string::npos)
+            return 18;
+
+        else if (input.find("reg") != string::npos || input.find("ลงทะเบียน") != string::npos)
+            return 19;
+
+        else if (input.find("ฉุกเฉิน") != string::npos || input.find("รปภ") != string::npos)
+            return 20;
+
         return 0;
     }
 
@@ -92,23 +106,20 @@ public:
             break;
 
         case 3:
-
             if (input.find("1") != string::npos)
                 cout << "วันดรอปวิชา (ติด W) ภาคเรียนที่ 1: " << dropTerm1 << endl;
-
             else if (input.find("2") != string::npos)
                 cout << "วันดรอปวิชา (ติด W) ภาคเรียนที่ 2: " << dropTerm2 << endl;
-
             else {
                 cout << "วันดรอปวิชา (ติด W)" << endl;
                 cout << "ภาคเรียนที่ 1: " << dropTerm1 << endl;
                 cout << "ภาคเรียนที่ 2: " << dropTerm2 << endl;
             }
-
             break;
 
         case 4:
-            cout << "ติดตามข่าวสารได้ที่:\n" << newsLink << endl;
+            cout << "ติดตามข่าวสารได้ที่:" << endl;
+            cout << newsLink << endl;
             break;
 
         case 5:
@@ -124,11 +135,15 @@ public:
             break;
 
         case 8:
-            cout << "เดือนเมษายน:\n6 เม.ย. วันจักรี\n13-15 เม.ย. วันสงกรานต์" << endl;
+            cout << "เดือนเมษายน:" << endl;
+            cout << "6 เม.ย. วันจักรี" << endl;
+            cout << "13-15 เม.ย. วันสงกรานต์" << endl;
             break;
 
         case 9:
-            cout << "เดือนพฤษภาคม:\n1 พ.ค. วันแรงงาน\n4 พ.ค. วันฉัตรมงคล" << endl;
+            cout << "เดือนพฤษภาคม:" << endl;
+            cout << "1 พ.ค. วันแรงงาน" << endl;
+            cout << "4 พ.ค. วันฉัตรมงคล" << endl;
             break;
 
         case 10:
@@ -148,7 +163,9 @@ public:
             break;
 
         case 14:
-            cout << "เดือนตุลาคม:\n13 ต.ค. วันนวมินทรมหาราช\n23 ต.ค. วันปิยมหาราช" << endl;
+            cout << "เดือนตุลาคม:" << endl;
+            cout << "13 ต.ค. วันนวมินทรมหาราช" << endl;
+            cout << "23 ต.ค. วันปิยมหาราช" << endl;
             break;
 
         case 15:
@@ -156,7 +173,35 @@ public:
             break;
 
         case 16:
-            cout << "เดือนธันวาคม:\n5 ธ.ค. วันพ่อ\n10 ธ.ค. วันรัฐธรรมนูญ\n31 ธ.ค. วันสิ้นปี" << endl;
+            cout << "เดือนธันวาคม:" << endl;
+            cout << "5 ธ.ค. วันพ่อ" << endl;
+            cout << "10 ธ.ค. วันรัฐธรรมนูญ" << endl;
+            cout << "31 ธ.ค. วันสิ้นปี" << endl;
+            break;
+
+        case 17:
+            cout << "ติดต่อ งานทะเบียนคณะวิศวกรรมศาสตร์ มช." << endl;
+            cout << "โทร: 053-944-000" << endl;
+            cout << "สถานที่: อาคารสำนักงานคณะวิศวกรรมศาสตร์ มหาวิทยาลัยเชียงใหม่" << endl;
+            cout << "เปิดทำการวันจันทร์ - ศุกร์ เวลา 08:30 - 16:30 น. (ปิดพักเที่ยงและวันหยุดนักขัตฤกษ์)" << endl;
+            break;
+
+        case 18:
+            cout << "Wi-Fi ของมหาวิทยาลัย: JumboNet" << endl;
+            cout << "1. เชื่อมต่อ Wi-Fi ชื่อ JumboNet" << endl;
+            cout << "2. ใช้ CMU Account ล็อกอิน" << endl;
+            cout << "Username = รหัสนักศึกษา" << endl;
+            cout << "Password = รหัสผ่าน CMU Account" << endl;
+            break;
+
+        case 19:
+            cout << "ระบบลงทะเบียนเรียน REG CMU" << endl;
+            cout << regLink << endl;
+            break;
+
+        case 20:
+            cout << "เบอร์โทรศัพท์แจ้งเหตุฉุกเฉิน มหาวิทยาลัยเชียงใหม่ ตลอด 24 ชั่วโมง" << endl;
+            cout << "053-941-191" << endl;
             break;
 
         default:
@@ -189,7 +234,6 @@ int main() {
             break;
 
         int cmd = bot.checkCommand(input);
-
         bot.answer(cmd, input);
     }
 
