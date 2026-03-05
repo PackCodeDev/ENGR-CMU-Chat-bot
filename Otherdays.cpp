@@ -1,174 +1,241 @@
 #include <iostream>
 #include <string>
-#include <vector>
 #include <windows.h>
 
 using namespace std;
 
-bool hasKeyword(string input, string keyword) {
-    return input.find(keyword) != string::npos;
-}
+class Chatbot {
+private:
+
+    bool hasDoiSchedule = false;
+    string doiDate = "15 พฤศจิกายน 2569";
+
+    string openDate = "1 มิถุนายน 2569";
+    string closeDate = "30 มีนาคม 2570";
+
+    string dropTerm1 = "31 สิงหาคม 2569";
+    string dropTerm2 = "15 มกราคม 2570";
+
+    string newsLink = "https://eng.cmu.ac.th/?page_id=21937";
+    string regLink = "https://reg.cmu.ac.th";
+
+public:
+
+    int checkCommand(string input) {
+
+        if (input.find("ขึ้นดอย") != string::npos)
+            return 1;
+
+        else if (input.find("เปิดเรียน") != string::npos || input.find("ปิดเรียน") != string::npos)
+            return 2;
+
+        else if (input.find("ดรอป") != string::npos ||
+                 input.find("drop") != string::npos ||
+                 input.find("W") != string::npos ||
+                 input.find("w") != string::npos)
+            return 3;
+
+        else if (input.find("ข่าว") != string::npos)
+            return 4;
+
+        else if (input.find("มกราคม") != string::npos || input.find("มกรา") != string::npos)
+            return 5;
+
+        else if (input.find("กุมภาพันธ์") != string::npos || input.find("กุมภา") != string::npos)
+            return 6;
+
+        else if (input.find("มีนาคม") != string::npos || input.find("มีนา") != string::npos)
+            return 7;
+
+        else if (input.find("เมษายน") != string::npos || input.find("เมษา") != string::npos)
+            return 8;
+
+        else if (input.find("พฤษภาคม") != string::npos || input.find("พฤษภา") != string::npos)
+            return 9;
+
+        else if (input.find("มิถุนายน") != string::npos || input.find("มิถุนา") != string::npos)
+            return 10;
+
+        else if (input.find("กรกฎาคม") != string::npos || input.find("กรกฎา") != string::npos)
+            return 11;
+
+        else if (input.find("สิงหาคม") != string::npos || input.find("สิงหา") != string::npos)
+            return 12;
+
+        else if (input.find("กันยายน") != string::npos || input.find("กันยา") != string::npos)
+            return 13;
+
+        else if (input.find("ตุลาคม") != string::npos || input.find("ตุลา") != string::npos)
+            return 14;
+
+        else if (input.find("พฤศจิกายน") != string::npos || input.find("พฤศจิกา") != string::npos)
+            return 15;
+
+        else if (input.find("ธันวาคม") != string::npos || input.find("ธันวา") != string::npos)
+            return 16;
+
+        else if (input.find("ติดต่อ") != string::npos || input.find("ทะเบียน") != string::npos)
+            return 17;
+
+        else if (input.find("wifi") != string::npos || input.find("WiFi") != string::npos)
+            return 18;
+
+        else if (input.find("reg") != string::npos || input.find("ลงทะเบียน") != string::npos)
+            return 19;
+
+        else if (input.find("ฉุกเฉิน") != string::npos || input.find("รปภ") != string::npos)
+            return 20;
+
+        return 0;
+    }
+
+    void answer(int cmd, string input) {
+
+        switch (cmd) {
+
+        case 1:
+            if (hasDoiSchedule)
+                cout << "วันขึ้นดอยคือ " << doiDate << endl;
+            else
+                cout << "ยังไม่ประกาศวันแน่นอน" << endl;
+            break;
+
+        case 2:
+            cout << "วันเปิดเรียน: " << openDate << endl;
+            cout << "วันปิดเรียน: " << closeDate << endl;
+            break;
+
+        case 3:
+            if (input.find("1") != string::npos)
+                cout << "วันดรอปวิชา (ติด W) ภาคเรียนที่ 1: " << dropTerm1 << endl;
+            else if (input.find("2") != string::npos)
+                cout << "วันดรอปวิชา (ติด W) ภาคเรียนที่ 2: " << dropTerm2 << endl;
+            else {
+                cout << "วันดรอปวิชา (ติด W)" << endl;
+                cout << "ภาคเรียนที่ 1: " << dropTerm1 << endl;
+                cout << "ภาคเรียนที่ 2: " << dropTerm2 << endl;
+            }
+            break;
+
+        case 4:
+            cout << "ติดตามข่าวสารได้ที่:" << endl;
+            cout << newsLink << endl;
+            break;
+
+        case 5:
+            cout << "เดือนมกราคม: 1 ม.ค. วันขึ้นปีใหม่" << endl;
+            break;
+
+        case 6:
+            cout << "เดือนกุมภาพันธ์: ไม่มีวันหยุดราชการ" << endl;
+            break;
+
+        case 7:
+            cout << "เดือนมีนาคม: ไม่มีวันหยุดราชการ" << endl;
+            break;
+
+        case 8:
+            cout << "เดือนเมษายน:" << endl;
+            cout << "6 เม.ย. วันจักรี" << endl;
+            cout << "13-15 เม.ย. วันสงกรานต์" << endl;
+            break;
+
+        case 9:
+            cout << "เดือนพฤษภาคม:" << endl;
+            cout << "1 พ.ค. วันแรงงาน" << endl;
+            cout << "4 พ.ค. วันฉัตรมงคล" << endl;
+            break;
+
+        case 10:
+            cout << "เดือนมิถุนายน: 3 มิ.ย. วันเฉลิมพระชนมพรรษาพระราชินี" << endl;
+            break;
+
+        case 11:
+            cout << "เดือนกรกฎาคม: 28 ก.ค. วันเฉลิมพระชนมพรรษา ร.10" << endl;
+            break;
+
+        case 12:
+            cout << "เดือนสิงหาคม: 12 ส.ค. วันแม่แห่งชาติ" << endl;
+            break;
+
+        case 13:
+            cout << "เดือนกันยายน: ไม่มีวันหยุดราชการ" << endl;
+            break;
+
+        case 14:
+            cout << "เดือนตุลาคม:" << endl;
+            cout << "13 ต.ค. วันนวมินทรมหาราช" << endl;
+            cout << "23 ต.ค. วันปิยมหาราช" << endl;
+            break;
+
+        case 15:
+            cout << "เดือนพฤศจิกายน: ไม่มีวันหยุดราชการ" << endl;
+            break;
+
+        case 16:
+            cout << "เดือนธันวาคม:" << endl;
+            cout << "5 ธ.ค. วันพ่อ" << endl;
+            cout << "10 ธ.ค. วันรัฐธรรมนูญ" << endl;
+            cout << "31 ธ.ค. วันสิ้นปี" << endl;
+            break;
+
+        case 17:
+            cout << "ติดต่อ งานทะเบียนคณะวิศวกรรมศาสตร์ มช." << endl;
+            cout << "โทร: 053-944-000" << endl;
+            cout << "สถานที่: อาคารสำนักงานคณะวิศวกรรมศาสตร์ มหาวิทยาลัยเชียงใหม่" << endl;
+            cout << "เปิดทำการวันจันทร์ - ศุกร์ เวลา 08:30 - 16:30 น. (ปิดพักเที่ยงและวันหยุดนักขัตฤกษ์)" << endl;
+            break;
+
+        case 18:
+            cout << "Wi-Fi ของมหาวิทยาลัย: JumboNet" << endl;
+            cout << "1. เชื่อมต่อ Wi-Fi ชื่อ JumboNet" << endl;
+            cout << "2. ใช้ CMU Account ล็อกอิน" << endl;
+            cout << "Username = รหัสนักศึกษา" << endl;
+            cout << "Password = รหัสผ่าน CMU Account" << endl;
+            break;
+
+        case 19:
+            cout << "ระบบลงทะเบียนเรียน REG CMU" << endl;
+            cout << regLink << endl;
+            break;
+
+        case 20:
+            cout << "เบอร์โทรศัพท์แจ้งเหตุฉุกเฉิน มหาวิทยาลัยเชียงใหม่ ตลอด 24 ชั่วโมง" << endl;
+            cout << "053-941-191" << endl;
+            break;
+
+        default:
+            cout << "ขออภัย ไม่พบข้อมูล" << endl;
+        }
+    }
+};
 
 int main() {
 
     SetConsoleOutputCP(65001);
     SetConsoleCP(65001);
 
-    string input;
+    Chatbot bot;
+
     string name;
-    bool keepRunning = true;
-
-    vector<string> history;
-
-    // ===== ข้อมูลขึ้นดอย =====
-    bool hasDoiSchedule = false;
-    string doiDate = "15 พฤศจิกายน 2569";
-
-    // ===== เปิด / ปิดเรียน =====
-    string openDate = "1 มิถุนายน 2569";
-    string closeDate = "30 มีนาคม 2570";
-
-    // ===== วันดรอป (ติด W) =====
-    bool hasDropDate = true;
-    string dropDateTerm1 = "31 สิงหาคม 2569";
-    string dropDateTerm2 = "15 มกราคม 2570";
-
-    // ===== ข่าวสาร =====
-    string newsLink = "https://eng.cmu.ac.th/?page_id=21937";
-
-    // ===== วันหยุดราชการ =====
-    vector<vector<string>> monthKeywords = {
-        {"มกราคม","มกรา","ม.ค"},
-        {"กุมภาพันธ์","กุมภา","ก.พ"},
-        {"มีนาคม","มีนา","มี.ค"},
-        {"เมษายน","เมษา","เม.ย"},
-        {"พฤษภาคม","พฤษภา","พ.ค"},
-        {"มิถุนายน","มิถุนา","มิ.ย"},
-        {"กรกฎาคม","กรกฎา","ก.ค"},
-        {"สิงหาคม","สิงหา","ส.ค"},
-        {"กันยายน","กันยา","ก.ย"},
-        {"ตุลาคม","ตุลา","ต.ค"},
-        {"พฤศจิกายน","พฤศจิกา","พ.ย"},
-        {"ธันวาคม","ธันวา","ธ.ค"}
-    };
-
-    vector<string> holidays = {
-        "1 ม.ค. วันขึ้นปีใหม่",
-        "ไม่มีวันหยุดราชการ",
-        "ไม่มีวันหยุดราชการ",
-        "6 เม.ย. วันจักรี\n13–15 เม.ย. วันสงกรานต์",
-        "1 พ.ค. วันแรงงานแห่งชาติ\n4 พ.ค. วันฉัตรมงคล",
-        "3 มิ.ย. วันเฉลิมพระชนมพรรษาสมเด็จพระราชินี",
-        "28 ก.ค. วันเฉลิมพระชนมพรรษาพระบาทสมเด็จพระเจ้าอยู่หัว",
-        "12 ส.ค. วันแม่แห่งชาติ",
-        "ไม่มีวันหยุดราชการ",
-        "13 ต.ค. วันนวมินทรมหาราช\n23 ต.ค. วันปิยมหาราช",
-        "ไม่มีวันหยุดราชการ",
-        "5 ธ.ค. วันพ่อแห่งชาติ\n10 ธ.ค. วันรัฐธรรมนูญ\n31 ธ.ค. วันสิ้นปี"
-    };
+    string input;
 
     cout << "กรุณาพิมพ์ชื่อของคุณ: ";
     getline(cin, name);
+
     cout << "สวัสดี " << name << endl;
 
-    while (keepRunning) {
+    while (true) {
 
         cout << "\nอยากถามอะไรเพิ่มเติม (หรือพิมพ์ exit เพื่อออก): ";
         getline(cin, input);
-        history.push_back(input);
 
-        if (input == "exit") {
-            keepRunning = false;
-        }
+        if (input == "exit")
+            break;
 
-        else {
-
-            // ===== ตรวจเดือน =====
-            bool foundMonth = false;
-
-            for (int i = 0; i < 12; i++) {
-                for (string keyword : monthKeywords[i]) {
-                    if (hasKeyword(input, keyword)) {
-                        cout << "วันหยุดราชการเดือน"
-                             << monthKeywords[i][0] << ":\n"
-                             << holidays[i] << endl;
-                        foundMonth = true;
-                        break;
-                    }
-                }
-                if (foundMonth) break;
-            }
-
-            if (foundMonth) continue;
-
-            // ===== วันขึ้นดอย =====
-            if (hasKeyword(input, "ขึ้นดอย")) {
-
-                if (hasDoiSchedule)
-                    cout << "วันขึ้นดอยคือ " << doiDate << endl;
-                else
-                    cout << "ยังไม่ประกาศวันแน่นอน" << endl;
-            }
-
-            // ===== เปิด / ปิดเรียน =====
-            else if (hasKeyword(input, "เปิดเรียน") || hasKeyword(input, "ปิดเรียน")) {
-
-                cout << "วันเปิดเรียน: " << openDate << endl;
-                cout << "วันปิดเรียน: " << closeDate << endl;
-            }
-
-            // ===== วันดรอป (รองรับ ภาคเรียน) =====
-            else if (hasKeyword(input, "ดรอป") || hasKeyword(input, "W")) {
-
-                if (!hasDropDate) {
-                    cout << "ยังไม่ประกาศวันดรอปวิชา" << endl;
-                }
-
-                else if (hasKeyword(input, "1") ||
-                         hasKeyword(input, "เทอม1") ||
-                         hasKeyword(input, "เทอม 1") ||
-                         hasKeyword(input, "ภาคเรียน1") ||
-                         hasKeyword(input, "ภาคเรียน 1")) {
-
-                    cout << "วันสุดท้ายดรอปวิชา (ติด W) ภาคเรียนที่ 1 คือ "
-                         << dropDateTerm1 << endl;
-                }
-
-                else if (hasKeyword(input, "2") ||
-                         hasKeyword(input, "เทอม2") ||
-                         hasKeyword(input, "เทอม 2") ||
-                         hasKeyword(input, "ภาคเรียน2") ||
-                         hasKeyword(input, "ภาคเรียน 2")) {
-
-                    cout << "วันสุดท้ายดรอปวิชา (ติด W) ภาคเรียนที่ 2 คือ "
-                         << dropDateTerm2 << endl;
-                }
-
-                else {
-                    cout << "วันดรอปวิชา (ติด W)\n";
-                    cout << "ภาคเรียนที่ 1: " << dropDateTerm1 << endl;
-                    cout << "ภาคเรียนที่ 2: " << dropDateTerm2 << endl;
-                }
-            }
-
-            // ===== ข่าวสาร =====
-            else if (hasKeyword(input, "ข่าว") ||
-                     hasKeyword(input, "ข่าวสาร") ||
-                     hasKeyword(input, "เว็บไซต์")) {
-
-                cout << "สามารถติดตามข้อมูลข่าวสารได้ที่:\n"
-                     << newsLink << endl;
-            }
-
-            else {
-                cout << "ขออภัย ไม่พบข้อมูล" << endl;
-            }
-        }
+        int cmd = bot.checkCommand(input);
+        bot.answer(cmd, input);
     }
-
-    cout << "\nประวัติการถาม:\n";
-    for (string h : history)
-        cout << "- " << h << endl;
 
     return 0;
 }
