@@ -19,8 +19,10 @@ public:
     std::string selectedProgram = "";
     std::string selectedMajor = "";
     std::string selectedDetail = "";
+    std::string selectedBuilding = "";
+    std::string selectedAccessories = "";
     std::string guide =
-        "คุณสามารถพิมพ์:\n"
+        "\nคุณสามารถพิมพ์:\n"
         "● เรียนอะไร\n"
         "● อาคารเรียน\n"
         "● อุปกรณ์\n"
@@ -59,7 +61,7 @@ public:
             case FRESH_STATE_SELECT_PROGRAM:
                 if (hasKeyword(input, "ปกติ")) {
                     selectedProgram = "ปกติ";
-                    reply("เลือกภาคปกติแล้วครับ ต่อไปพิมพ์ชื่อสาขาที่สนใจได้เลยครับ\n(เช่น คอมพิวเตอร์, เครื่องกล, โยธา, เซมิคอนดักเตอร์, บูรณาการ)");
+                    reply("เลือกภาคปกติแล้วครับ ต่อไปพิมพ์ชื่อสาขาที่สนใจได้เลยครับ\n(เช่น คอมพิวเตอร์, เครื่องกล, โยธา, ไฟฟ้า, เซมิคอนดักเตอร์, บูรณาการ)");
                     currentState = FRESH_STATE_SELECT_MAJOR;
                 } 
                 else if (hasKeyword(input, "พิเศษ")) {
@@ -83,101 +85,101 @@ public:
                 // ---------------- ภาคปกติ ----------------
                 if ((hasKeyword(input, "คอม") || hasKeyword(input, "คอมพิวเตอร์")) && selectedProgram == "ปกติ") {
                     selectedMajor = "คอมพิวเตอร์";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมคอมพิวเตอร์ครับ?"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมคอมพิวเตอร์ครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if ((hasKeyword(input, "เครื่องกล") || hasKeyword(input, "เครื่อง")) && selectedProgram == "ปกติ") {
                     selectedMajor = "เครื่องกล";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเครื่องกลครับ?"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเครื่องกลครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if ((hasKeyword(input, "ไฟฟ้า") || hasKeyword(input, "ไฟ")) && selectedProgram == "ปกติ") {
                     selectedMajor = "ไฟฟ้า";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมไฟฟ้าครับ?"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมไฟฟ้าครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if (hasKeyword(input, "โยธา") && selectedProgram == "ปกติ") {
                     selectedMajor = "โยธา";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมโยธาครับ?"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมโยธาครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if ((hasKeyword(input, "อุตสาหการ") || hasKeyword(input, "IE")) && selectedProgram == "ปกติ") {
                     selectedMajor = "อุตสาหการ";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมอุตสาหการครับ?"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมอุตสาหการครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if (hasKeyword(input, "สิ่งแวดล้อม") && selectedProgram == "ปกติ") {
                     selectedMajor = "สิ่งแวดล้อม";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมสิ่งแวดล้อมครับ?"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมสิ่งแวดล้อมครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if ((hasKeyword(input, "เหมืองแร่") || hasKeyword(input, "ปิโตรเลียม")) && selectedProgram == "ปกติ") {
                     selectedMajor = "เหมืองแร่";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเหมืองแร่และปิโตรเลียมครับ?"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเหมืองแร่และปิโตรเลียมครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if ((hasKeyword(input, "reai") || hasKeyword(input, "robot") || hasKeyword(input, "หุ่นยนต์") || hasKeyword(input, "ai")) && selectedProgram == "ปกติ") {
                     selectedMajor = "REAI";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมหุ่นยนต์และปัญญาประดิษฐ์ครับ? (ลองพิมพ์ 'เรียนอะไร')"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมหุ่นยนต์และปัญญาประดิษฐ์ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if ((hasKeyword(input, "เซมิคอนดักเตอร์") || hasKeyword(input, "เซมิ")) && selectedProgram == "ปกติ") {
                     selectedMajor = "เซมิคอนดักเตอร์";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเซมิคอนดักเตอร์ครับ? (ลองพิมพ์ 'เรียนอะไร')"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเซมิคอนดักเตอร์ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if ((hasKeyword(input, "บูรณาการ") || hasKeyword(input, "บูรณาการณ์")) && selectedProgram == "ปกติ") {
                     selectedMajor = "บูรณาการ";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมบูรณาการครับ? (ลองพิมพ์ 'เรียนอะไร')"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมบูรณาการครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
 
                 // ---------------- ภาคพิเศษ ----------------
                 else if (hasKeyword(input, "อุตสาหการ") && selectedProgram == "พิเศษ") {
                     selectedMajor = "อุตสาหการ";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมอุตสาหการ (พิเศษ) ครับ? (ลองพิมพ์ 'เรียนอะไร')"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมอุตสาหการ (พิเศษ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if (hasKeyword(input, "ไฟฟ้า") && selectedProgram == "พิเศษ") {
                     selectedMajor = "ไฟฟ้า";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมไฟฟ้า (พิเศษ) ครับ? (ลองพิมพ์ 'เรียนอะไร')"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมไฟฟ้า (พิเศษ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if (hasKeyword(input, "เครื่องกล") && selectedProgram == "พิเศษ") {
                     selectedMajor = "เครื่องกล";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเครื่องกล (พิเศษ) ครับ? (ลองพิมพ์ 'เรียนอะไร')"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเครื่องกล (พิเศษ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
 
                 // ---------------- ภาคนานาชาติ ----------------
                 else if (hasKeyword(input, "เครื่องกล") && selectedProgram == "นานาชาติ") {
                     selectedMajor = "เครื่องกล";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับเครื่องกล (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับเครื่องกล (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if ((hasKeyword(input, "บูรณาการ") || hasKeyword(input, "บูรณาการณ์")) && selectedProgram == "นานาชาติ") {
                     selectedMajor = "บูรณาการ";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับบูรณาการ (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับบูรณาการ (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if (hasKeyword(input, "ไฟฟ้า") && selectedProgram == "นานาชาติ") {
                     selectedMajor = "ไฟฟ้า";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมไฟฟ้า (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมไฟฟ้า (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if (hasKeyword(input, "โยธา") && selectedProgram == "นานาชาติ") {
                     selectedMajor = "โยธา";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมโยธา (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมโยธา (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if ((hasKeyword(input, "ISNE") || hasKeyword(input, "สารสนเทศ")) && selectedProgram == "นานาชาติ") {
                     selectedMajor = "ISNE";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมระบบสารสนเทศและเครือข่าย (ISNE) ครับ? (ลองพิมพ์ 'เรียนอะไร')"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมระบบสารสนเทศและเครือข่าย (ISNE) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 else if (hasKeyword(input, "อุตสาหการ") && selectedProgram == "นานาชาติ") {
                     selectedMajor = "อุตสาหการ";
-                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมอุตสาหการ (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')"+guide);
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมอุตสาหการ (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 // ถ้าพิมพ์ผิด หรือเลือกสาขาที่ไม่มีในภาคนั้นๆ
@@ -187,6 +189,8 @@ public:
                     selectedProgram = "";
                     selectedMajor = "";
                     selectedDetail = "";
+                    selectedBuilding = "";
+                    selectedAccessories = "";                   
 
                     reply("กลับไปเลือกภาคใหม่ครับ: ปกติ / พิเศษ / นานาชาติ");
                 }
@@ -354,15 +358,36 @@ break; // อย่าลืมใส่ break ตรงนี้เสมอ!
 
                 // Maps
                 case FRESH_STATE_Building:
+
                     if (hasKeyword(input, "อาคารเรียน") || hasKeyword(input, "อาคาร") || hasKeyword(input, "ตึก")) {
+                        selectedBuilding = "อาคารเรียน";
                         reply("อาคารเรียนหลักของคณะวิศวกรรมศาสตร์ มช. คือ ตึก30ปี ซึ่งเป็นอาคารเรียนที่ทันสมัยและมีสิ่งอำนวยความสะดวกครบครัน นอกจากนี้ยังมีอาคารวิจัยและห้องปฏิบัติการต่างๆ ที่สนับสนุนการเรียนการสอนและงานวิจัยของคณะครับ");
                         reply("นอกจากนี้ยังมีอาคารเรียนอื่นๆ เช่น อาคารวิศวกรรมโยธา, อาคารวิศวกรรมไฟฟ้า, และอาคารวิศวกรรมเครื่องกล ซึ่งแต่ละอาคารจะมีห้องเรียนและห้องปฏิบัติการที่เหมาะสมกับสาขาวิชาต่างๆ ของคณะครับ");
                         reply("นี่เป็นแผนที่สำหรับน้องๆปี1 ที่จะได้ใช้บ่อยๆครับ: https://cmu.to/maps");
-                    }
+                    currentState = FRESH_STATE_Building;
+                }
+                
                 break;
                 
+                // Accessories
+                case FRESH_STATE_ACCESSORIES:
                 
+                    if (hasKeyword(input, "อุปกรณ์") || hasKeyword(input, "ของใช้") || hasKeyword(input, "เครื่องมือ")|| hasKeyword(input, "ของ")) {
+                        selectedAccessories = "อุปกรณ์";
+                        reply("อุปกรณ์ที่จำเป็นสำหรับนักศึกษาวิศวกรรมศาสตร์ มช. มีหลายอย่างครับ ขึ้นอยู่กับสาขาวิชาและวิชาที่เรียน แต่โดยทั่วไปแล้วจะมีอุปกรณ์พื้นฐานดังนี้ครับ:");
+                        reply("1. ไม้ธี หรือไม้บรรทัด: ใช้ในการเขียนแบบและการวาดภาพวิศวกรรม\n2. เครื่องคิดเลขวิศวกรรม: เช่น Casio fx-991ES Plus");
 
+                    if (hasKeyword(input, "ไม้ธี") || hasKeyword(input, "ไม้บรรทัด")) {
+                        reply("ไม้ธี หรือไม้บรรทัด เป็นอุปกรณ์ที่นักศึกษาวิศวกรรมศาสตร์ มช. ใช้ในการเขียนแบบและการวาดภาพวิศวกรรม โดยเฉพาะในวิชาที่ต้องใช้การเขียนแบบด้วยมือ เช่น Engineering Drawing ครับ ");
+                        reply("สามารถหาซื้อได้เองหรือมีการสั่งซื้อพร้อมกับอุปกรณ์อื่นๆ ในช่วงเปิดเทอมครับ(ทางสโมสรรนักศึกษามักจะมีการจัดชุดอุปกรณ์สำหรับนักศึกษาใหม่ที่รวมไม้ธีไว้ด้วยครับ)");
+                    }
+                    else if (hasKeyword(input, "เครื่องคิดเลข") || hasKeyword(input, "แลป")) {
+                        reply("เครื่องคิดเลขที่นิยมใช้ในคณะวิศวกรรมศาสตร์ มช. คือเครื่องคิดเลขวิศวกรรม เช่น Casio fx-991ES Plus ซึ่งมีฟังก์ชันที่จำเป็นสำหรับการคำนวณทางวิศวกรรม เช่น การคำนวณเมทริกซ์, การคำนวณเชิงสถิติ และการคำนวณทางวิทยาศาสตร์ครับ");
+                        reply("สามารถหาซื้อได้เองหรือมีการสั่งซื้อพร้อมกับอุปกรณ์อื่นๆ ในช่วงเปิดเทอมครับ(ทางสโมสรรนักศึกษามักจะมีการจัดชุดอุปกรณ์สำหรับนักศึกษาใหม่ที่รวมเครื่องคิดเลขไว้ด้วยครับ)");
+                        currentState = FRESH_STATE_ACCESSORIES;
+                    }                   
+                }                
+                break;
         }
         return true;
     }
