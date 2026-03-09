@@ -38,52 +38,52 @@ public:
         else if (input.find("ข่าว") != string::npos)
             return 4;
 
-        else if (input.find("มกราคม") != string::npos || input.find("มกรา") != string::npos)
+        else if (input.find("January") != string::npos || input.find("january") != string::npos || input.find("มกรา") != string::npos)
             return 5;
 
-        else if (input.find("กุมภาพันธ์") != string::npos || input.find("กุมภา") != string::npos)
+        else if (input.find("February") != string::npos || input.find("february") != string::npos || input.find("กุมภา") != string::npos)
             return 6;
 
-        else if (input.find("มีนาคม") != string::npos || input.find("มีนา") != string::npos)
+        else if (input.find("March") != string::npos || input.find("march") != string::npos || input.find("มีนา") != string::npos)
             return 7;
 
-        else if (input.find("เมษายน") != string::npos || input.find("เมษา") != string::npos)
+        else if (input.find("April") != string::npos || input.find("april") != string::npos || input.find("เมษา") != string::npos)
             return 8;
 
-        else if (input.find("พฤษภาคม") != string::npos || input.find("พฤษภา") != string::npos)
+        else if (input.find("May") != string::npos || input.find("may") != string::npos || input.find("พฤษภา") != string::npos)
             return 9;
 
-        else if (input.find("มิถุนายน") != string::npos || input.find("มิถุนา") != string::npos)
+        else if (input.find("June") != string::npos || input.find("june") != string::npos || input.find("มิถุนา") != string::npos)
             return 10;
 
-        else if (input.find("กรกฎาคม") != string::npos || input.find("กรกฎา") != string::npos)
+        else if (input.find("July") != string::npos || input.find("july") != string::npos || input.find("กรกฎา") != string::npos)
             return 11;
 
-        else if (input.find("สิงหาคม") != string::npos || input.find("สิงหา") != string::npos)
+        else if (input.find("August") != string::npos || input.find("august") != string::npos || input.find("สิงหา") != string::npos)
             return 12;
 
-        else if (input.find("กันยายน") != string::npos || input.find("กันยา") != string::npos)
+        else if (input.find("September") != string::npos || input.find("september") != string::npos || input.find("กันยา") != string::npos)
             return 13;
 
-        else if (input.find("ตุลาคม") != string::npos || input.find("ตุลา") != string::npos)
+        else if (input.find("October") != string::npos || input.find("october") != string::npos || input.find("ตุลา") != string::npos)
             return 14;
 
-        else if (input.find("พฤศจิกายน") != string::npos || input.find("พฤศจิกา") != string::npos)
+        else if (input.find("November") != string::npos || input.find("november") != string::npos || input.find("พฤศจิกา") != string::npos)
             return 15;
 
-        else if (input.find("ธันวาคม") != string::npos || input.find("ธันวา") != string::npos)
+        else if (input.find("December") != string::npos || input.find("december") != string::npos || input.find("ธันวา") != string::npos)
             return 16;
 
-        else if (input.find("ติดต่อ") != string::npos || input.find("ทะเบียน") != string::npos)
+        else if (input.find("ติดต่อคณะ") != string::npos)
             return 17;
 
         else if (input.find("wifi") != string::npos || input.find("WiFi") != string::npos)
             return 18;
 
-        else if (input.find("reg") != string::npos || input.find("ลงทะเบียน") != string::npos)
+        else if (input.find("ลงทะเบียน") != string::npos || input.find("reg") != string::npos)
             return 19;
 
-        else if (input.find("ฉุกเฉิน") != string::npos || input.find("รปภ") != string::npos)
+        else if (input.find("ฉุกเฉิน") != string::npos || input.find("emergency") != string::npos  || input.find("รปภ") != string::npos)
             return 20;
 
         return 0;
