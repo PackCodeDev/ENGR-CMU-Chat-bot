@@ -63,22 +63,19 @@ public:
 
         switch (currentState) {
             case FRESH_STATE_SELECT_PROGRAM:
-                if (hasKeyword(input, "ปกติ") || hasKeyword(input, "ภาคปก")) {
+                if(hasKeyword(input, "ปกติ") || hasKeyword(input, "ภาคปก")){
                     selectedProgram = "ปกติ";
                     reply("เลือกภาคปกติแล้วครับ ต่อไปพิมพ์ชื่อสาขาที่สนใจได้เลยครับ\n(เช่น คอมพิวเตอร์, เครื่องกล, โยธา, ไฟฟ้า, เซมิคอนดักเตอร์, บูรณาการ)");
                     currentState = FRESH_STATE_SELECT_MAJOR;
-                } 
-                else if (hasKeyword(input, "พิเศษ") || hasKeyword(input, "ภาคพิ")) {
+                }else if(hasKeyword(input, "พิเศษ") || hasKeyword(input, "ภาคพิ")){
                     selectedProgram = "พิเศษ";
                     reply("เลือกภาคพิเศษแล้วครับ ต่อไปพิมพ์ชื่อสาขาที่สนใจได้เลยครับ\n(เช่น อุตสาหการ, ไฟฟ้า, เครื่องกล)");
                     currentState = FRESH_STATE_SELECT_MAJOR;
-                } 
-                else if (hasKeyword(input, "นานาชาติ" || hasKeyword(input, "อินเตอร์"))) {
+                }else if(hasKeyword(input, "นานาชาติ" || hasKeyword(input, "อินเตอร์"))){
                     selectedProgram = "นานาชาติ";
                     reply("เลือกภาคนานาชาติแล้วครับ ต่อไปพิมพ์ชื่อสาขาที่สนใจได้เลยครับ\n(เช่น เครื่องกล, บูรณาการ, ไฟฟ้า, โยธา, ISNE, อุตสาหการ)");
                     currentState = FRESH_STATE_SELECT_MAJOR;
-                } 
-                else {
+                }else{
                     reply("กรุณาเลือกภาคที่ต้องการ: ปกติ, พิเศษ หรือ นานาชาติ ครับ\n(หรือพิมพ์ 'ออก' เพื่อกลับเมนูหลัก)");
                 }
                 break;
@@ -87,107 +84,107 @@ public:
 
             case FRESH_STATE_SELECT_MAJOR:
                 // ---------------- ภาคปกติ ----------------
-                if ((hasKeyword(input, "คอม") || hasKeyword(input, "คอมพิวเตอร์")) && selectedProgram == "ปกติ") {
+                if((hasKeyword(input, "คอม") || hasKeyword(input, "คอมพิวเตอร์")) && selectedProgram == "ปกติ"){
                     selectedMajor = "คอมพิวเตอร์";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมคอมพิวเตอร์ครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if ((hasKeyword(input, "เครื่องกล") || hasKeyword(input, "เครื่อง")) && selectedProgram == "ปกติ") {
+                else if((hasKeyword(input, "เครื่องกล") || hasKeyword(input, "เครื่อง")) && selectedProgram == "ปกติ"){
                     selectedMajor = "เครื่องกล";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเครื่องกลครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if ((hasKeyword(input, "ไฟฟ้า") || hasKeyword(input, "ไฟ")) && selectedProgram == "ปกติ") {
+                else if((hasKeyword(input, "ไฟฟ้า") || hasKeyword(input, "ไฟ")) && selectedProgram == "ปกติ"){
                     selectedMajor = "ไฟฟ้า";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมไฟฟ้าครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if (hasKeyword(input, "โยธา") && selectedProgram == "ปกติ") {
+                else if(hasKeyword(input, "โยธา") && selectedProgram == "ปกติ"){
                     selectedMajor = "โยธา";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมโยธาครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if ((hasKeyword(input, "อุตสาหการ") || hasKeyword(input, "IE")) && selectedProgram == "ปกติ") {
+                else if((hasKeyword(input, "อุตสาหการ") || hasKeyword(input, "IE")) && selectedProgram == "ปกติ"){
                     selectedMajor = "อุตสาหการ";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมอุตสาหการครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if (hasKeyword(input, "สิ่งแวดล้อม") && selectedProgram == "ปกติ") {
+                else if(hasKeyword(input, "สิ่งแวดล้อม") && selectedProgram == "ปกติ"){
                     selectedMajor = "สิ่งแวดล้อม";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมสิ่งแวดล้อมครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if ((hasKeyword(input, "เหมืองแร่") || hasKeyword(input, "ปิโตรเลียม")) && selectedProgram == "ปกติ") {
+                else if((hasKeyword(input, "เหมืองแร่") || hasKeyword(input, "ปิโตรเลียม")) && selectedProgram == "ปกติ"){
                     selectedMajor = "เหมืองแร่";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเหมืองแร่และปิโตรเลียมครับ?");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if ((hasKeyword(input, "reai") || hasKeyword(input, "robot") || hasKeyword(input, "หุ่นยนต์") || hasKeyword(input, "ai")) && selectedProgram == "ปกติ") {
+                else if((hasKeyword(input, "reai") || hasKeyword(input, "robot") || hasKeyword(input, "หุ่นยนต์") || hasKeyword(input, "ai")) && selectedProgram == "ปกติ"){
                     selectedMajor = "REAI";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมหุ่นยนต์และปัญญาประดิษฐ์ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if ((hasKeyword(input, "เซมิคอนดักเตอร์") || hasKeyword(input, "เซมิ")) && selectedProgram == "ปกติ") {
+                else if((hasKeyword(input, "เซมิคอนดักเตอร์") || hasKeyword(input, "เซมิ")) && selectedProgram == "ปกติ"){
                     selectedMajor = "เซมิคอนดักเตอร์";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเซมิคอนดักเตอร์ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if ((hasKeyword(input, "บูรณาการ") || hasKeyword(input, "บูรณาการณ์")) && selectedProgram == "ปกติ") {
+                else if((hasKeyword(input, "บูรณาการ") || hasKeyword(input, "บูรณาการณ์")) && selectedProgram == "ปกติ"){
                     selectedMajor = "บูรณาการ";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมบูรณาการครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
 
                 // ---------------- ภาคพิเศษ ----------------
-                else if (hasKeyword(input, "อุตสาหการ") && selectedProgram == "พิเศษ") {
+                else if(hasKeyword(input, "อุตสาหการ") && selectedProgram == "พิเศษ"){
                     selectedMajor = "อุตสาหการ";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมอุตสาหการ (พิเศษ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if (hasKeyword(input, "ไฟฟ้า") && selectedProgram == "พิเศษ") {
+                else if(hasKeyword(input, "ไฟฟ้า") && selectedProgram == "พิเศษ"){
                     selectedMajor = "ไฟฟ้า";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมไฟฟ้า (พิเศษ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if (hasKeyword(input, "เครื่องกล") && selectedProgram == "พิเศษ") {
+                else if(hasKeyword(input, "เครื่องกล") && selectedProgram == "พิเศษ"){
                     selectedMajor = "เครื่องกล";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเครื่องกล (พิเศษ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
 
                 // ---------------- ภาคนานาชาติ ----------------
-                else if (hasKeyword(input, "เครื่องกล") && selectedProgram == "นานาชาติ") {
+                else if(hasKeyword(input, "เครื่องกล") && selectedProgram == "นานาชาติ"){
                     selectedMajor = "เครื่องกล";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับเครื่องกล (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if ((hasKeyword(input, "บูรณาการ") || hasKeyword(input, "บูรณาการณ์")) && selectedProgram == "นานาชาติ") {
+                else if((hasKeyword(input, "บูรณาการ") || hasKeyword(input, "บูรณาการณ์")) && selectedProgram == "นานาชาติ"){
                     selectedMajor = "บูรณาการ";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับบูรณาการ (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if (hasKeyword(input, "ไฟฟ้า") && selectedProgram == "นานาชาติ") {
+                else if(hasKeyword(input, "ไฟฟ้า") && selectedProgram == "นานาชาติ"){
                     selectedMajor = "ไฟฟ้า";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมไฟฟ้า (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if (hasKeyword(input, "โยธา") && selectedProgram == "นานาชาติ") {
+                else if(hasKeyword(input, "โยธา") && selectedProgram == "นานาชาติ"){
                     selectedMajor = "โยธา";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมโยธา (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if ((hasKeyword(input, "ISNE") || hasKeyword(input, "สารสนเทศ")) && selectedProgram == "นานาชาติ") {
+                else if((hasKeyword(input, "ISNE") || hasKeyword(input, "สารสนเทศ")) && selectedProgram == "นานาชาติ"){
                     selectedMajor = "ISNE";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมระบบสารสนเทศและเครือข่าย (ISNE) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
-                else if (hasKeyword(input, "อุตสาหการ") && selectedProgram == "นานาชาติ") {
+                else if(hasKeyword(input, "อุตสาหการ") && selectedProgram == "นานาชาติ"){
                     selectedMajor = "อุตสาหการ";
                     reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมอุตสาหการ (นานาชาติ) ครับ? (ลองพิมพ์ 'เรียนอะไร')");
                     currentState = FRESH_STATE_DETAIL;
                 }
                 // ถ้าพิมพ์ผิด หรือเลือกสาขาที่ไม่มีในภาคนั้นๆ
-                else if (hasKeyword(input, "เปลี่ยนภาค")) {
+                else if(hasKeyword(input, "เปลี่ยนภาค")){
                     currentState = FRESH_STATE_SELECT_PROGRAM;
 
                     selectedProgram = "";
@@ -367,7 +364,7 @@ break; // อย่าลืมใส่ break ตรงนี้เสมอ!
                         reply("อาคารเรียนหลักของคณะวิศวกรรมศาสตร์ มช. คือ ตึก30ปี ซึ่งเป็นอาคารเรียนที่ทันสมัยและมีสิ่งอำนวยความสะดวกครบครัน นอกจากนี้ยังมีอาคารวิจัยและห้องปฏิบัติการต่างๆ ที่สนับสนุนการเรียนการสอนและงานวิจัยของคณะครับ");
                         reply("นอกจากนี้ยังมีอาคารเรียนอื่นๆ เช่น อาคารวิศวกรรมโยธา, อาคารวิศวกรรมไฟฟ้า, และอาคารวิศวกรรมเครื่องกล ซึ่งแต่ละอาคารจะมีห้องเรียนและห้องปฏิบัติการที่เหมาะสมกับสาขาวิชาต่างๆ ของคณะครับ");
                         reply("นี่เป็นแผนที่สำหรับน้องๆปี1 ที่จะได้ใช้บ่อยๆครับ: https://cmu.to/maps");
-                    currentState = FRESH_STATE_Building;
+                        currentState = FRESH_STATE_Building;
                 }
                 
                 break;
@@ -379,10 +376,13 @@ break; // อย่าลืมใส่ break ตรงนี้เสมอ!
                         selectedAccessories = "อุปกรณ์";
                         reply("อุปกรณ์ที่จำเป็นสำหรับนักศึกษาวิศวกรรมศาสตร์ มช. มีหลายอย่างครับ ขึ้นอยู่กับสาขาวิชาและวิชาที่เรียน แต่โดยทั่วไปแล้วจะมีอุปกรณ์พื้นฐานดังนี้ครับ:");
                         reply("1. ไม้ธี หรือไม้บรรทัด: ใช้ในการเขียนแบบและการวาดภาพวิศวกรรม\n2. เครื่องคิดเลขวิศวกรรม: เช่น Casio fx-991ES Plus");
+                        currentState = FRESH_STATE_ACCESSORIES;
 
                     if (hasKeyword(input, "ไม้ธี") || hasKeyword(input, "ไม้บรรทัด")) {
                         reply("ไม้ธี หรือไม้บรรทัด เป็นอุปกรณ์ที่นักศึกษาวิศวกรรมศาสตร์ มช. ใช้ในการเขียนแบบและการวาดภาพวิศวกรรม โดยเฉพาะในวิชาที่ต้องใช้การเขียนแบบด้วยมือ เช่น Engineering Drawing ครับ ");
                         reply("สามารถหาซื้อได้เองหรือมีการสั่งซื้อพร้อมกับอุปกรณ์อื่นๆ ในช่วงเปิดเทอมครับ(ทางสโมสรรนักศึกษามักจะมีการจัดชุดอุปกรณ์สำหรับนักศึกษาใหม่ที่รวมไม้ธีไว้ด้วยครับ)");
+                        currentState = FRESH_STATE_ACCESSORIES;
+
                     }
                     else if (hasKeyword(input, "เครื่องคิดเลข") || hasKeyword(input, "แลป")) {
                         reply("เครื่องคิดเลขที่นิยมใช้ในคณะวิศวกรรมศาสตร์ มช. คือเครื่องคิดเลขวิศวกรรม เช่น Casio fx-991ES Plus ซึ่งมีฟังก์ชันที่จำเป็นสำหรับการคำนวณทางวิศวกรรม เช่น การคำนวณเมทริกซ์, การคำนวณเชิงสถิติ และการคำนวณทางวิทยาศาสตร์ครับ");
@@ -402,9 +402,11 @@ break; // อย่าลืมใส่ break ตรงนี้เสมอ!
                         reply("หอพักนักศึกษาหญิง (รวม 11 อาคาร) โดยจะมี\n");
                         reply("หอพักในกำกับ (หอธรรมดา/ปรับปรุง): มี 10 อาคาร คือ หอ 1 หญิง ถึง หอ 10 หญิง \n****บางหอในกลุ่มนี้ เช่น หอ 4, 6, 7 และ 8 หญิง ได้รับการปรับปรุงเป็นหอพักแบบพรีเมียม (ห้องน้ำในตัว/กึ่งส่วนตัว) ซึ่งค่าเทอมจะสูงกว่าหอธรรมดา\n");
                         reply("หอพักในกำกับเชิงพาณิชย์: มี 1 อาคาร คือ หอพักนักศึกษาหญิงอาคาร 40 ปี (หอสีชมพูฝั่งหญิง ซึ่งเป็นหอยอดฮิต)\n");
+                        currentState = FRESH_STATE_DORMITORY;
 
                     }else if(hasKeyword(input, "ข้อมูล")){
                         reply("ช่องทางติดต่อ, ราคา, ค่าน้ำ-ค่าไฟ, วิธีจองหอพัก, จำนวนหอพัก");
+                        currentState = FRESH_STATE_DORMITORY;
 
                     }else if(hasKeyword(input, "ราคา") || hasKeyword(input, "ค่าใช้จ่ายหอ")){
                         reply("หอพักในกำกับ (หอธรรมดา) เป็นหอพักดั้งเดิม (หอ 1-7 ชาย และ หอ 1-3, 5, 8-9 หญิง บางหออาจมีการปรับปรุง)\n");
@@ -419,12 +421,14 @@ break; // อย่าลืมใส่ break ตรงนี้เสมอ!
                         reply("แรกเข้า (รวมค่าประกัน): ประมาณ 10,100 - 10,850 บาท\n");
                         reply("เทอมถัดไป: ประมาณ 9,000 บาท\n");
                         reply("ลักษณะ: มีทั้งแบบพัก 2 คน หรือเหมาห้อง, มีระเบียง, ใกล้แหล่งของกิน\n");
+                        currentState = FRESH_STATE_DORMITORY;
                         
                     }else if(hasKeyword(input, "ค่าน้ำ") || hasKeyword(input, "ค่าไฟ")){
                         reply("หอธรรมดา: มักรวมอยู่ในค่าเทอมแล้ว (ยกเว้นเครื่องใช้ไฟฟ้าพิเศษ)\n");
                         reply("หอปรับปรุง/หอ 40 ปี: จ่ายตามมิเตอร์จริง (ค่าไฟหน่วยละประมาณ 6 บาท, ค่าน้ำเหมาจ่ายหรือตามหน่วย) ต้องจ่ายทุกเดือนภายในวันที่ 5\n");
                         reply("ค่าธรรมเนียมเครื่องใช้ไฟฟ้า: หากนำเครื่องใช้ไฟฟ้ามาเอง (เช่น ตู้เย็น, หม้อหุงข้าว) ต้องลงทะเบียนจ่ายเพิ่มประมาณ 100 - 300 บาท ต่อเทอม\n");
                         reply("ค่าประกันของเสียหาย: จ่ายครั้งแรกที่เข้าพัก (ประมาณ 500 - 2,000 บาท ขึ้นอยู่กับประเภทหอ) และจะได้คืนเมื่อย้ายออกหากห้องไม่เสียหาย\n");
+                        currentState = FRESH_STATE_DORMITORY;
 
                     }else if(hasKeyword(input, "จองหอ") || hasKeyword(input, "วิธีจองหอ")){
                         reply("ขั้นตอนการจอง (ระบบออนไลน์) คุณต้องทำตามลำดับขั้นตอนผ่านเว็บไซต์ 'udo.oop.cmu.ac.th' หรือ 'reg.cmu.ac.th'\n");
@@ -432,12 +436,16 @@ break; // อย่าลืมใส่ break ตรงนี้เสมอ!
                         reply("2.ล็อกอินเข้าระบบจอง: เมื่อถึงวันและเวลาที่ประกาศเปิดจอง (มักจะเป็นช่วงหลังประกาศผล TCAS ในแต่ละรอบ) ให้รีบล็อกอินเข้าสู่ระบบ\n");
                         reply("3.ระบบจะแสดงรายชื่อหอพักที่ยังว่างอยู่ คุณสามารถเลือกเลขห้องและเลขเตียงที่ต้องการได้ทันที \n****ตรงนี้หอปรับปรุงและหอ 40 ปี จะเต็มเร็วมากภายในไม่กี่นาที แนะนำให้เล็งห้องในใจไว้ก่อนครับ \n");
                         reply("4.ยืนยันการจองและพิมพ์ใบชำระเงิน: เมื่อจองสำเร็จ ระบบจะให้พิมพ์ใบแจ้งหนี้เพื่อไปชำระเงินที่ธนาคารหรือผ่านแอปฯ ธนาคารตามที่กำหนด\n");
+                        currentState = FRESH_STATE_DORMITORY;
 
                     }else if(hasKeyword(input, "ช่องทางติดต่อ") || hasKeyword(input, "เว็บหอ")){
                         reply("เว็บไซต์จองหอพัก (ระบบหลัก) 'https://udo.oop.cmu.ac.th' (สำนักงานหอพักนักศึกษา มหาวิทยาลัยเชียงใหม่)");
                         reply("ช่องทางประกาศข่าวสาร (สำคัญมาก) 'Facebook: สำนักงานหอพักนักศึกษา มหาวิทยาลัยเชียงใหม่'");
+                        currentState = FRESH_STATE_DORMITORY;
+
                     }else{
                         reply("ลองพิมพ์คำว่า 'ข้อมูล' ดูนะครับ เพื่อดูรายละเอียดต่างๆ ที่มีปัจจุบันครับ\n(หรือพิมพ์ 'ออก' เพื่อกลับหน้าแรก)");
+
                     }
                 break;
 
@@ -449,8 +457,11 @@ break; // อย่าลืมใส่ break ตรงนี้เสมอ!
                         reply("นักศึกษาชาย\nเสื้อ: เชิ้ตแขนยาวสีขาว ผูกเนคไทสีม่วง (มีตรามหาวิทยาลัย)\nกางเกง: กางเกงสแล็คขายาว สีสุภาพ (ดำ/กรมท่า)\nเข็มขัด: สายหนังสีดำ หัวเข็มขัดตรามหาวิทยาลัย\nรองเท้า: รองเท้าคัทชูสีดำ ถุงเท้าสีดำ\n");
                         reply("นักศึกษาหญิง\nเสื้อ: เสื้อเชิ้ตสีขาว แขนสั้น ติดกระดุมโลหะตรามหาวิทยาลัย และเข็มวิทยฐานะที่อกซ้าย\nกระโปรง: กระโปรงทรงสอบ (สีดำ/กรมท่า) ความยาวคลุมเข่า\nเข็มขัด: สายเข็มขัดหนังสีดำ/น้ำตาล หัวเข็มขัดตรามหาวิทยาลัย\nรองเท้า: รองเท้าคัทชูสีดำปิดหัวปิดส้น\n");
                         reply("ชุดนักศึกษาทั่วไป (ชุดเรียนปกติ) มช. ค่อนข้างให้อิสระในการแต่งกายแบบสุภาพ โดย \nนักศึกษาชาย: เสื้อเชิ้ตขาวแขนสั้น/ยาว กางเกงสแล็คหรือยีนส์สีเข้ม (ขึ้นอยู่กับระเบียบของแต่ละคณะ)\nนักศึกษาหญิง: เสื้อนักศึกษาขาว กระโปรงพลีท (จีบรอบ) สีเข้ม หรือกระโปรงทรงสอบ รองเท้าผ้าใบสีสุภาพ\n");
+                        currentState = FRESH_STATE_CLOTHES;
+                    
                     }else if(hasKeyword(input, "เข็มกลัด") || hasKeyword(input, "กระดุม") || hasKeyword(input, "เนคไท") || hasKeyword(input, "หัวเข็มขัด") || hasKeyword(input, "ตุ้งติ้ง") || hasKeyword(input, "อุปกรณ์") || hasKeyword(input, "รองเท้า") || hasKeyword(input, "เครื่องแต่งกาย") || hasKeyword(input, "ชุด")){
                         reply("สามารถหาซื้อได้ที่สหกรณ์มหาวิทยาลัยเชียงใหม่ ตั้งอยู่บริเวณลานจอดรถหอหญิง 2 และสาขาฝั่งหน้า มช. เป็นแหล่งรวมเครื่องหมายที่ถูกต้องตามระเบียบที่สุด หรือ ร้านค้าหน้ามช. มีร้านขายชุดนักศึกษาให้เลือกหลายร้าน ซึ่งมักจะมีทรงเสื้อและเนื้อผ้าที่หลากหลายกว่า\n");
+                        currentState = FRESH_STATE_CLOTHES;
                     }
                 break;
         }
@@ -458,4 +469,3 @@ break; // อย่าลืมใส่ break ตรงนี้เสมอ!
     }
 
 };
-
