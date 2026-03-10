@@ -1,176 +1,385 @@
+#pragma once
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cstring>
+#include <algorithm>
 
-// Include ImGui และ Backend
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include <GLFW/glfw3.h>
-
-// --- [ส่วนที่ 1: สมองของบอท (Logic Class)] ---
-class ChatbotLogic {
-public:
-    int state = -1; // -1: ถามชื่อ, 0: เมนูหลัก, 1: Admission, 2: Freshman, 3: General
-    std::string userName;
-    std::vector<std::string> chatHistory;
-
-    ChatbotLogic() {
-        chatHistory.push_back("Chatbot: สวัสดีครับ! ขอทราบชื่อของคุณหน่อยครับ");
-    }
-
-    void processInput(std::string input) {
-        if (input.empty()) return;
-        chatHistory.push_back("User: " + input);
-
-        // ด่านที่ 1: รับชื่อ (เหมือนเวอร์ชัน Terminal)
-        if (state == -1) {
-            userName = input;
-            state = 0;
-            chatHistory.push_back("Chatbot: ยินดีที่ได้รู้จักครับ คุณ " + userName + "!");
-            addMenuMessage();
-            return;
-        }
-
-        // ด่านที่ 2: เลือกเมนูหลัก (1-3)
-        if (state == 0) {
-            if (input == "1") { 
-                state = 1; 
-                chatHistory.push_back("Chatbot: --- เข้าสู่โหมด Admission ---");
-                chatHistory.push_back("Chatbot: อยากทราบเรื่อง 'รอบรับ', 'คะแนน', 'เครื่องกล' หรือ 'คอมพิวเตอร์' ครับ?");
-            } 
-            else if (input == "2") { 
-                state = 2; 
-                chatHistory.push_back("Chatbot: ยินดีด้วยนะลูกช้างใหม่! ข้อมูลตารางสอนจะประกาศเร็ว ๆ นี้ครับ");
-                state = 0; // ทำงานเสร็จแล้วกลับมาเมนูหลัก
-                addMenuMessage();
-            } 
-            else if (input == "3") { 
-                state = 3; 
-                chatHistory.push_back("Chatbot: มีเรื่องอะไรที่อยากทราบเป็นพิเศษไหมครับ? พิมพ์ถามได้เลย!");
-                state = 0;
-                addMenuMessage();
-            } 
-            else {
-                chatHistory.push_back("Chatbot: กรุณาเลือกตัวเลข 1, 2 หรือ 3 เท่านั้นครับ");
-            }
-            return;
-        }
-
-        // ด่านที่ 3: จัดการ Keyword ในโหมด Admission (ใช้ Pointer ตาม Lecture 16)
-        if (state == 1) {
-            if (input == "ออก") {
-                state = 0;
-                chatHistory.push_back("Chatbot: กลับสู่เมนูหลักครับ");
-                addMenuMessage();
-                return;
-            }
-
-            // ใช้ Vector เก็บ Keyword (Lecture 17)
-            std::vector<std::string> keywords = {"รอบรับ", "คะแนน", "เครื่องกล", "คอมพิวเตอร์"};
-            const char *responses[] = {
-                "คณะเราเปิดรับ 3 รอบหลักครับ...",
-                "คะแนนย้อนหลังดูได้ที่เว็บไซต์ reg.cmu.ac.th",
-                "วิศวะเครื่องกลเน้นการออกแบบเครื่องจักรและพลังงาน",
-                "วิศวะคอมฯ เรียนทั้ง Hardware, Software และ AI"
-            };
-
-            bool found = false;
-            for (size_t i = 0; i < keywords.size(); i++) {
-                if (input.find(keywords[i]) != std::string::npos) {
-                    chatHistory.push_back("Chatbot: " + std::string(*(responses + i)));
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) chatHistory.push_back("Chatbot: ไม่พบข้อมูล ลองถามเรื่อง 'รอบรับ' หรือพิมพ์ 'ออก'");
-        }
-    }
-
-private:
-    void addMenuMessage() {
-        chatHistory.push_back("-------------------------");
-        chatHistory.push_back("Chatbot: กรุณาเลือกสถานะของคุณ:");
-        chatHistory.push_back("[1] สนใจเข้าเรียน (Admission)");
-        chatHistory.push_back("[2] นักศึกษาใหม่ปี 1 (Freshman)");
-        chatHistory.push_back("[3] ถามตอบทั่วไป (General Q&A)");
-        chatHistory.push_back("-------------------------");
-    }
+// สถานะย่อยสำหรับระบบนักศึกษาปี 1 (Freshman / Curriculum)
+enum FreshmanState {
+    FRESH_STATE_SELECT_PROGRAM, // เลือกภาค (ปกติ, พิเศษ, นานาชาติ)
+    FRESH_STATE_SELECT_MAJOR,   // เลือกสาขา
+    FRESH_STATE_DETAIL,         // คำถามเจาะลึก (เรียนอะไรบ้าง)
+    FRESH_STATE_Building,       // ข้อมูลตึกที่เรียน
+    FRESH_STATE_ACCESSORIES,    // อุปกรณ์ที่ใช้เรียน
+    FRESH_STATE_DORMITORY,      // หอพัก
+    FRESH_STATE_CLOTHES         // ชุด
 };
 
-// --- [ส่วนที่ 2: ฟังก์ชันหลัก (GUI Setup)] ---
-int main() {
-    if (!glfwInit()) return 1;
-    GLFWwindow* window = glfwCreateWindow(600, 800, "ENGR CMU Chatbot (GUI Version)", NULL, NULL);
-    glfwMakeContextCurrent(window);
+class FreshmanHandler {
+public:
+    FreshmanState currentState = FRESH_STATE_SELECT_PROGRAM;
+    std::string selectedProgram = "";
+    std::string selectedMajor = "";
+    std::string selectedBuilding = "";
+    std::string selectedAccessories = "";  
+    
+    std::string guide =
+        "\nคุณสามารถพิมพ์:\n"
+        "- เรียนอะไร\n"
+        "- อาคารเรียน\n"
+        "- อุปกรณ์\n"
+        "- หอพัก\n"
+        "- เครื่องแต่งกาย\n"
+        "- เปลี่ยนสาขา\n"
+        "- เปลี่ยนภาค\n"
+        "\n- ออก";
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-
-    // 1. ดึง IO ของ ImGui มาจัดการเรื่อง Font
-ImGuiIO& io = ImGui::GetIO();
-
-// 2. โหลดไฟล์ Font ภาษาไทย (เช่น Tahoma, Arial หรือ TH Sarabun) 
-// ต้องระบุ Path ที่อยู่ของไฟล์ .ttf ในเครื่องคุณ (ปกติ Windows จะอยู่ที่ C:/Windows/Fonts/)
-io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\tahoma.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesThai());
-
-// 3. (Optional) หากคุณมีไฟล์ Font ในโฟลเดอร์โปรเจค ก็ระบุชื่อไฟล์ได้เลย
-// io.Fonts->AddFontFromFileTTF("THSarabunNew.ttf", 20.0f, NULL, io.Fonts->GetGlyphRangesThai());
-
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 130");
-
-    // จองพื้นที่ใน Heap สำหรับสมองบอท (Lecture 17)
-    ChatbotLogic *brain = new ChatbotLogic();
-    static char inputBuffer[256] = "";
-
-    while (!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        // ตั้งค่าหน้าต่างแชทให้เต็มจอ
-        ImGui::SetNextWindowPos(ImVec2(0, 0));
-        ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
-        ImGui::Begin("Chatbot Console", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
-
-        // แสดงประวัติการสนทนา
-        ImGui::BeginChild("ChatRegion", ImVec2(0, -ImGui::GetFrameHeightWithSpacing() * 2));
-        for (const auto& log : brain->chatHistory) {
-            ImGui::TextWrapped("%s", log.c_str());
-        }
-        if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) ImGui::SetScrollHereY(1.0f);
-        ImGui::EndChild();
-
-        ImGui::Separator();
-
-        // ช่องรับข้อมูล
-        if (ImGui::InputText("##Input", inputBuffer, 256, ImGuiInputTextFlags_EnterReturnsTrue)) {
-            brain->processInput(inputBuffer);
-            memset(inputBuffer, 0, sizeof(inputBuffer));
-            ImGui::SetKeyboardFocusHere(-1); 
-        }
-        ImGui::SameLine();
-        ImGui::TextDisabled("(กด Enter)");
-
-        ImGui::End();
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(window);
+    std::string toLower(std::string s){
+        std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+        return s;
     }
 
-    // คืนพื้นที่หน่วยความจำ (Lecture 17)
-    delete brain;
-    brain = NULL;
+    // ฟังก์ชันเช็คคีย์เวิร์ด
+    bool hasKeyword(std::string input, std::string keyword){
+        input = toLower(input);
+        keyword = toLower(keyword);
+        return input.find(keyword) != std::string::npos;
+    }
 
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    // ฟังก์ชันหลักประมวลผลการทำงาน
+    bool processFreshman(std::string input, std::vector<std::string>& chatHistory) {
+        
+        auto reply = [&](std::string text) {
+            chatHistory.push_back("Chatbot: " + text);
+        };
 
-    return 0;
-}
+        // ตรวจสอบการออกจากโหมด
+        if (hasKeyword(input, "ออก") || hasKeyword(input, "กลับ") || hasKeyword(input, "เมนูหลัก")) {
+            currentState = FRESH_STATE_SELECT_PROGRAM;
+            selectedProgram = ""; 
+            selectedMajor = ""; 
+            return false; // ส่งสัญญาณ false กลับไปให้ main.cpp ดึงกลับเมนูหลัก
+        }
+
+        switch (currentState) {
+            case FRESH_STATE_SELECT_PROGRAM:
+                if (hasKeyword(input, "ปกติ")) {
+                    selectedProgram = "ปกติ";
+                    reply("เลือกภาคปกติแล้วครับ ต่อไปพิมพ์ชื่อสาขาที่สนใจได้เลยครับ\n(เช่น คอมพิวเตอร์, เครื่องกล, โยธา, ไฟฟ้า, เซมิคอนดักเตอร์, บูรณาการ)");
+                    currentState = FRESH_STATE_SELECT_MAJOR;
+                } 
+                else if (hasKeyword(input, "พิเศษ")) {
+                    selectedProgram = "พิเศษ";
+                    reply("เลือกภาคพิเศษแล้วครับ ต่อไปพิมพ์ชื่อสาขาที่สนใจได้เลยครับ\n(เช่น อุตสาหการ, ไฟฟ้า, เครื่องกล)");
+                    currentState = FRESH_STATE_SELECT_MAJOR;
+                } 
+                else if (hasKeyword(input, "นานาชาติ")) {
+                    selectedProgram = "นานาชาติ";
+                    reply("เลือกภาคนานาชาติแล้วครับ ต่อไปพิมพ์ชื่อสาขาที่สนใจได้เลยครับ\n(เช่น เครื่องกล, บูรณาการ, ไฟฟ้า, โยธา, ISNE, อุตสาหการ)");
+                    currentState = FRESH_STATE_SELECT_MAJOR;
+                } 
+                else {
+                    reply("กรุณาเลือกภาคที่ต้องการ: ปกติ, พิเศษ หรือ นานาชาติ ครับ\n(หรือพิมพ์ 'ออก' เพื่อกลับเมนูหลัก)");
+                }
+                break;
+
+            case FRESH_STATE_SELECT_MAJOR:
+                // ---------------- ภาคปกติ ----------------
+                if ((hasKeyword(input, "คอม") || hasKeyword(input, "คอมพิวเตอร์")) && selectedProgram == "ปกติ") {
+                    selectedMajor = "คอมพิวเตอร์";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมคอมพิวเตอร์ครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if ((hasKeyword(input, "เครื่องกล") || hasKeyword(input, "เครื่อง")) && selectedProgram == "ปกติ") {
+                    selectedMajor = "เครื่องกล";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเครื่องกลครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if ((hasKeyword(input, "ไฟฟ้า") || hasKeyword(input, "ไฟ")) && selectedProgram == "ปกติ") {
+                    selectedMajor = "ไฟฟ้า";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมไฟฟ้าครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if (hasKeyword(input, "โยธา") && selectedProgram == "ปกติ") {
+                    selectedMajor = "โยธา";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมโยธาครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if ((hasKeyword(input, "อุตสาหการ") || hasKeyword(input, "IE")) && selectedProgram == "ปกติ") {
+                    selectedMajor = "อุตสาหการ";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมอุตสาหการครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if (hasKeyword(input, "สิ่งแวดล้อม") && selectedProgram == "ปกติ") {
+                    selectedMajor = "สิ่งแวดล้อม";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมสิ่งแวดล้อมครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if ((hasKeyword(input, "เหมืองแร่") || hasKeyword(input, "ปิโตรเลียม")) && selectedProgram == "ปกติ") {
+                    selectedMajor = "เหมืองแร่";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเหมืองแร่และปิโตรเลียมครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if ((hasKeyword(input, "reai") || hasKeyword(input, "robot") || hasKeyword(input, "หุ่นยนต์") || hasKeyword(input, "ai")) && selectedProgram == "ปกติ") {
+                    selectedMajor = "REAI";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมหุ่นยนต์และปัญญาประดิษฐ์ครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if ((hasKeyword(input, "เซมิคอนดักเตอร์") || hasKeyword(input, "เซมิ")) && selectedProgram == "ปกติ") {
+                    selectedMajor = "เซมิคอนดักเตอร์";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเซมิคอนดักเตอร์ครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if ((hasKeyword(input, "บูรณาการ") || hasKeyword(input, "บูรณาการณ์")) && selectedProgram == "ปกติ") {
+                    selectedMajor = "บูรณาการ";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมบูรณาการครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                // ---------------- ภาคพิเศษ ----------------
+                else if (hasKeyword(input, "อุตสาหการ") && selectedProgram == "พิเศษ") {
+                    selectedMajor = "อุตสาหการ";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมอุตสาหการ (พิเศษ) ครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if (hasKeyword(input, "ไฟฟ้า") && selectedProgram == "พิเศษ") {
+                    selectedMajor = "ไฟฟ้า";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมไฟฟ้า (พิเศษ) ครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if (hasKeyword(input, "เครื่องกล") && selectedProgram == "พิเศษ") {
+                    selectedMajor = "เครื่องกล";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมเครื่องกล (พิเศษ) ครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                // ---------------- ภาคนานาชาติ ----------------
+                else if (hasKeyword(input, "เครื่องกล") && selectedProgram == "นานาชาติ") {
+                    selectedMajor = "เครื่องกล";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับเครื่องกล (นานาชาติ) ครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if ((hasKeyword(input, "บูรณาการ") || hasKeyword(input, "บูรณาการณ์")) && selectedProgram == "นานาชาติ") {
+                    selectedMajor = "บูรณาการ";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับบูรณาการ (นานาชาติ) ครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if (hasKeyword(input, "ไฟฟ้า") && selectedProgram == "นานาชาติ") {
+                    selectedMajor = "ไฟฟ้า";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมไฟฟ้า (นานาชาติ) ครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if (hasKeyword(input, "โยธา") && selectedProgram == "นานาชาติ") {
+                    selectedMajor = "โยธา";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมโยธา (นานาชาติ) ครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if ((hasKeyword(input, "ISNE") || hasKeyword(input, "สารสนเทศ")) && selectedProgram == "นานาชาติ") {
+                    selectedMajor = "ISNE";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมระบบสารสนเทศและเครือข่าย (ISNE) ครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if (hasKeyword(input, "อุตสาหการ") && selectedProgram == "นานาชาติ") {
+                    selectedMajor = "อุตสาหการ";
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับวิศวกรรมอุตสาหการ (นานาชาติ) ครับ?" + guide);
+                    currentState = FRESH_STATE_DETAIL;
+                }
+                else if (hasKeyword(input, "เปลี่ยนภาค")) {
+                    currentState = FRESH_STATE_SELECT_PROGRAM;
+                    selectedProgram = ""; selectedMajor = ""; 
+                    reply("กลับไปเลือกภาคใหม่ครับ: ปกติ / พิเศษ / นานาชาติ");
+                }
+                else {
+                    reply("ไม่พบสาขาที่ระบุในหลักสูตรนี้ครับ ลองพิมพ์ชื่อสาขาใหม่");
+                }
+                break;
+
+            case FRESH_STATE_DETAIL:
+                // จุดศูนย์กลางการสับรางไปยังโหมดต่างๆ
+                if (hasKeyword(input, "เปลี่ยนสาขา")) {
+                    currentState = FRESH_STATE_SELECT_MAJOR;
+                    reply("กลับมาหน้าเลือกสาขาแล้วครับ กรุณาพิมพ์ชื่อสาขาที่สนใจได้เลยครับ");
+                }
+                else if (hasKeyword(input, "เปลี่ยนภาค")) {
+                    currentState = FRESH_STATE_SELECT_PROGRAM;
+                    selectedProgram = ""; selectedMajor = ""; 
+                    reply("กลับไปเลือกภาคใหม่ครับ: ปกติ / พิเศษ / นานาชาติ");
+                }
+                else if (hasKeyword(input, "อาคารเรียน") || hasKeyword(input, "ตึก") || hasKeyword(input, "อาคาร")) {
+                    currentState = FRESH_STATE_Building;
+                    reply("ต้องการทราบข้อมูลอาคารเรียนใช่ไหมครับ? พิมพ์ 'อาคารเรียน' อีกครั้งเพื่อดูรายละเอียดเลยครับ");
+                }
+                else if (hasKeyword(input, "อุปกรณ์") || hasKeyword(input, "เครื่องมือ")) {
+                    currentState = FRESH_STATE_ACCESSORIES;
+                    reply("ต้องการสอบถามเรื่องอุปกรณ์การเรียนใช่ไหมครับ? (เช่น ไม้บรรทัด, เครื่องคิดเลข)");
+                }
+                else if (hasKeyword(input, "หอพัก")) {
+                    currentState = FRESH_STATE_DORMITORY;
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับหอพักครับ?\n(เช่น จำนวนหอพัก, ราคา, ค่าน้ำค่าไฟ, วิธีจองหอ, ช่องทางติดต่อ)");
+                }
+                else if (hasKeyword(input, "ชุด") || hasKeyword(input, "เครื่องแต่งกาย")) {
+                    currentState = FRESH_STATE_CLOTHES;
+                    reply("ต้องการสอบถามเรื่องใดเกี่ยวกับเครื่องแต่งกายครับ?\n(เช่น ระเบียบการแต่งกาย, ซื้ออุปกรณ์ที่ไหน)");
+                }
+                // ถ้าพิมพ์ถามว่าเรียนอะไร
+                else if (hasKeyword(input, "เรียนอะไร") || hasKeyword(input, "เกี่ยวกับอะไร") || hasKeyword(input, "เรียนเกี่ยวกับ")) {        
+                    if (selectedMajor == "คอมพิวเตอร์") {
+                        if (selectedProgram == "ปกติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมทั่วไป และการโปรแกรมเบื้องต้นเน้น Calculus, Physics และวิชาหัวใจหลักคือ Computer Programming (มักเริ่มด้วย C หรือ Python) เพื่อฝึกตรรกะการแก้ปัญหา (Logic)\nปี 2: โครงสร้างข้อมูล (Data Structures), ระบบดิจิทัล และวงจรไฟฟ้าเรียนวิชาปราบเซียนอย่าง Discrete Mathematics, Digital Systems, Data Structures & Algorithms และการออกแบบวงจรไฟฟ้าพื้นฐาน\nปี 3: ปีแห่งระบบปฏิบัติการ! เรียน OS, ฐานข้อมูล (Database), และเครือข่าย (Network)เน้นวิชาสายระบบอย่าง Operating Systems, Computer Architecture, Software Engineering และ Microprocessors (การเขียนโปรแกรมควบคุมบอร์ด)\n● ปี 4: ปัญญาประดิษฐ์ (AI), ความมั่นคงปลอดภัยไซเบอร์ และ Senior Project เรียนวิชาล้ำสมัยอย่าง Machine Learning (AI), Computer Security และเน้นการทำโครงงานจบการศึกษา (Senior Project) ที่สร้างนวัตกรรมหรือซอฟต์แวร์ใช้งานจริง\n"+guide);
+                        } else { reply("ไม่มีสาขานี้ในภาคที่คุณเลือกครับ"); }
+                    } 
+                    else if (selectedMajor == "เครื่องกล") {
+                        if (selectedProgram == "ปกติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมทั่วไป และวิชาเคมีสำหรับวิศวกรเน้น Calculus 1&2 และ Physics 1&2 (โดยเฉพาะเรื่องแรงและการเคลื่อนที่) และเริ่มเรียนการเขียนแบบวิศวกรรม (Drawing) ด้วยคอมพิวเตอร์\nปี 2: พื้นฐานกลศาสตร์ (Mechanics), สถิติวิศวกรรม และอุณหพลศาสตร์ (Thermo)เรียนวิชาแกนหลักอย่าง Statics (สถิตยศาสตร์), Dynamics (พลศาสตร์), และ Thermodynamics (การถ่ายเทความร้อนและพลังงาน) รวมถึงเริ่มฝึกงานโรงงาน (Workshop)\n● ปี 3: ปีแห่งการคำนวณขั้นสูง! เรียนกลศาสตร์ของไหล (Fluid), การถ่ายเทความร้อน (Heat Transfer), และการออกแบบเครื่องจักรเน้นวิชาเฉพาะทางอย่าง Fluid Mechanics, Mechanical Design (การออกแบบชิ้นส่วนเครื่องกล) และระบบควบคุมอัตโนมัติ (Automatic Control)\n● ปี 4: ระบบปรับอากาศ, เครื่องยนต์สันดาปภายใน และ Senior Project เรียนวิชาประยุกต์อย่าง Power Plant Engineering, Internal Combustion Engines, การทำความเย็น และโครงงานจบการศึกษาที่เน้นการสร้างเครื่องจักรหรือแบบจำลองทางวิศวกรรม\n"+guide);
+                        } else if (selectedProgram == "พิเศษ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมทั่วไป และวิชาเคมีสำหรับวิศวกรเน้นการปูพื้นฐานคำนวณหนักๆ อย่าง Calculus 1&2 และ Physics 1&2 (กลศาสตร์และไฟฟ้า) รวมถึงการเขียนแบบวิศวกรรม (Engineering Drawing)\nปี 2: สถิติวิศวกรรม (Engineering Stat), อุณหพลศาสตร์ (Thermo) และกลศาสตร์เริ่มเข้าวิชาภาคอย่าง Statics (สถิตยศาสตร์), Dynamics (พลศาสตร์) และ Thermodynamics เพื่อเข้าใจการเปลี่ยนรูปพลังงานและแรง\n● ปี 3: ปีแห่งการคำนวณขั้นสูง! เรียนกลศาสตร์ของไหล (Fluid), การถ่ายเทความร้อน (Heat), และการออกแบบเครื่องจักรเน้นวิชาเฉพาะทางอย่าง Fluid Mechanics, Heat Transfer, ระบบควบคุมอัตโนมัติ และการออกแบบชิ้นส่วนเครื่องกล (Machine Design)\n● ปี 4: ระบบปรับอากาศ, เครื่องยนต์สันดาป และ Senior Project เรียนวิชาประยุกต์อย่างวิศวกรรมโรงไฟฟ้า, ระบบทำความเย็น, การสั่นสะเทือนทางเครื่องกล และทำโครงงานวิศวกรรมจบการศึกษา (Senior Project)\n"+guide);
+                        } else if (selectedProgram == "นานาชาติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมสากล และวิชาเคมี (English Medium)เรียน Calculus, Physics และ Chemistry โดยใช้ตำราและบรรยายเป็นภาษาอังกฤษทั้งหมด พร้อมฝึกทักษะการสื่อสารทางวิศวกรรม\n● ปี 2: กลศาสตร์พื้นฐาน และการประมวลผลด้วยคอมพิวเตอร์ เรียน Statics, Dynamics, Thermodynamics และเริ่มใช้โปรแกรมคอมพิวเตอร์ในการคำนวณทางวิศวกรรมเครื่องกล (Computational Tools)\n● ปี 3: ปีแห่งวิชาแกนหลัก และโอกาสไปต่างประเทศ! เรียน Fluid Mechanics, Heat Transfer และ Machine Design โดยในช่วงนี้มักจะมีโครงการแลกเปลี่ยนหรือเตรียมตัวไปเรียนที่มหาวิทยาลัยพาร์ทเนอร์ (เช่น ในเยอรมนี หรือญี่ปุ่น)\n● ปี 4: เทคโนโลยีพลังงานสะอาด, ระบบอัตโนมัติ และ Senior Project เน้นวิชาเลือกที่ทันสมัย เช่น Renewable Energy, Robotics และทำงานวิจัยจบการศึกษา (Senior Project) โดยนำเสนอเป็นภาษาอังกฤษ\n"+guide);
+                        }
+                    } 
+                    else if (selectedMajor == "เซมิคอนดักเตอร์") {
+                        if (selectedProgram == "ปกติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมสากล และวิชาเคมีสำหรับวิศวกร เรียน Calculus, Physics และ Chemistry (ภาษาอังกฤษ) เพื่อปูพื้นฐานเรื่องโครงสร้างอะตอมและไฟฟ้า ซึ่งเป็นจุดเริ่มต้นของเซมิคอนดักเตอร์\n● ปี 2: ฟิสิกส์อุปกรณ์ (Device Physics) และวงจรอิเล็กทรอนิกส์ เรียนเรื่องอุปกรณ์เซมิคอนดักเตอร์พื้นฐาน, วงจรไฟฟ้า (Circuit), สถิติวิศวกรรม และเริ่มเรียนเรื่อง วัสดุศาสตร์ ที่ใช้ในการผลิตชิป\n● ปี 3: ปีแห่งการออกแบบและผลิต! เรียน IC Design และ Fabrication เรียนการออกแบบวงจรรวม (Integrated Circuit Design), เทคโนโลยีการผลิตสารกึ่งตัวนำ (Fabrication Technology) และระบบฝังตัว (Embedded Systems)\n● ปี 4: สหกิจศึกษารูปแบบพิเศษ (Coop+) และ Senior Project เน้นการออกไปปฏิบัติงานจริงในอุตสาหกรรมเซมิคอนดักเตอร์ (Sandbox) เพื่อแก้ปัญหาหน้างาน และทำโครงงานจบการศึกษาที่เน้นนวัตกรรมชิปหรืออุปกรณ์อิเล็กทรอนิกส์ขั้นสูง\n"+guide);
+                        } else { reply("ไม่มีสาขานี้ในภาคที่คุณเลือกครับ"); }
+                    } 
+                    else if (selectedMajor == "บูรณาการ") {                    
+                        if (selectedProgram == "ปกติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมสากล และการปรับตัว (The Learner) เรียนวิชาพื้นฐานคณะ (Calculus, Physics, Programming) เหมือนสาขาอื่น แต่เน้นภาษาอังกฤษและการทำงานร่วมกับผู้อื่น (Soft Skills)\n● ปี 2: เลือกเส้นทาง (The Specialist Path) เริ่มเลือก Module หรือแผนการเรียนเฉพาะที่สนใจ (เช่น วิศวกรอิเล็กทรอนิกส์, พลังงานทดแทน หรือ IT) และเรียนวิชาแกนด้านสถิติและวัสดุที่เกี่ยวข้องกับเส้นทางนั้น\n● ปี 3: ปีแห่งการเจาะลึกวิชาเอกเลือก (The Deep Dive) เรียนวิชาที่ออกแบบร่วมกับบริษัทพาร์ทเนอร์ (เช่น ถ้าเลือกสาย Murata จะเน้นการผลิตและคุมคุณภาพ) เน้นเรียนในสิ่งที่ได้ใช้ เพื่อเตรียมพร้อมเข้าทำงานจริง\n● ปี 4: สหกิจศึกษาเต็มรูปแบบ และ Senior Project (The Professional) เน้นการฝึกงานระยะยาวในบริษัท (Co-op) หรือทำโครงงานนวัตกรรม (Senior Project) โดยเน้นการแก้ปัญหาจริงที่เกิดขึ้นในภาคอุตสาหกรรม\n"+guide);
+                        } else if (selectedProgram == "นานาชาติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมสากล และการเป็นมืออาชีพ (International Foundation)เรียน Calculus, Physics, Chemistry (ภาษาอังกฤษ) และวิชาพิเศษอย่าง Principle of Being Professional เพื่อปูพื้นฐานจรรยาบรรณและการทำงานในระดับสากล พร้อมทักษะการใช้เครื่องมือ Workshop\n● ปี 2: กลศาสตร์วิศวกรรม และคณิตตรรกศาสตร์ (Analytical Skills)เรียน Engineering Mechanics (Statics & Dynamics), สถิติ, และ Introduction to Mathematical Logic เพื่อฝึกกระบวนการคิดวิเคราะห์เชิงระบบสำหรับงานบูรณาการ\n● ปี 3: ปีแห่งการเลือกเส้นทางและนวัตกรรม (Specialization & Innovation)คุณจะได้เลือก Major Elective ตามความสนใจ (เช่น AI, พลังงานสะอาด, หรือ Smart City) และเรียนวิชา Innovation to Market เพื่อเรียนรู้การเปลี่ยนไอเดียวิศวกรรมให้เป็นธุรกิจจริง\n● ปี 4: สหกิจศึกษาข้ามชาติ และ Senior Project (Global Professional)เน้นการออกฝึกงาน (Engineering Training) ในบริษัทข้ามชาติ หรือทำโครงงานจบการศึกษาที่เน้นการแก้ปัญหาระดับพหุวิทยาการ โดยใช้ทักษะภาษาอังกฤษสื่อสารผลงานในระดับมืออาชีพ\n"+guide);
+                        } else { reply("ไม่มีสาขานี้ในภาคพิเศษครับ"); }
+                    } 
+                    else if (selectedMajor == "ไฟฟ้า") {
+                        if (selectedProgram == "ปกติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมทั่วไป และวิชาเคมีสำหรับวิศวกร เน้น Calculus 1&2, Physics 1&2 และ Chemistry รวมถึงการปูพื้นฐานการเขียนโปรแกรมและการเขียนแบบวิศวกรรม (Engineering Drawing)\n● ปี 2: วงจรไฟฟ้า (Circuit), อุปกรณ์อิเล็กทรอนิกส์ และการวัด เข้าสู่วิชาภาคเต็มตัวด้วย Electric Circuits 1&2, อุปกรณ์อิเล็กทรอนิกส์, สถิติวิศวกรรม และวิชาปราบเซียนอย่างการวิเคราะห์สัญญาณ (Signal Analysis)\n● ปี 3: ปีแห่งวิชาแกนหลัก! เรียนเครื่องจักรกลไฟฟ้า, สนามแม่เหล็ก และระบบควบคุม เน้นวิชาหนักที่เป็นหัวใจของไฟฟ้า เช่น สนามแม่เหล็กไฟฟ้า (Electromagnetic Fields), เครื่องจักรกลไฟฟ้า (Electrical Machines) และเริ่มแยกสายวิชาเลือกในกลุ่มไฟฟ้ากำลังหรือไฟฟ้าสื่อสาร\n● ปี 4: การออกแบบระบบไฟฟ้า, โครงงานจบการศึกษา และวิชาเลือกเฉพาะสาย เน้นการออกแบบระบบไฟฟ้า (Electrical System Design), วิศวกรรมไฟฟ้าแรงสูง และทุ่มเทให้กับ Senior Project (แผนโครงงาน) หรือเลือกออก สหกิจศึกษา (แผนปฏิบัติงานในสถานประกอบการ)\n"+guide);
+                        } else if (selectedProgram == "พิเศษ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมทั่วไป และวิชาเคมีสำหรับวิศวกรเน้น Calculus 1&2, Physics 1&2 และ Chemistry เพื่อปูพื้นฐานการคำนวณและวิทยาศาสตร์ที่จำเป็น รวมถึงการเขียนแบบวิศวกรรม (Drawing)\n● ปี 2: วงจรไฟฟ้า (Circuit), อุปกรณ์อิเล็กทรอนิกส์ และการวัดเริ่มเข้าวิชาภาคอย่าง Electric Circuits 1&2, การวัดและเครื่องมือวัด (Measurements), อุปกรณ์อิเล็กทรอนิกส์ และสถิติวิศวกรรม รวมถึงวิชาปราบเซียนอย่างการวิเคราะห์สัญญาณ (Signal Analysis)\n● ปี 3: ปีแห่งวิชาแกนหลัก! เรียนเครื่องจักรกลไฟฟ้า, สนามแม่เหล็ก และระบบควบคุมเน้นวิชาที่เป็นหัวใจของวิศวกรไฟฟ้า เช่น สนามแม่เหล็กไฟฟ้า (Electromagnetic Fields), เครื่องจักรกลไฟฟ้า (Electrical Machines) และอิเล็กทรอนิกส์กำลัง (Power Electronics)\n● ปี 4: การออกแบบระบบไฟฟ้า, โครงงานจบการศึกษา และวิชาเลือกเฉพาะสายเน้นการออกแบบระบบไฟฟ้า (Electrical System Design), วิศวกรรมไฟฟ้าแรงสูง และทุ่มเทให้กับ Senior Project หรือเลือกแผน สหกิจศึกษา เพื่อไปปฏิบัติงานจริงในบริษัท\n"+guide);
+                        } else if (selectedProgram == "นานาชาติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมสากล และการเป็นมืออาชีพ (English Foundation)เน้น Calculus 1&2, Physics 1&2, Chemistry (ภาษาอังกฤษ) และวิชาพื้นฐานอย่าง Drawing รวมถึงวิชา Principle of Being Professional เพื่อปูพื้นฐานจรรยาบรรณวิศวกรระดับสากล\n● ปี 2: วงจรไฟฟ้า และการเขียนโปรแกรม (Circuits & Computing)เรียนวิชาแกนอย่าง Electric Circuits Analysis, Electronic Engineering, สถิติวิศวกรรม และที่สำคัญคือเริ่มเรียน Computer Programming for Engineers เพื่อใช้ในการคำนวณและควบคุมระบบ\n● ปี 3: ปีแห่งระบบอัจฉริยะ! (Smart Systems)เรียนเครื่องจักรกลไฟฟ้า (Electrical Machines), อิเล็กทรอนิกส์กำลัง, ระบบสื่อสาร และเข้าสู่หัวใจของหลักสูตรคือ Smart Grid Technology และการจัดการพลังงานยุคใหม่\n● ปี 4: การออกแบบระบบ และโครงงานนวัตกรรม (Advanced Integration)เรียนการออกแบบระบบไฟฟ้า (Electrical System Design), Distributed Generation (การผลิตไฟฟ้าแบบกระจายตัว), Electric Vehicles (EV) และทำโครงงานจบการศึกษา (Capstone Design Project) หรือเลือกออก สหกิจศึกษา ในบริษัทข้ามชาติ\n"+guide);
+                        }
+                    } 
+                    else if (selectedMajor == "โยธา") {
+                        if (selectedProgram == "ปกติ") {
+                            reply("ปี 1: พื้นฐานคำนวณและวิทยาศาสตร์เรียน Calculus 1&2, Physics 1&2 (เน้นกลศาสตร์เป็นพิเศษ) และ Chemistry นอกจากนี้ยังมีวิชา Engineering Drawing ที่ต้องเป๊ะเรื่องลายเส้นและมิติสัมพันธ์\n● ปี 2: หัวใจของโยธา (Mechanics & Surveying)เริ่มเข้าวิชาภาคที่ดุเดือดอย่าง Statics (สถิตยศาสตร์), Mechanics of Solids (กลศาสตร์ของแข็ง), กลศาสตร์ของไหล และวิชาที่เป็นสัญลักษณ์ของโยธาอย่าง Surveying (การสำรวจ) ที่ต้องออกไปส่องกล้องทั่ว มช. ครับ\n● ปี 3: การออกแบบโครงสร้างและวัสดุ (Design Phase)เรียนการออกแบบอย่างจริงจัง ทั้ง RC Design (คอนกรีตเสริมเหล็ก), Steel Design (โครงสร้างเหล็ก), วิศวกรรมปฐพี (Soil Mechanics) เพื่อดูฐานราก และวิศวกรรมทางหลวง (Highway Engineering)\n● ปี 4: การบริหารงานก่อสร้างและ Senior Projectเน้นวิชาการจัดการ เช่น Construction Management, การประเมินราคา และทำโครงงานจบการศึกษา (Senior Project) หรือเลือกออก สหกิจศึกษา เพื่อไปลุยหน้างานจริงที่ไซด์งานก่อสร้าง\n"+guide);
+                        } else if (selectedProgram == "นานาชาติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมสากล (Global Foundation)เรียน Calculus, Physics, Chemistry (ภาษาอังกฤษ) และวิชาพื้นฐานวิศวกรรม โดยเน้นการปรับตัวเข้าสู่การเรียนระบบนานาชาติ\n● ปี 2: กลศาสตร์และการสำรวจ (Mechanics & Surveying)เรียนวิชาแกนอย่าง Statics, Strength of Materials, Fluid Mechanics และวิชาที่เด็กโยธาต้องผ่านคือ Surveying (การสำรวจ) ซึ่งใช้ตำราและศัพท์เทคนิคภาษาอังกฤษทั้งหมด\n● ปี 3: การออกแบบโครงสร้างและเทคโนโลยี (Design & Innovation)เรียนการออกแบบคอนกรีตเสริมเหล็ก (RC Design), โครงสร้างเหล็ก และเริ่มนำเทคโนโลยีอย่าง BIM (Building Information Modeling) มาใช้ในการออกแบบและจำลองโครงสร้าง 3 มิติ\n● ปี 4: การจัดการโครงการและวิชาเลือกเฉพาะทางเรียนการบริหารงานก่อสร้าง (Construction Management), วิศวกรรมระบบราง (Railway Engineering) หรือการจัดการภัยพิบัติ และทำโครงงานจบการศึกษา (Senior Project) เป็นภาษาอังกฤษ\n"+guide);
+                        } else { reply("ไม่มีสาขานี้ในภาคที่คุณเลือกครับ"); }
+                    } 
+                    else if (selectedMajor == "สิ่งแวดล้อม") {                    
+                        if (selectedProgram == "ปกติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมทั่วไป และวิชาเคมีสำหรับวิศวกร เรียนวิชาพื้นฐานคณะเหมือนสาขาอื่น (Calculus, Physics) แต่จะเน้น Chemistry for Engineers และแล็บเคมีเป็นพิเศษ เพื่อปูพื้นฐานการวิเคราะห์สารปนเปื้อนในสิ่งแวดล้อม\n● ปี 2: เคมีน้ำและน้ำเสีย, ชีววิทยาสิ่งแวดล้อม และกลศาสตร์ เริ่มเข้าวิชาภาคอย่าง Environmental Chemistry (เคมีน้ำ), จุลชีววิทยาสิ่งแวดล้อม, สถิติวิศวกรรม และวิชาพื้นฐานอย่าง Statics และกลศาสตร์ของไหล (Fluid Mechanics)\n● ปี 3: ปีแห่งการบำบัด! เรียนวิศวกรรมน้ำเสีย, ประปา และมลพิษอากาศ เน้นการคำนวณและออกแบบระบบ ได้แก่ Wastewater Engineering (น้ำเสีย), Water Supply (ประปา), อุทกวิทยา, และวิชาอากาศ (Air Pollution and Meteorology)\n● ปี 4: การจัดการขยะ, การออกแบบโรงงาน และ Senior Project เรียนวิชาประยุกต์อย่าง Solid Waste Management (จัดการขยะมูลฝอย), การจัดการของเสียอันตราย, การประเมินผลกระทบสิ่งแวดล้อม (EIA) และทำโครงงานจบการศึกษา (Senior Project)\n"+guide);
+                        } else { reply("ไม่มีสาขานี้ในภาคที่คุณเลือกครับ"); }
+                    } 
+                    else if (selectedMajor == "REAI") {                    
+                        if (selectedProgram == "ปกติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรม และการเขียนโปรแกรมหุ่นยนต์เรียน Calculus, Physics และวิชาหัวใจคือ Computer Programming for Automation and Robotics พร้อมเริ่มทำโครงงานหุ่นยนต์ตัวแรกในวิชา Robotics Engineering Project 1\n● ปี 2: กลศาสตร์, ระบบดิจิทัล และพลศาสตร์ (Dynamics)เรียนวิชาแกนอย่าง Statics, Mechanics of Solids, Electronics for Robotics และสถิติวิศวกรรม พร้อมลุยโครงงานต่อเนื่องใน Robotics Engineering Project 2\n● ปี 3: ปีแห่งปัญญาประดิษฐ์ และการควบคุม (AI & Control)เรียนวิชา Artificial Intelligence for Robotics, Feedback Control Systems, Microprocessors และการจำลองระบบอัตโนมัติด้วยคอมพิวเตอร์ (Simulation)\n● ปี 4: ระบบหุ่นยนต์อิสระ และ Senior Projectเรียน Autonomous Robotic System, ทักษะการเป็นผู้ประกอบการ และทุ่มเทเวลาให้กับ Senior Project (โครงงานวิศวกรรมหุ่นยนต์ 3 และ 4) เพื่อสร้างนวัตกรรมที่ใช้งานได้จริง\n"+guide);
+                        } else { reply("ไม่มีสาขานี้ในภาคที่คุณเลือกครับ"); }
+                    } 
+                    else if (selectedMajor == "เหมืองแร่") {                    
+                        if (selectedProgram == "ปกติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมทั่วไป และวิชาเคมีสำหรับวิศวกรเรียนเหมือนภาคปกติสาขาอื่น (Calculus, Physics, Drawing) แต่จะเริ่มมีการปูพื้นฐานด้านวัสดุศาสตร์เบื้องต้น\n● ปี 2: ธรณีวิศวกรรม (Engineering Geology), กลศาสตร์ และการรังวัด (Surveying)เน้นการดูหินและแร่, การสำรวจรังวัดแผนที่ดิน, กลศาสตร์ของแข็ง และสถิติพื้นฐานเพื่อการวิเคราะห์ทางธรณีวิทยา\n● ปี 3: ปีแห่งการขุดและสกัด! เรียนการทำเหมือง (Mining Methods), การแต่งแร่ (Mineral Processing), กลศาสตร์หิน (Rock Mechanics)เน้นวิชาเฉพาะทางอย่างการออกแบบเหมืองผิวดิน/ใต้ดิน, การใช้วัตถุระเบิดในงานวิศวกรรม และเศรษฐศาสตร์แร่\n● ปี 4: วิศวกรรมสิ่งแวดล้อมเหมืองแร่, การออกแบบโรงแต่งแร่ และ Senior Project เน้นการฟื้นฟูพื้นที่เหมืองแร่, ความปลอดภัยในงานเหมือง, การจัดการสิ่งแวดล้อม และโครงงานจบการศึกษาที่เน้นการแก้ปัญหาจริงในอุตสาหกรรมแร่ธาตุหรือก่อสร้าง\n"+guide);
+                        } else { reply("ไม่มีสาขานี้ในภาคที่คุณเลือกครับ"); }
+                    } 
+                    else if (selectedMajor == "อุตสาหการ") {                    
+                        if (selectedProgram == "ปกติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมทั่วไป และวิชาเคมีสำหรับวิศวกร (เน้นหนักที่ Calculus 1&2, Physics 1&2 และ Drawing เพื่อปูพื้นฐานการคำนวณ)\n● ปี 2: สถิติวิศวกรรม (Engineering Stat), กรรมวิธีการผลิต และกลศาสตร์ (เริ่มเข้าวิชาภาคอย่าง Material, Statics และ Strength of Materials เพื่อเข้าใจพื้นฐานโรงงาน)\n● ปี 3: ปีแห่งการวางแผน! เรียน Operations Research (OR), คุมคุณภาพ (QC), เศรษฐศาสตร์วิศวกรรม (เน้นการคำนวณเพื่อเพิ่มประสิทธิภาพการผลิตและการศึกษางาน หรือ Work Study)\n● ปี 4: การจัดการโลจิสติกส์, การออกแบบโรงงาน และ Senior Project (เน้นการนำความรู้มาออกแบบผังโรงงานจริง ความปลอดภัย และทำโครงงานวิศวกรรมจบการศึกษา)\n"+guide);
+                        } else if (selectedProgram == "พิเศษ") {
+                            reply("ปี 1: วางรากฐานวิศวกร เรียนวิชาพื้นฐานคำนวณและวิทยาศาสตร์ (Calculus, Physics, Chemistry), การเขียนแบบวิศวกรรม (Engineering Drawing) และการเขียนโปรแกรมเบื้องต้น\n● ปี 2: เจาะลึกกลศาสตร์และพื้นฐาน IE เรียนสถิติวิศวกรรม (Engineering Stat), กลศาสตร์ (Statics), ความแข็งแรงของวัสดุ (Strength of Materials), วัสดุวิศวกรรม และกรรมวิธีการผลิต (Manufacturing)\n● ปี 3: ปีแห่งการวิเคราะห์และการเพิ่มประสิทธิภาพ (Optimization) เรียนการวิจัยดำเนินงาน (OR), การศึกษางาน (Work Study), การควบคุมคุณภาพ (QC), เศรษฐศาสตร์วิศวกรรม และการวางแผนควบคุมการผลิต\n● ปี 4: บูรณาการการจัดการและโครงงานจบการศึกษา เรียนการจัดการโลจิสติกส์และโซ่อุปทาน, การออกแบบผังโรงงาน (Plant Design), วิศวกรรมความปลอดภัย และทำโครงงานวิศวกรรม (Senior Project)\n"+guide);
+                        } else if (selectedProgram == "นานาชาติ") {
+                            reply("ปี 1: พื้นฐานวิศวกรรมสากล และการโปรแกรมเน้น Calculus, Physics (ภาษาอังกฤษทั้งหมด) และที่ต่างคือเริ่มเรียน Computer Programming อย่างเข้มข้นตั้งแต่ปี 1 เพื่อปูพื้นฐานด้านระบบสารสนเทศ\n● ปี 2: สถิติวิศวกรรม (Engineering Stat), พื้นฐานไอที และเศรษฐศาสตร์เรียนสถิติขั้นสูง, ระบบฐานข้อมูล (Database), และวิชาด้านการจัดการเบื้องต้น เพื่อเตรียมพร้อมสำหรับการวิเคราะห์ข้อมูลขนาดใหญ่ (Big Data)\n● ปี 3: ปีแห่งการเพิ่มประสิทธิภาพ (Optimization) และโลจิสติกส์!เรียนวิจัยดำเนินงาน (OR), การจัดการโซ่อุปทาน (Supply Chain), การจำลองสถานการณ์ด้วยคอมพิวเตอร์ (Simulation) และการควบคุมคุณภาพ (QC)\n● ปี 4: การจัดการโลจิสติกส์ขั้นสูง, โครงงานนวัตกรรม และ Senior Project เน้นการออกแบบระบบโลจิสติกส์อัจฉริยะ, การจัดการการดำเนินงานสากล และทำโครงงานจบการศึกษาที่เน้นการแก้ปัญหาด้วยเทคโนโลยีสมัยใหม่\n"+guide);
+                        }
+                    }
+                    else if (selectedMajor == "ISNE" && selectedProgram == "นานาชาติ") {
+                        reply("ปี 1: พื้นฐานวิศวกรรมและโปรแกรมมิ่ง (Foundation & Programming) เน้นวิชา Programming (C++/Python), Calculus และ Physics เป็นภาษาอังกฤษทั้งหมด\n● ปี 2: โครงสร้างข้อมูลและเครือข่ายเบื้องต้น เรียน Data Structures, Database Systems และ Computer Networks เพื่อเข้าใจสถาปัตยกรรมของระบบสารสนเทศ\n● ปี 3: ความมั่นคงปลอดภัยและระบบขั้นสูง (Security & Advanced Systems) เข้าสู่วิชาแกนอย่าง Cybersecurity, Cloud Computing และ Software Engineering\n● ปี 4: โครงงานและสหกิจศึกษา ทำ Senior Project เพื่อแก้ปัญหาทาง IT และมีโอกาสฝึกงาน (Co-op) กับบริษัทเทคโนโลยีชั้นนำทั้งในและต่างประเทศ\n"+guide);
+                    }
+                } 
+                else {
+                    reply("ลองพิมพ์ตามเมนูด้านบนดูนะครับ เช่น 'เรียนอะไร', 'อุปกรณ์', 'หอพัก' \n(หรือพิมพ์ 'ออก')");
+                }
+                break;
+
+            // ================== โซนตอบคำถามย่อย (สับรางมาจาก FRESH_STATE_DETAIL) ==================
+
+            case FRESH_STATE_Building:
+                if (hasKeyword(input, "อาคารเรียน") || hasKeyword(input, "อาคาร") || hasKeyword(input, "ตึก")) {
+                    reply("อาคารเรียนหลักของคณะวิศวกรรมศาสตร์ มช. คือ ตึก 30 ปี ซึ่งเป็นอาคารเรียนที่ทันสมัยและมีสิ่งอำนวยความสะดวกครบครัน นอกจากนี้ยังมีอาคารวิจัยและห้องปฏิบัติการต่างๆ ที่สนับสนุนการเรียนการสอนและงานวิจัยของคณะครับ\n\nนอกจากนี้ยังมีอาคารเรียนอื่นๆ เช่น อาคารวิศวกรรมโยธา, อาคารวิศวกรรมไฟฟ้า, และอาคารวิศวกรรมเครื่องกล ซึ่งแต่ละอาคารจะมีห้องเรียนและห้องปฏิบัติการที่เหมาะสมกับสาขาวิชาต่างๆ\n\nนี่เป็นแผนที่สำหรับน้องๆ ปี 1 ที่จะได้ใช้บ่อยๆ ครับ: https://cmu.to/maps");
+                } else {
+                    reply("อยู่ในโหมดอาคารเรียน หากต้องการดูข้อมูลอาคารให้พิมพ์ 'อาคารเรียน' หรือพิมพ์ 'กลับ' เพื่อออกครับ");
+                }
+                break;
+                
+            case FRESH_STATE_ACCESSORIES:
+                if (hasKeyword(input, "ไม้ธี") || hasKeyword(input, "ไม้บรรทัด")) {
+                    reply("ไม้ที หรือไม้บรรทัด เป็นอุปกรณ์ที่นักศึกษาวิศวกรรมศาสตร์ มช. ใช้ในการเขียนแบบและการวาดภาพวิศวกรรม โดยเฉพาะในวิชาที่ต้องใช้การเขียนแบบด้วยมือ เช่น Engineering Drawing ครับ\nสามารถหาซื้อได้เองหรือมีการสั่งซื้อพร้อมกับอุปกรณ์อื่นๆ ในช่วงเปิดเทอมครับ (ทางสโมสรนักศึกษามักจะมีการจัดชุดอุปกรณ์สำหรับนักศึกษาใหม่ที่รวมไม้ทีไว้ด้วยครับ)");
+                }
+                else if (hasKeyword(input, "เครื่องคิดเลข") || hasKeyword(input, "แลป")) {
+                    reply("เครื่องคิดเลขที่นิยมใช้ในคณะวิศวกรรมศาสตร์ มช. คือเครื่องคิดเลขวิศวกรรม เช่น Casio fx-991ES Plus ซึ่งมีฟังก์ชันที่จำเป็นสำหรับการคำนวณทางวิศวกรรม เช่น การคำนวณเมทริกซ์, การคำนวณเชิงสถิติ และการคำนวณทางวิทยาศาสตร์ครับ\nสามารถหาซื้อได้เองหรือมีการสั่งซื้อพร้อมกับอุปกรณ์อื่นๆ ในช่วงเปิดเทอมครับ");
+                }
+                else if (hasKeyword(input, "อุปกรณ์") || hasKeyword(input, "ของใช้") || hasKeyword(input, "เครื่องมือ")) {
+                    reply("อุปกรณ์ที่จำเป็นสำหรับนักศึกษาวิศวกรรมศาสตร์ มช. โดยทั่วไปแล้วจะมีอุปกรณ์พื้นฐานดังนี้ครับ:\n1. ไม้ที หรือไม้บรรทัด\n2. เครื่องคิดเลขวิศวกรรม (ลองพิมพ์ถามเจาะจงแต่ละอย่างได้เลยครับ)");
+                } else {
+                    reply("อยู่ในโหมดอุปกรณ์การเรียน ลองพิมพ์ถาม 'ไม้ที' หรือ 'เครื่องคิดเลข' ดูนะครับ หรือพิมพ์ 'กลับ' เพื่อออก");
+                }
+                break;
+
+            case FRESH_STATE_DORMITORY:
+                if(hasKeyword(input, "จำนวนหอพัก") || hasKeyword(input, "มีกี่หอ")){
+                    reply("โดยปกติจะแบ่งเป็น หอพักในกำกับ (หอธรรมดา) และ หอพักในกำกับเชิงพาณิชย์ (หอปรับปรุง/หอสีชมพู) โดยมีรายละเอียดดังนี้ครับ\n"
+                          "หอพักนักศึกษาชาย (รวม 8 อาคาร) โดยจะมี\n"
+                          "หอพักในกำกับ (หอธรรมดา): มี 7 อาคาร คือ หอ 1 ชาย ถึง หอ 7 ชาย\n"
+                          "หอพักในกำกับเชิงพาณิชย์: มี 1 อาคาร คือ หอพักนักศึกษาชายอาคาร 40 ปี (หอสีชมพูฝั่งชาย)\n\n"
+                          "หอพักนักศึกษาหญิง (รวม 11 อาคาร) โดยจะมี\n"
+                          "หอพักในกำกับ (หอธรรมดา/ปรับปรุง): มี 10 อาคาร คือ หอ 1 หญิง ถึง หอ 10 หญิง \n"
+                          "****บางหอในกลุ่มนี้ เช่น หอ 4, 6, 7 และ 8 หญิง ได้รับการปรับปรุงเป็นหอพักแบบพรีเมียม ซึ่งค่าเทอมจะสูงกว่าหอธรรมดา\n"
+                          "หอพักในกำกับเชิงพาณิชย์: มี 1 อาคาร คือ หอพักนักศึกษาหญิงอาคาร 40 ปี (หอสีชมพูฝั่งหญิง ซึ่งเป็นหอยอดฮิต)");
+                }
+                else if(hasKeyword(input, "ข้อมูล")){
+                    reply("ข้อมูลหอพักที่ควรรู้ สามารถพิมพ์คำเหล่านี้เพื่อถามต่อได้เลยครับ:\n- จำนวนหอพัก\n- ราคา\n- ค่าน้ำค่าไฟ\n- วิธีจองหอ\n- ช่องทางติดต่อ");
+                }
+                else if(hasKeyword(input, "ราคา") || hasKeyword(input, "ค่าใช้จ่ายหอ")){
+                    reply("หอพักในกำกับ (หอธรรมดา) (หอ 1-7 ชาย และ หอ 1-3, 5, 8-9 หญิง)\n"
+                          "เทอมแรก: ประมาณ 2,400 บาท | เทอมถัดไป: ประมาณ 2,200 บาท (พัดลม, ห้องน้ำรวม)\n\n"
+                          "หอพักปรับปรุง (พรีเมียม) เช่น หอหญิง 4, 6, 7\n"
+                          "เทอมแรก: ประมาณ 10,850 บาท | เทอมถัดไป: ประมาณ 8,750 บาท (ห้องน้ำในตัว, เฟอร์นิเจอร์ครบ)\n\n"
+                          "หอพักอาคาร 40 ปี (หอสีชมพู)\n"
+                          "แรกเข้า: ประมาณ 10,100 - 10,850 บาท | เทอมถัดไป: ประมาณ 9,000 บาท (มีทั้งแบบพัก 2 คน หรือเหมาห้อง)");
+                }
+                else if(hasKeyword(input, "ค่าน้ำ") || hasKeyword(input, "ค่าไฟ")){
+                    reply("หอธรรมดา: มักรวมอยู่ในค่าเทอมแล้ว (ยกเว้นเครื่องใช้ไฟฟ้าพิเศษ)\n"
+                          "หอปรับปรุง/หอ 40 ปี: จ่ายตามมิเตอร์จริง (ค่าไฟหน่วยละประมาณ 6 บาท, ค่าน้ำเหมาจ่ายหรือตามหน่วย) จ่ายทุกเดือน\n"
+                          "ค่าธรรมเนียมเครื่องใช้ไฟฟ้า: ตู้เย็น, หม้อหุงข้าว จ่ายเพิ่มประมาณ 100 - 300 บาท ต่อเทอม");
+                }
+                else if(hasKeyword(input, "จองหอ") || hasKeyword(input, "วิธีจองหอ")){
+                    reply("ขั้นตอนการจองผ่านเว็บไซต์ udo.oop.cmu.ac.th\n"
+                          "1. สร้างบัญชีผู้ใช้งาน: โดยใช้ เลขประจำตัวประชาชน และ วันเดือนปีเกิด (ระบุเพศให้ถูกต้อง)\n"
+                          "2. ล็อกอินเข้าระบบจอง: เมื่อถึงเวลาประกาศเปิดจอง ให้รีบล็อกอิน\n"
+                          "3. เลือกระบบจะแสดงรายชื่อหอพัก: เลือกห้องและเตียง (หอปรับปรุงจะเต็มเร็วมาก)\n"
+                          "4. ยืนยันการจองและชำระเงิน: พิมพ์ใบแจ้งหนี้เพื่อไปชำระเงินที่ธนาคาร");
+                }
+                else if(hasKeyword(input, "ติดต่อ") || hasKeyword(input, "เว็บหอ")){
+                    reply("เว็บไซต์จองหอพัก (ระบบหลัก): https://udo.oop.cmu.ac.th\n"
+                          "ช่องทางประกาศข่าวสาร (สำคัญมาก) Facebook: สำนักงานหอพักนักศึกษา มหาวิทยาลัยเชียงใหม่");
+                }
+                else {
+                    reply("อยู่ในโหมดหอพัก ลองพิมพ์ถาม 'ราคา', 'วิธีจองหอ', 'จำนวนหอพัก' ดูนะครับ หรือพิมพ์ 'กลับ' เพื่อออก");
+                }
+                break;
+
+            case FRESH_STATE_CLOTHES:
+                if(hasKeyword(input, "เข็มกลัด") || hasKeyword(input, "กระดุม") || hasKeyword(input, "เนคไท") || hasKeyword(input, "หัวเข็มขัด") || hasKeyword(input, "อุปกรณ์")){
+                    reply("สามารถหาซื้อได้ที่สหกรณ์มหาวิทยาลัยเชียงใหม่ ตั้งอยู่บริเวณลานจอดรถหอหญิง 2 และสาขาฝั่งหน้า มช. เป็นแหล่งรวมเครื่องหมายที่ถูกต้องตามระเบียบที่สุด หรือ ร้านค้าหน้ามช. มีร้านขายชุดนักศึกษาให้เลือกหลายร้าน ซึ่งมักจะมีทรงเสื้อและเนื้อผ้าที่หลากหลายกว่า");
+                }
+                else if(hasKeyword(input, "ชุด") || hasKeyword(input, "เครื่องแต่งกาย")){
+                    reply("การแต่งกายจะมีดังนี้ครับ\n\n"
+                          "[ชุดพิธีการ]\n"
+                          "ชาย: เชิ้ตแขนยาวสีขาว ผูกเนคไทสีม่วงตรา มช., กางเกงสแล็คสีสุภาพ, รองเท้าคัทชูสีดำ\n"
+                          "หญิง: เสื้อเชิ้ตขาวแขนสั้น ติดกระดุมและเข็ม มช., กระโปรงทรงสอบสีเข้ม, รองเท้าคัทชูสีดำ\n\n"
+                          "[ชุดเรียนปกติ]\n"
+                          "มช. ให้อิสระค่อนข้างมาก ชายใส่เชิ้ต/ยีนส์สีเข้มได้ หญิงใส่กระโปรงพลีทหรือทรงสอบกับรองเท้าผ้าใบได้ครับ (ขึ้นอยู่กับวิชาเรียนด้วยครับ)");
+                }
+                else {
+                    reply("อยู่ในโหมดเครื่องแต่งกาย ลองพิมพ์ถาม 'ชุด' หรือ 'อุปกรณ์' ดูนะครับ หรือพิมพ์ 'กลับ' เพื่อออก");
+                }
+                break;
+        }
+        return true;
+    }
+};
